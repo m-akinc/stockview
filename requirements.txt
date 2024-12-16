@@ -1,0 +1,3 @@
+wetrade
+playwright==1.40
+python-vipaccess

@@ -1,0 +1,35 @@
+body {
+    background-color: black;
+    color: aquamarine;
+    font-family: monospace;
+    gap: 10px;
+}
+
+.updated {
+    display: block;
+    font-size: 8pt;
+}
+
+.latestPrice {
+    display: block;
+    font-size: 40pt;
+}
+
+.daysChange {
+    display: block;
+    font-size: 14pt;
+}
+
+.daysChangeDollars {
+    font-size: 36pt;
+    color: green;
+}
+
+.daysChangePercent {
+    font-size: 36pt;
+    color: green;
+}
+
+.loss {
+    color: red;
+}
