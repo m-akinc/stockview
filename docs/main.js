@@ -1,4 +1,4 @@
-import './treemap';
+import './docs/treemap';
 
 (async () => {
     const response = await fetch('https://raw.githubusercontent.com/m-akinc/stockview/refs/heads/main/data.json');
@@ -34,6 +34,22 @@ import './treemap';
             daysChangePercentElement.classList.remove('loss');
         }
     }
+
+    const table = document.querySelector('table');
+    for (const index in data.indices) {
+        row = document.createElement('tr');
+        let column = document.createElement('td');
+        column.innerHTML = index[0];
+        row.appendChild(column);
+        column = document.createElement('td');
+        column.innerHTML = index[1];
+        row.appendChild(column);
+        column = document.createElement('td');
+        column.innerHTML = index[2];
+        row.appendChild(column);
+        table.appendChild(row);
+    }
+
     const positionsElement = document.querySelector('.positions');
     const absoluteMaximum = Math.max(...data.positions.map(x => Math.abs(x.daysChangePercent)));
     positionsElement.innerHTML = data.positions
