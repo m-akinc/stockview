@@ -105,6 +105,7 @@
 
 function getPositionColor(percentChange, absMaximum) {
     const rangeMax = Math.max(absMaximum, 15);
+    let r, g, b;
     if (percentChange > 0) {
         r = foo(percentChange, rangeMax, 9);
         g = foo(percentChange, rangeMax, 219);
