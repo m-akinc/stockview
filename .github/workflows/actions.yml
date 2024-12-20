@@ -25,7 +25,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           playwright install --with-deps firefox
-          $path = '/usr/local/lib/python3.12/site-packages/wetrade/api.py';
+          $path = pip show wetrade | Select-String -Pattern '(?<=Location: )[^\n]+'
+          $path
+          pip show wetrade
+          $path += '/wetrade/api.py';
           (Get-Content $path) -replace 'v1/accounts/{}/portfolio.json', 'v1/accounts/{}/portfolio.json?count=1000&totalsRequired=true' | Set-Content $path
           
       - name: fetch new data and update file
