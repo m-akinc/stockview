@@ -59,7 +59,7 @@
     
     const previousClose = data.history.reverse().find(x => new Date(x[0]).getDate() !== lastUpdated.getDate());
     if (previousClose) {
-        const previousCloseSharePrice = previousClose.cap / data.totalShares;
+        const previousCloseSharePrice = previousClose[1] / data.totalShares;
         const daysChangeDollars = latestSharePrice - previousCloseSharePrice;
         const daysChangePercent = (100 * daysChangeDollars / previousCloseSharePrice).toFixed(2);
         const daysChangeDollarsElement = document.querySelector('#changeDollars'); 
