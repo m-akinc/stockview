@@ -38,5 +38,5 @@ export class TreeMap extends HTMLElement {
     }
   }
   
-  customElements.define("treemap", TreeMap);
+  customElements.define("stockview-treemap", TreeMap);
   
