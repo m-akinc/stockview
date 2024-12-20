@@ -17,7 +17,11 @@ def main():
   client = APIClient()
 
   quote = MultiQuote(client, tuple([x[0] for x in comps]))
-  indices = quote.get_quote()
+  indices = [(
+    x['Product']['symbol'],
+    x['All']['changeClose'],
+    x['All']['changeClosePercentage']
+  ) for x in quote.get_quote()]
 
   response = client.request_account_portfolio(account_key)[0]['PortfolioResponse']
   portfolio = response['AccountPortfolio'][0]
@@ -61,11 +65,7 @@ def main():
       'date': nowMs,
       'cap': total,
       'totalShares': totalShares,
-      'accounts': [
-        { 'id': 'A041281', 'shares': totalShares - 25},
-        { 'id': 'A220876', 'shares': 5 },
-        { 'id': 'A030653', 'shares': 20 }
-      ],
+      'accounts': accounts,
       'history': history,
       'indices': indices,
       'positions': positions

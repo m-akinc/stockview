@@ -60,8 +60,8 @@ function getPositionColor(percentChange, absMaximum) {
 }
 
 function foo(percentChange, rangeMax, minValue) {
-    const logValue = Math.log(Math.abs(percentChange) + 1);
-    const logMaxInput = Math.log(rangeMax + 1);
+    const logValue = Math.log(1.5 * Math.abs(percentChange) + 1);
+    const logMaxInput = Math.log(1.5 * rangeMax + 1);
     const percentMagnitude = Math.min(1, logValue / logMaxInput);
     const range = 255 - minValue;
     return Math.floor(minValue + ((1 - percentMagnitude) * range));
