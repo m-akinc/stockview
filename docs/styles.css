@@ -18,8 +18,7 @@ body {
     font-size: 14pt;
 }
 
-.daysChangeDollars,
-.daysChangePercent {
+.changeValue {
     font-size: 36pt;
     color: #24af24;
 }

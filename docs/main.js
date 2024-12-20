@@ -15,6 +15,23 @@ import './treemap';
     const lastUpdated = new Date(data.date);
     const latestSharePrice = data.cap / data.totalShares;
     document.querySelector('.date').innerText = lastUpdated.toLocaleString();
+
+    const account = data.accounts.find(x => x.id === 'A041281');
+
+    // Populate table
+    const table = document.querySelector('table');
+    for (const index of data.indices) {
+        const row = document.createElement('tr');
+        let column;
+        for (const i of [...Array(4).keys()]) {
+            column = document.createElement('td');
+            column.innerHTML = index[i];
+            row.appendChild(column);
+        }
+        table.appendChild(row);
+    }
+
+    // TODO: remove later?
     document.querySelector('.latestPrice').innerText = priceFormatter.format(latestSharePrice);
     
     const previousClose = data.history.reverse().find(x => new Date(x.date).getDate() !== lastUpdated.getDate());
@@ -33,17 +50,49 @@ import './treemap';
             daysChangeDollarsElement.classList.remove('loss');
             daysChangePercentElement.classList.remove('loss');
         }
-    }
 
-    const table = document.querySelector('table');
-    for (const index of data.indices) {
-        row = document.createElement('tr');
-        let column;
-        for (const i of [...Array(4).keys()]) {
-            column = document.createElement('td');
-            column.innerHTML = index[i];
-            row.appendChild(column);
+        // Add to table
+        const row = document.createElement('tr');
+        let column = document.createElement('td');
+        column.innerHTML = 'MERT';
+        row.appendChild(column);
+        
+        column = document.createElement('td');
+        column.innerHTML = priceFormatter.format(latestSharePrice);
+        row.appendChild(column);
+        
+        column = document.createElement('td');
+        let span = document.createElement('span');
+        span.classList.add('changeValue');
+        if (daysChangeDollars < 0) {
+            span.classList.add('loss');
         }
+        span.innerHTML = priceFormatter.format(daysChangeDollars);
+        column.appendChild(span);
+        row.appendChild(column);
+        
+        column = document.createElement('td');
+        span = document.createElement('span');
+        span.classList.add('changeValue');
+        if (daysChangeDollars < 0) {
+            span.classList.add('loss');
+        }
+        span.innerHTML = `${daysChangePercent}%`;
+        column.appendChild(span);
+        row.appendChild(column);
+        
+        column = document.createElement('td');
+        column.innerHTML = 'TODO';
+        row.appendChild(column);
+        
+        column = document.createElement('td');
+        column.innerHTML = 'TODO';
+        row.appendChild(column);
+        
+        column = document.createElement('td');
+        column.innerHTML = account.shares;
+        row.appendChild(column);
+
         table.appendChild(row);
     }
 
