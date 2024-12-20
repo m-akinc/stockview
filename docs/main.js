@@ -1,3 +1,5 @@
+import './treemap';
+
 (async () => {
     const response = await fetch('https://raw.githubusercontent.com/m-akinc/stockview/refs/heads/main/data.json');
     if (!response.ok) {

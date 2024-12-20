@@ -1,5 +1,4 @@
-// Create a class for the element
-class TreeMap extends HTMLElement {
+export class TreeMap extends HTMLElement {
     //static observedAttributes = ["color", "size"];
     resizeObserver = new ResizeObserver(this.onResize);
   
