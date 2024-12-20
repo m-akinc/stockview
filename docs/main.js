@@ -21,9 +21,23 @@
     for (const index of data.indices) {
         const row = document.createElement('tr');
         let column;
-        for (const i of [...Array(4).keys()]) {
+        for (const i of [...Array(7).keys()]) {
             column = document.createElement('td');
-            column.innerHTML = index[i];
+            if (i < 4) {
+                if (i > 0 && i < 6) {
+                    let span = document.createElement('span');
+                    if (i !== 1) {
+                        span.classList.add('changeValue');
+                        if (index[i] < 0) {
+                            span.classList.add('loss');
+                        }
+                    }
+                    span.innerHTML = priceFormatter.format(index[i]);
+                    column.appendChild(span);
+                } else {
+                    column.innerHTML = index[i];
+                }
+            }
             row.appendChild(column);
         }
         table.appendChild(row);

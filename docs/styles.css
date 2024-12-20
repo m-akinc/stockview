@@ -18,8 +18,11 @@ body {
     font-size: 14pt;
 }
 
-.changeValue {
+#changeDollars, #changePercent {
     font-size: 36pt;
+}
+
+.changeValue {
     color: #24af24;
 }
 
