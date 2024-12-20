@@ -32,7 +32,9 @@
                             span.classList.add('loss');
                         }
                     }
-                    span.innerHTML = priceFormatter.format(index[i]);
+                    span.innerHTML = (i ==2 || i == 4)
+                        ? priceFormatter.format(index[i])
+                        : `${index[i]}%`;
                     column.appendChild(span);
                 } else {
                     column.innerHTML = index[i];
@@ -43,10 +45,19 @@
         table.appendChild(row);
     }
 
-    // TODO: remove later?
+    // TODO: remove later
+    const history = document.createElement('div');
+    for (const x of data.history) {
+        const d = document.createElement('div');
+        d.innerHTML = new Date(x[0]).toLocaleString();
+        history.appendChild(d);
+    }
+    table.after(history);
+
+    // TODO: remove later
     document.querySelector('.latestPrice').innerText = priceFormatter.format(latestSharePrice);
     
-    const previousClose = data.history.reverse().find(x => new Date(x.date).getDate() !== lastUpdated.getDate());
+    const previousClose = data.history.reverse().find(x => new Date(x[0]).getDate() !== lastUpdated.getDate());
     if (previousClose) {
         const previousCloseSharePrice = previousClose.cap / data.totalShares;
         const daysChangeDollars = latestSharePrice - previousCloseSharePrice;
