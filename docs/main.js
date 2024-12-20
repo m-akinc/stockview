@@ -32,7 +32,7 @@
                             span.classList.add('loss');
                         }
                     }
-                    span.innerHTML = (i ==2 || i == 4)
+                    span.innerHTML = (i == 1 || i ==2 || i == 4)
                         ? priceFormatter.format(index[i])
                         : `${index[i]}%`;
                     column.appendChild(span);
