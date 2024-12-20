@@ -19,6 +19,7 @@ def main():
   quote = MultiQuote(client, tuple([x[0] for x in comps]))
   indices = [(
     x['Product']['symbol'],
+    x['All']['lastTrade'],
     x['All']['changeClose'],
     x['All']['changeClosePercentage']
   ) for x in quote.get_quote()]

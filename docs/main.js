@@ -36,17 +36,14 @@ import './docs/treemap';
     }
 
     const table = document.querySelector('table');
-    for (const index in data.indices) {
+    for (const index of data.indices) {
         row = document.createElement('tr');
-        let column = document.createElement('td');
-        column.innerHTML = index[0];
-        row.appendChild(column);
-        column = document.createElement('td');
-        column.innerHTML = index[1];
-        row.appendChild(column);
-        column = document.createElement('td');
-        column.innerHTML = index[2];
-        row.appendChild(column);
+        let column;
+        for (const i of [...Array(4).keys()]) {
+            column = document.createElement('td');
+            column.innerHTML = index[i];
+            row.appendChild(column);
+        }
         table.appendChild(row);
     }
 
