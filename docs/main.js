@@ -32,10 +32,22 @@
             daysChangePercentElement.classList.remove('loss');
         }
     }
-    const positionsElement = document.querySelector('.positions'); 
-    positionsElement.innerText = data.positions
+    const positionsElement = document.querySelector('.positions');
+    const absoluteMaximum = Math.max(...data.positions.map(x => Math.abs(x.percentChange)));
+    positionsElement.innerHTML = data.positions
         .sort((a, b) => a.percentOfPortfolio - b.percentOfPortfolio)
-        .map(x => `${x.symbol}: day% ${x.daysChangePercent}, gain ${x.totalGain}, port% ${x.percentOfPortfolio}, value ${x.value}`)
+        .map(x => `<span style="color:${getPositionColor(x.daysChangePercent, absoluteMaximum)}">${x.symbol}: day% ${x.daysChangePercent}, port% ${x.percentOfPortfolio}</span>`)
         .join('\n');
         
 })();
+
+function getPositionColor(percentChange, absMaximum) {
+    const intensity = Math.abs(percentChange / absMaximum);
+    if (percentChange > 0) {
+        return `rgb(${intensity * 9}, 219, ${intensity * 22})`;
+    }
+    if (percentChange < 0) {
+        return `rgb(253, ${intensity * 19}, ${intensity * 12})`;
+    }
+    return 'rgb(238, 238, 238)';
+}
