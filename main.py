@@ -15,7 +15,7 @@ comps = [
 
 def main():
   client = APIClient()
-  
+
   quote = MultiQuote(client, tuple([x[0] for x in comps]))
   indices = quote.get_quote()
 
@@ -89,10 +89,10 @@ def decimateHistory(history):
 
 def priorNDays(descendingHistory, numDays):
   nowMs = datetime.datetime.now().timestamp() * 1000
-  latest = itertools.takewhile(
+  latest = list(itertools.takewhile(
     lambda x: datetime.timedelta(milliseconds = nowMs - x[0]).days <= numDays,
     descendingHistory
-  )
+  ))
   remainder = descendingHistory[len(latest):]
   return (latest, remainder)
 
