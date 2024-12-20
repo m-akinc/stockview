@@ -36,18 +36,19 @@
     const absoluteMaximum = Math.max(...data.positions.map(x => Math.abs(x.daysChangePercent)));
     positionsElement.innerHTML = data.positions
         .sort((a, b) => a.percentOfPortfolio - b.percentOfPortfolio)
-        .map(x => `<span style="color:${getPositionColor(x.daysChangePercent, absoluteMaximum)}">${x.symbol}: day% ${x.daysChangePercent}, port% ${x.percentOfPortfolio}</span>`)
-        .join('\n');
+        .map(x => `<div style="color:${getPositionColor(x.daysChangePercent, absoluteMaximum)}">${x.symbol}: day% ${x.daysChangePercent}, port% ${x.percentOfPortfolio}</div>`)
+        .join('');
         
 })();
 
 function getPositionColor(percentChange, absMaximum) {
-    const intensity = Math.abs(percentChange / absMaximum);
+    const rangeMax = Math.max(absMaximum, 15);
+    const intensity = Math.abs(percentChange / rangeMax);
     if (percentChange > 0) {
-        return `rgb(${intensity * 9}, 219, ${intensity * 22})`;
+        return `rgb(${Math.floor(intensity * 9)}, ${Math.floor(intensity * 219)}, ${Math.floor(intensity * 22)})`;
     }
     if (percentChange < 0) {
-        return `rgb(253, ${intensity * 19}, ${intensity * 12})`;
+        return `rgb(${Math.floor(intensity * 253)}, ${Math.floor(intensity * 19)}, ${Math.floor(intensity * 12)})`;
     }
     return 'rgb(238, 238, 238)';
 }
