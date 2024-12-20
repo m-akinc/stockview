@@ -20,7 +20,7 @@
         const previousCloseSharePrice = previousClose.cap / data.totalShares;
         const daysChangeDollars = latestSharePrice - previousCloseSharePrice;
         const daysChangePercent = (100 * daysChangeDollars / previousCloseSharePrice).toFixed(2);
-        const daysChangeDollarsElement = document.querySelector('.daysChange'); 
+        const daysChangeDollarsElement = document.querySelector('.daysChangeDollars'); 
         const daysChangePercentElement = document.querySelector('.daysChangePercent'); 
         daysChangeDollarsElement.innerText = priceFormatter.format(daysChangeDollars);
         daysChangePercentElement.innerText = `${daysChangePercent}%`;
@@ -32,4 +32,10 @@
             daysChangePercentElement.classList.remove('loss');
         }
     }
+    const positionsElement = document.querySelector('.positions'); 
+    positionsElement.innerText = data.positions
+        .sort((a, b) => a.percentOfPortfolio - b.percentOfPortfolio)
+        .map(x => `${x.symbol}: day% ${x.daysChangePercent}, gain ${x.totalGain}, port% ${x.percentOfPortfolio}, value ${x.value}`)
+        .join('\n');
+        
 })();

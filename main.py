@@ -12,9 +12,15 @@ def main():
   portfolio = response['AccountPortfolio'][0]
   totals = response['Totals']
 
-  stocks = []
+  positions = [{
+    "symbol": "(CASH)",
+    "value": "N/A",
+    "daysChangePercent": 0,
+    "totalGain": 0,
+    "percentOfPortfolio": totals['cashBalance'] / totals['totalMarketValue'] 
+  }]
   for position in portfolio["Position"]:
-    stocks.append({
+    positions.append({
       "symbol": position["symbolDescription"],
       "value": position["marketValue"],
       "daysChangePercent": position["daysGainPct"],
@@ -40,7 +46,8 @@ def main():
       'date': now,
       'cap': total,
       'totalShares': 250000,
-      'history': history
+      'history': history,
+      'positions': positions
     }
     json.dump(updated, f, ensure_ascii=False)
 

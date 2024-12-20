@@ -1,12 +1,11 @@
 body {
-    background-color: black;
-    color: aquamarine;
+    background-color: #2b2c37;
+    color: #c6e8ed;
     font-family: monospace;
     gap: 10px;
 }
 
 .updated {
-    display: block;
     font-size: 8pt;
 }
 
@@ -15,21 +14,16 @@ body {
     font-size: 40pt;
 }
 
-.daysChange {
-    display: block;
+.label {
     font-size: 14pt;
 }
 
-.daysChangeDollars {
-    font-size: 36pt;
-    color: green;
-}
-
+.daysChangeDollars,
 .daysChangePercent {
     font-size: 36pt;
-    color: green;
+    color: #24af24;
 }
 
 .loss {
-    color: red;
+    color: #e21414;
 }

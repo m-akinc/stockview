@@ -20,16 +20,16 @@ jobs:
           python-version: '3.12' # install the python version needed
           
       - name: install python packages
-        shell: pwsh
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           playwright install --with-deps firefox
+
+      - name: monkey-patch wetrade file
+        shell: pwsh
+        run: |
           $matches = pip show wetrade | Select-String -Pattern '(?<=Location: )[^\n]+'
-          $path = $matches.Matches.Value
-          $path
-          pip show wetrade
-          $path += '/wetrade/api.py';
+          $path = $matches.Matches.Value + '/wetrade/api.py';
           (Get-Content $path) -replace 'v1/accounts/{}/portfolio.json', 'v1/accounts/{}/portfolio.json?count=1000&totalsRequired=true' | Set-Content $path
           
       - name: fetch new data and update file
