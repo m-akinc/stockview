@@ -2,7 +2,7 @@ body {
     background-color: #2b2c37;
     color: #c6e8ed;
     font-family: monospace;
-    gap: 10px;
+    margin-bottom: 10px;
 }
 
 .updated {
