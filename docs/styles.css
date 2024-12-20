@@ -27,3 +27,8 @@ body {
 .loss {
     color: #e21414;
 }
+
+treemap {
+    width: 100%;
+    height: 800px;
+}
