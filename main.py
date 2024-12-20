@@ -93,7 +93,7 @@ def priorNDays(descendingHistory, numDays):
     lambda x: datetime.timedelta(milliseconds = nowMs - x[0]).days <= numDays,
     descendingHistory
   ))
-  remainder = descendingHistory[len(latest):]
+  remainder = list(descendingHistory[len(latest):])
   return (latest, remainder)
 
 
