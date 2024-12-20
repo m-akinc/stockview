@@ -84,7 +84,7 @@ def decimateHistory(history):
   year = [next(group) for key, group in itertools.groupby(year, lambda y: (toDatetime(y[0]).day, toDatetime(y[0]).date)) if key[0] == 5]
   older = [next(group) for key, group in itertools.groupby(older, lambda y: (toDatetime(y[0]).month, toDatetime(y[0]).year))]
 
-  return reversed(today + week + month + year + older)
+  return list(reversed(today + week + month + year + older))
   
 
 def priorNDays(descendingHistory, numDays):
