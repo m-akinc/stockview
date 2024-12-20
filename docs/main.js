@@ -33,7 +33,7 @@
         }
     }
     const positionsElement = document.querySelector('.positions');
-    const absoluteMaximum = Math.max(...data.positions.map(x => Math.abs(x.percentChange)));
+    const absoluteMaximum = Math.max(...data.positions.map(x => Math.abs(x.daysChangePercent)));
     positionsElement.innerHTML = data.positions
         .sort((a, b) => a.percentOfPortfolio - b.percentOfPortfolio)
         .map(x => `<span style="color:${getPositionColor(x.daysChangePercent, absoluteMaximum)}">${x.symbol}: day% ${x.daysChangePercent}, port% ${x.percentOfPortfolio}</span>`)
