@@ -37,8 +37,8 @@
         const previousCloseSharePrice = previousClose.cap / data.totalShares;
         const daysChangeDollars = latestSharePrice - previousCloseSharePrice;
         const daysChangePercent = (100 * daysChangeDollars / previousCloseSharePrice).toFixed(2);
-        const daysChangeDollarsElement = document.querySelector('.daysChangeDollars'); 
-        const daysChangePercentElement = document.querySelector('.daysChangePercent'); 
+        const daysChangeDollarsElement = document.querySelector('#changeDollars'); 
+        const daysChangePercentElement = document.querySelector('#changePercent'); 
         daysChangeDollarsElement.innerText = priceFormatter.format(daysChangeDollars);
         daysChangePercentElement.innerText = `${daysChangePercent}%`;
         if (daysChangeDollars < 0) {
