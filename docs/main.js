@@ -43,17 +43,26 @@
 
 function getPositionColor(percentChange, absMaximum) {
     const rangeMax = Math.max(absMaximum, 15);
-    const percentMagnitude = Math.abs(percentChange / rangeMax);
     if (percentChange > 0) {
-        return `rgb(${foo(percentMagnitude, 9)}, ${foo(percentMagnitude, 219)}, ${foo(percentMagnitude, 22)})`;
+        r = foo(percentChange, rangeMax, 9);
+        g = foo(percentChange, rangeMax, 219);
+        b = foo(percentChange, rangeMax, 22);
+    } else if (percentChange < 0) {
+        r = foo(percentChange, rangeMax, 253);
+        g = foo(percentChange, rangeMax, 19);
+        b = foo(percentChange, rangeMax, 12);
+    } else {
+        r = 238;
+        g = 238;
+        b = 238;
     }
-    if (percentChange < 0) {
-        return `rgb(${foo(percentMagnitude, 253)}, ${foo(percentMagnitude, 19)}, ${foo(percentMagnitude, 12)})`;
-    }
-    return 'rgb(238, 238, 238)';
+    return `rgb(${r}, ${g}, ${b})`;
 }
 
-function foo(percentMagnitude, min) {
-    const range = 255 - min;
-    return Math.floor(min + ((1 - percentMagnitude) * range));
+function foo(percentChange, rangeMax, minValue) {
+    const logValue = Math.log(Math.abs(percentChange) + 1);
+    const logMaxInput = Math.log(rangeMax + 1);
+    const percentMagnitude = Math.min(1, logValue / logMaxInput);
+    const range = 255 - minValue;
+    return Math.floor(minValue + ((1 - percentMagnitude) * range));
 }
