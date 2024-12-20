@@ -25,7 +25,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           playwright install --with-deps firefox
-          $path = pip show wetrade | Select-String -Pattern '(?<=Location: )[^\n]+'
+          $matches = pip show wetrade | Select-String -Pattern '(?<=Location: )[^\n]+'
+          $path = $matches.Matches.Value
           $path
           pip show wetrade
           $path += '/wetrade/api.py';
