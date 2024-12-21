@@ -1,5 +1,4 @@
 export class TreeMap extends HTMLElement {
-    //static observedAttributes = ["color", "size"];
     resizeObserver = new ResizeObserver(() => this.update());
     root;
     _positions;
@@ -34,12 +33,11 @@ export class TreeMap extends HTMLElement {
     disconnectedCallback() {
         this.resizeObserver.disconnect();
     }
-  
-    // attributeChangedCallback(name, oldValue, newValue) {
-    //   console.log(`Attribute ${name} has changed.`);
-    // }
 
     update() {
+        if (!this.positions) {
+            return;
+        }
         this.root.innerHTML = '';
         const absoluteMaximum = Math.max(...this.positions.map(x => Math.abs(x.daysChangePercent)));
         this.layout(this.root, 100, this.positions, absoluteMaximum);
@@ -70,19 +68,27 @@ export class TreeMap extends HTMLElement {
         const rangeMax = Math.max(absMaximum, 15);
         let r, g, b;
         if (percentChange > 0) {
-            r = foo(percentChange, rangeMax, 9);
-            g = foo(percentChange, rangeMax, 219);
-            b = foo(percentChange, rangeMax, 22);
+            r = this.scaleColorValue(percentChange, rangeMax, 9);
+            g = this.scaleColorValue(percentChange, rangeMax, 219);
+            b = this.scaleColorValue(percentChange, rangeMax, 22);
         } else if (percentChange < 0) {
-            r = foo(percentChange, rangeMax, 253);
-            g = foo(percentChange, rangeMax, 19);
-            b = foo(percentChange, rangeMax, 12);
+            r = this.scaleColorValue(percentChange, rangeMax, 253);
+            g = this.scaleColorValue(percentChange, rangeMax, 19);
+            b = this.scaleColorValue(percentChange, rangeMax, 12);
         } else {
             r = 238;
             g = 238;
             b = 238;
         }
         return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    scaleColorValue(percentChange, rangeMax, minValue) {
+        const logValue = Math.log(1.5 * Math.abs(percentChange) + 1);
+        const logMaxInput = Math.log(1.5 * rangeMax + 1);
+        const percentMagnitude = Math.min(1, logValue / logMaxInput);
+        const range = 255 - minValue;
+        return Math.floor(minValue + ((1 - percentMagnitude) * range));
     }
   }
   
