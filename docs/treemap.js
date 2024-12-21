@@ -61,7 +61,7 @@ export class TreeMap extends HTMLElement {
         largestDiv.style.backgroundColor = this.getPositionColor(largest.daysChangePercent, absoluteChangeMaximum);
         container.appendChild(largestDiv);
         container.appendChild(restDiv);
-        this.layout(restDiv, containerPercent * (1 - (largestAsPercentOfContainer / 100)), positions);
+        this.layout(restDiv, containerPercent * (1 - (largestAsPercentOfContainer / 100)), positions, absoluteChangeMaximum);
     }
 
     getPositionColor(percentChange, absMaximum) {
