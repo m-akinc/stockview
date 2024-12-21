@@ -48,7 +48,7 @@ export class TreeMap extends HTMLElement {
             return;
         }
         const largest = positions.shift();
-        const largestAsPercentOfContainer = largest.percentOfPortfolio / containerPercent;
+        const largestAsPercentOfContainer = 100 * largest.percentOfPortfolio / containerPercent;
         const rect = container.getBoundingClientRect();
         if (rect.width >= rect.height) {
             container.classList.remove('tall');
