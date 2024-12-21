@@ -119,6 +119,9 @@
         table.appendChild(row);
     }
 
+    const treemapElement = document.querySelector('stockview-treemap');
+    treemapElement.positions = data.positions;
+
     const positionsElement = document.querySelector('.positions');
     const absoluteMaximum = Math.max(...data.positions.map(x => Math.abs(x.daysChangePercent)));
     positionsElement.innerHTML = data.positions
