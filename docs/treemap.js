@@ -1,6 +1,14 @@
 export class TreeMap extends HTMLElement {
     //static observedAttributes = ["color", "size"];
-    resizeObserver = new ResizeObserver(this.onResize);
+    resizeObserver = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+            if (entry.contentBoxSize) {
+                const newSize = entry.contentBoxSize[0];
+                console.log('content box resize', newSize);
+                this.update();
+            }
+        }
+    });
     root;
     _positions;
 
@@ -38,16 +46,6 @@ export class TreeMap extends HTMLElement {
     // attributeChangedCallback(name, oldValue, newValue) {
     //   console.log(`Attribute ${name} has changed.`);
     // }
-
-    onResize = (entries) => {
-        for (const entry of entries) {
-            if (entry.contentBoxSize) {
-                const newSize = entry.contentBoxSize[0];
-                console.log('content box resize', newSize);
-                this.update();
-            }
-        }
-    }
 
     update() {
         this.root.innerHTML = '';
