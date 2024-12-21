@@ -47,7 +47,7 @@ export class TreeMap extends HTMLElement {
         if (positions.length === 0) {
             return;
         }
-        const largest = positions[0];
+        const largest = positions.shift();
         const largestAsPercentOfContainer = largest.percentOfPortfolio / containerPercent;
         const rect = container.getBoundingClientRect();
         if (rect.width >= rect.height) {
@@ -61,7 +61,7 @@ export class TreeMap extends HTMLElement {
         largestDiv.style.backgroundColor = this.getPositionColor(largest.daysChangePercent, absoluteChangeMaximum);
         container.appendChild(largestDiv);
         container.appendChild(restDiv);
-        this.layout(restDiv, containerPercent - (100 - largestAsPercentOfContainer), positions.shift());
+        this.layout(restDiv, containerPercent - (100 - largestAsPercentOfContainer), positions);
     }
 
     getPositionColor(percentChange, absMaximum) {
