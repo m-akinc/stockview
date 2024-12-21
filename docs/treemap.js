@@ -39,7 +39,7 @@ export class TreeMap extends HTMLElement {
     //   console.log(`Attribute ${name} has changed.`);
     // }
 
-    onResize(entries) {
+    onResize = (entries) => {
         for (const entry of entries) {
             if (entry.contentBoxSize) {
                 const newSize = entry.contentBoxSize[0];
@@ -70,7 +70,7 @@ export class TreeMap extends HTMLElement {
         const largestDiv = document.createElement('div');
         const restDiv = document.createElement('div');
         largestDiv.style.flexBasis = `${largestAsPercentOfContainer}%`;
-        largestDiv.style.backgroundColor = getPositionColor(largest.daysChangePercent, absoluteChangeMaximum);
+        largestDiv.style.backgroundColor = this.getPositionColor(largest.daysChangePercent, absoluteChangeMaximum);
         container.appendChild(largestDiv);
         container.appendChild(restDiv);
         this.layout(restDiv, containerPercent - (100 - largestAsPercentOfContainer), positions.shift());
