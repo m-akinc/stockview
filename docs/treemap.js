@@ -1,14 +1,6 @@
 export class TreeMap extends HTMLElement {
     //static observedAttributes = ["color", "size"];
-    resizeObserver = new ResizeObserver((entries) => {
-        for (const entry of entries) {
-            if (entry.contentBoxSize) {
-                const newSize = entry.contentBoxSize[0];
-                console.log('content box resize', newSize);
-                this.update();
-            }
-        }
-    });
+    resizeObserver = new ResizeObserver(() => this.update());
     root;
     _positions;
 
