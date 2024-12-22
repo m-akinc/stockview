@@ -62,10 +62,10 @@ export class TreeMap extends HTMLElement {
         if (divisions > 1) {
             const targetPercent = containerPercent / divisions;
             let positionIndex = 0;
-            let blockPercent = 0;
             const blocks = [...Array(divisions).keys()].map(x => document.createElement('div'));
             for (const div of blocks) {
                 container.appendChild(div);
+                let blockPercent = 0;
                 const blockPositions = [];
                 for (; positionIndex < positions.length && blockPercent < targetPercent; positionIndex += 1) {
                     blockPositions.push(positions[positionIndex]);
