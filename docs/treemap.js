@@ -67,6 +67,7 @@ export class TreeMap extends HTMLElement {
             const blockPositions = [];
             for (const block of [...Array(divisions).keys()]) {
                 const div = document.createElement('div');
+                container.appendChild(div);
                 for (; positionIndex < positions.length && blockPercent < targetPercent; positionIndex += 1) {
                     blockPositions.push(positions[positionIndex]);
                     blockPercent += positions[positionIndex].percentOfPortfolio;
