@@ -39,31 +39,34 @@ export class TreeMap extends HTMLElement {
             return;
         }
         this.root.innerHTML = '';
+        const rect = root.getBoundingClientRect();
         const absoluteMaximum = Math.max(...this.positions.map(x => Math.abs(x.daysChangePercent)));
-        this.layout(this.root, 100, this.positions, absoluteMaximum);
+        this.layout(this.root, 100, rect.width, rect.height, this.positions, absoluteMaximum);
     }
 
-    layout(container, containerPercent, positions, absoluteChangeMaximum) {
+    layout(container, containerPercent, containerWidth, containerHeight, positions, absoluteChangeMaximum) {
         if (positions.length === 0) {
             return;
         }
-        const rect = container.getBoundingClientRect();
+        container.classList.add('container');
         let smallerDimension, largerDimension;
-        if (rect.width >= rect.height) {
-            smallerDimension = rect.height;
-            largerDimension = rect.width;
+        if (containerWidth >= containerHeight) {
+            smallerDimension = containerHeight;
+            largerDimension = containerWidth;
             container.classList.remove('tall');
         } else {
-            smallerDimension = rect.width;
-            largerDimension = rect.height;
+            smallerDimension = containerWidth;
+            largerDimension = containerHeight;
             container.classList.add('tall');
         }
         const divisions = Math.round(largerDimension / smallerDimension);
-        console.log(largerDimension, smallerDimension, divisions);
         if (divisions > 1) {
             const targetPercent = containerPercent / divisions;
             let positionIndex = 0;
             const blocks = [...Array(divisions).keys()].map(x => document.createElement('div'));
+            for (const div of blocks) {
+                div.classList.add('container');
+            }
             for (const div of blocks) {
                 container.appendChild(div);
                 let blockPercent = 0;
@@ -72,9 +75,17 @@ export class TreeMap extends HTMLElement {
                     blockPositions.push(positions[positionIndex]);
                     blockPercent += positions[positionIndex].percentOfPortfolio;
                 }
-                const divPercentOfContainer = 100 * blockPercent / containerPercent;
-                div.style.flexBasis = `${divPercentOfContainer}%`;
-                this.layout(div, blockPercent, blockPositions, absoluteChangeMaximum);
+                const divPercentOfContainer = blockPercent / containerPercent;
+                div.style.flexBasis = `${100 * divPercentOfContainer}%`;
+                let blockWidth, blockHeight;
+                if (largerDimension === containerWidth) {
+                    blockWidth = (containerWidth * divPercentOfContainer);
+                    blockHeight = containerHeight;
+                } else {
+                    blockWidth = containerWidth;
+                    blockHeight = (containerHeight * divPercentOfContainer);
+                }
+                this.layout(div, blockPercent, blockWidth, blockHeight, blockPositions, absoluteChangeMaximum);
             }
             return;
         }
