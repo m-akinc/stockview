@@ -39,7 +39,7 @@ export class TreeMap extends HTMLElement {
             return;
         }
         this.root.innerHTML = '';
-        const rect = this.root.getBoundingClientRect();
+        const rect = this.getBoundingClientRect();
         const absoluteMaximum = Math.max(...this.positions.map(x => Math.abs(x.daysChangePercent)));
         this.layout(this.root, 100, rect.width, rect.height, this.positions, absoluteMaximum);
     }
