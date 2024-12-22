@@ -58,16 +58,15 @@ export class TreeMap extends HTMLElement {
             largerDimension = rect.height;
             container.classList.add('tall');
         }
-        console.log(smallerDimension, largerDimension);
         const divisions = Math.round(largerDimension / smallerDimension);
         if (divisions > 1) {
             const targetPercent = containerPercent / divisions;
             let positionIndex = 0;
             let blockPercent = 0;
-            const blockPositions = [];
             const blocks = [...Array(divisions).keys()].map(x => document.createElement('div'));
             for (const div of blocks) {
                 container.appendChild(div);
+                const blockPositions = [];
                 for (; positionIndex < positions.length && blockPercent < targetPercent; positionIndex += 1) {
                     blockPositions.push(positions[positionIndex]);
                     blockPercent += positions[positionIndex].percentOfPortfolio;
@@ -86,6 +85,7 @@ export class TreeMap extends HTMLElement {
         const restDiv = document.createElement('div');
         largestDiv.style.flexBasis = `${largestAsPercentOfContainer}%`;
         largestDiv.style.backgroundColor = this.getPositionColor(largest.daysChangePercent, absoluteChangeMaximum);
+        largestDiv.innerHTML = `${largest.symbol}<br>${largest.percentOfPortfolio}<br>${largest.daysChangePercent}%`
         container.appendChild(largestDiv);
         container.appendChild(restDiv);
         this.layout(restDiv, containerPercent * (1 - (largestAsPercentOfContainer / 100)), positions, absoluteChangeMaximum);

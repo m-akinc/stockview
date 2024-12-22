@@ -4,6 +4,9 @@
 
 div {
     display: flex;
+    color: #c6e8ed;
+    font-family: monospace;
+    font-size: 6px;
     border: 1px solid blueviolet;
     width: 100%;
     height: 100%;
