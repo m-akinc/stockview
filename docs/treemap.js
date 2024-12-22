@@ -58,6 +58,7 @@ export class TreeMap extends HTMLElement {
             largerDimension = rect.height;
             container.classList.add('tall');
         }
+        console.log(smallerDimension, largerDimension);
         const divisions = Math.round(largerDimension / smallerDimension);
         if (divisions > 1) {
             const targetPercent = containerPercent / divisions;
