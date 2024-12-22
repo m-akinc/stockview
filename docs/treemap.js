@@ -47,15 +47,37 @@ export class TreeMap extends HTMLElement {
         if (positions.length === 0) {
             return;
         }
+        const rect = container.getBoundingClientRect();
+        let smallerDimension, largerDimension;
+        if (rect.width >= rect.height) {
+            smallerDimension = rect.height;
+            largerDimension = rect.width;
+            container.classList.remove('tall');
+        } else {
+            smallerDimension = rect.width;
+            largerDimension = rect.height;
+            container.classList.add('tall');
+        }
+        const divisions = Math.round(largerDimension / smallerDimension);
+        if (divisions > 1) {
+            const targetPercent = containerPercent / divisions;
+            let positionIndex = 0;
+            let blockPercent = 0;
+            const blockPositions = [];
+            for (const block of [...Array(divisions).keys]) {
+                const div = document.createElement('div');
+                for (; positionIndex < positions.length && blockPercent < targetPercent; positionIndex += 1) {
+                    blockPositions += positions[positionIndex];
+                    blockPercent += positions[positionIndex].percentOfPortfolio;
+                }
+                this.layout(div, blockPercent, blockPositions, absoluteChangeMaximum);
+            }
+            return;
+        }
         positions = [...positions];
         const largest = positions.shift();
         const largestAsPercentOfContainer = 100 * largest.percentOfPortfolio / containerPercent;
-        const rect = container.getBoundingClientRect();
-        if (rect.width >= rect.height) {
-            container.classList.remove('tall');
-        } else {
-            container.classList.add('tall');
-        }
+        
         const largestDiv = document.createElement('div');
         const restDiv = document.createElement('div');
         largestDiv.style.flexBasis = `${largestAsPercentOfContainer}%`;
