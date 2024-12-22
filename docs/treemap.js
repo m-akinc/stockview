@@ -73,7 +73,7 @@ export class TreeMap extends HTMLElement {
                     blockPercent += positions[positionIndex].percentOfPortfolio;
                 }
                 const divPercentOfContainer = 100 * blockPercent / containerPercent;
-                largestDiv.style.flexBasis = `${divPercentOfContainer}%`;
+                div.style.flexBasis = `${divPercentOfContainer}%`;
                 this.layout(div, blockPercent, blockPositions, absoluteChangeMaximum);
             }
             return;
