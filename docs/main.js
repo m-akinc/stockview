@@ -1,3 +1,6 @@
+import { Chart } from 'chart.js';
+import 'chartjs-adapter-date-fns';
+
 (async () => {
     const devMode = getQueryParameter('dev') !== undefined;
     const longitude = getQueryParameter('longitude');
