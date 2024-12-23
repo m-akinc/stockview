@@ -1,4 +1,6 @@
 (async () => {
+    const devMode = getQueryParameter('dev') !== undefined;
+
     const response = await fetch('https://raw.githubusercontent.com/m-akinc/stockview/refs/heads/main/data.json');
     if (!response.ok) {
         document.body.innerText = `Failed to fetch data (${response.status}): ${response.statusText}`;
@@ -36,14 +38,15 @@
     
     const table = document.querySelector('table');
 
-    // TODO: remove later
-    const history = document.createElement('div');
-    for (const x of data.history) {
-        const d = document.createElement('div');
-        d.innerHTML = new Date(x[0]).toLocaleString();
-        history.appendChild(d);
+    if (devMode) {
+        const history = document.createElement('div');
+        for (const x of data.history) {
+            const d = document.createElement('div');
+            d.innerHTML = new Date(x[0]).toLocaleString();
+            history.appendChild(d);
+        }
+        table.after(history);
     }
-    table.after(history);
 
     // TODO: remove later
     document.querySelector('.latestPrice').innerText = priceFormatter.format(latestSharePrice);
@@ -127,3 +130,14 @@ function getDisplayName(symbol) {
             return '(Unknown)';
     }
 }
+
+function getQueryParameter(name) {
+    var url = window.location.search.substring(1);
+    var vars = url.split('&');
+    for (var i = 0; i < vars.length; i++) {
+        var nameAndValue = vars[i].split('=');
+        if (nameAndValue[0] == name) {
+            return nameAndValue[1];
+        }
+    }
+}​
