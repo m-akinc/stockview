@@ -9,6 +9,14 @@ body {
     font-size: 8pt;
 }
 
+.changeValue {
+    color: #23ce23;
+}
+
+.loss {
+    color: #e21414;
+}
+
 .market {
     display: flex;
 }
@@ -44,22 +52,6 @@ body {
     font-size: 40px;
 }
 
-.graph-container {
-    height: 300px;
-}
-
-.label {
-    font-size: 14pt;
-}
-
-.changeValue {
-    color: #23ce23;
-}
-
-.loss {
-    color: #e21414;
-}
-
 table {
     table-layout: fixed;
     width: 100%;
@@ -70,6 +62,16 @@ th, td {
     padding: 12px;
     border: 1px solid #4a4b5c;
     text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.graph-container {
+    max-height: 300px;
+}
+
+.label {
+    font-size: 14pt;
 }
 
 stockview-treemap {

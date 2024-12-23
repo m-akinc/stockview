@@ -4,12 +4,8 @@
     let accountId = getQueryParameter('id');
     let accountValues;
 
-    alert('1');
-
     if (!accountId && !longitude) {
-        alert('2');
         accountId = localStorage.getItem('stockview-account-id');
-        alert('3');
         console.log('Got accountId from local storage:', accountId);
     }
 
@@ -152,7 +148,7 @@ function populateAccountValues(accountValues, priceFormatter) {
     if (accountValues.gainPercent < 0) {
         span.classList.add('loss');
     }
-    span.innerHTML = priceFormatter.format(accountValues.gainPercent);
+    span.innerHTML = `${accountValues.gainPercent}%`;
     
     columns[6].innerHTML = accountValues.shares;
 }
