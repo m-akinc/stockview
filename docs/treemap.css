@@ -3,7 +3,7 @@
 }
 
 div {
-    display: flex;
+    display: grid;
     color: black;
     font-family: monospace;
     font-size: 8px;
@@ -18,4 +18,8 @@ div {
 
 .tall {
     flex-direction: column;
+}
+
+.leaf {
+    display: block;
 }
