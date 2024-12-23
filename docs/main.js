@@ -5,6 +5,8 @@
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(x => {
             console.log(x);
+        },x => {
+            console.log(x);
         },{
             enableHighAccuracy: true,
             timeout: 5000
