@@ -95,30 +95,31 @@ export class TreeMap extends HTMLElement {
         }
         positions = [...positions];
         const largest = positions.shift();
-        const largestAsPercentOfContainer = 100 * largest.percentOfPortfolio / containerPercent;
+        const largestAsPercentOfContainer = largest.percentOfPortfolio / containerPercent;
         
         const largestDiv = document.createElement('div');
         const restDiv = document.createElement('div');
-        largestDiv.style.flexBasis = `${largestAsPercentOfContainer}%`;
         largestDiv.style.backgroundColor = this.getPositionColor(largest.daysChangePercent, absoluteChangeMaximum);
-        largestDiv.innerHTML = `${largest.symbol}<br>${largest.percentOfPortfolio}<br>${largest.daysChangePercent}%`
+        largestDiv.innerHTML = `${largest.symbol}<br>${largest.percentOfPortfolio}<br>${largest.daysChangePercent}%`;
+        if (largerDimension === containerWidth) {
+            largestDiv.style.width = `${containerWidth * largestAsPercentOfContainer}px`;
+        } else {
+            largestDiv.style.height = `${containerHeight * largestAsPercentOfContainer}px`;
+        }
         container.appendChild(largestDiv);
         container.appendChild(restDiv);
-        const restPercent = 1 - (largestAsPercentOfContainer / 100);
-        let restWidth, restHeight;
-        if (largerDimension === containerWidth) {
-            restWidth = (containerWidth * restPercent);
-            restHeight = containerHeight;
-            restDiv.style.width = `${restWidth}px`;
-        } else {
-            restWidth = containerWidth;
-            restHeight = (containerHeight * restPercent);
-            restDiv.style.height = `${restHeight}px`;
+        if (n <= 5) {
+            const restPercent = 1 - largestAsPercentOfContainer;
+            let restWidth, restHeight;
+            if (largerDimension === containerWidth) {
+                restWidth = containerWidth * restPercent;
+                restHeight = containerHeight;
+            } else {
+                restWidth = containerWidth;
+                restHeight = containerHeight * restPercent;
+            }
+            this.layout(restDiv, containerPercent * restPercent, restWidth, restHeight, positions, absoluteChangeMaximum, n+1);
         }
-        if (n > 5) {
-            return;
-        }
-        this.layout(restDiv, containerPercent * restPercent, restWidth, restHeight, positions, absoluteChangeMaximum, n+1);
     }
 
     getPositionColor(percentChange, absMaximum) {
