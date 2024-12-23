@@ -30,7 +30,7 @@ def main():
 
   positions = [{
     "symbol": "(CASH)",
-    "value": "N/A",
+    "value": totals['cashBalance'],
     "daysChangePercent": 0,
     "totalGain": 0,
     "percentOfPortfolio": totals['cashBalance'] / totals['totalMarketValue'] 

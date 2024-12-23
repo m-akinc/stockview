@@ -119,16 +119,12 @@
         table.appendChild(row);
     }
 
-    const treemapElement = document.querySelector('stockview-treemap');
-    treemapElement.positions = data.positions;
+    document.querySelector('stockview-treemap').positions = data.positions;
 
     const positionsElement = document.querySelector('.positions');
-    const absoluteMaximum = Math.max(...data.positions.map(x => Math.abs(x.daysChangePercent)));
-    positionsElement.innerHTML = data.positions
-        .sort((a, b) => a.percentOfPortfolio - b.percentOfPortfolio)
-        .map(x => `<div style="color:${getPositionColor(x.daysChangePercent, absoluteMaximum)}">${x.symbol}: day% ${x.daysChangePercent}, port% ${x.percentOfPortfolio}</div>`)
-        .join('');
-        
+    const sumOfPercents = data.positions.reduce(((a, x) => a + x.percentOfPortfolio), 0.0);
+    const sumOfValue = data.positions.reduce(((a, x) => a + x.value), 0.0);
+    positionsElement.innerHTML = `<div>Sum of percents: ${sumOfPercents}</div><br><div>Sum of values: ${sumOfValue}</div>`
 })();
 
 function getPositionColor(percentChange, absMaximum) {
