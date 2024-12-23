@@ -90,7 +90,7 @@ export class TreeMap extends HTMLElement {
             if (n <= 5) {
                 for (const div of blocks) {
                     let blockWidth, blockHeight;
-                    if (largerDimension === containerWidth) {
+                    if (horizontal) {
                         blockWidth = (containerWidth * divPercentOfContainer);
                         blockHeight = containerHeight;
                     } else {
