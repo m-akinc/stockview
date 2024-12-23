@@ -20,24 +20,24 @@
     document.querySelector('.date').innerText = lastUpdated.toLocaleString();
 
     if (accountId) {
-        accountValues = getAccountValues(data.accounts, accountId);
+        accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
     } else if (longitude) {
         accountId = getAccountIdFromLocation(longitude);
-        accountValues = getAccountValues(data.accounts, accountId);
+        accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
     } else if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(x => {
             accountId = getAccountIdFromLocation(x.coords.longitude);
             if (!accountId) {
                 console.log('Could not find account for longitude:', x.coords.longitude);
                 const zip = prompt("Couldn't determine your accound from your location. Please enter your zip code so we can show your holdings.");
-                accountId = getAccountIdFromZipCode(zip);
+                accountId = getAccountIdFromZipCode(data.accounts, zip);
             }
-            accountValues = getAccountValues(data.accounts, accountId);
+            accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
         },x => {
             console.log('Geolocation failed:', x);
             const zip = prompt('Looks like the browser is not allowed to use your location. Please enter your zip code so we can show your holdings.');
             accountId = getAccountIdFromZipCode(zip);
-            accountValues = getAccountValues(data.accounts, accountId);
+            accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
         },{
             enableHighAccuracy: true,
             timeout: 2000
