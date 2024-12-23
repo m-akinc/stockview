@@ -169,7 +169,7 @@ export class TreeMap extends HTMLElement {
         }
         container.appendChild(largestDiv);
         container.appendChild(restDiv);
-        if (n <= 10) {
+        //if (n <= 10) {
             const restPercent = 1 - largestAsPercentOfContainer;
             let restWidth, restHeight;
             if (horizontal) {
@@ -180,7 +180,7 @@ export class TreeMap extends HTMLElement {
                 restHeight = containerHeight * restPercent;
             }
             this.layout(restDiv, containerPercent * restPercent, restWidth, restHeight, positions, absoluteChangeMaximum, n+1);
-        }
+        //}
     }
 
     getPositionColor(percentChange, absMaximum) {
