@@ -1,24 +1,15 @@
 (async () => {
     const devMode = getQueryParameter('dev') !== undefined;
-
-    let accountId = 'A030653';
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(x => {
-            console.log(x);
-        },x => {
-            console.log(x);
-        },{
-            enableHighAccuracy: true,
-            timeout: 5000
-        });
-    }
+    const longitude = getQueryParameter('longitude');
+    let accountId = getQueryParameter('id');
+    let accountValues;
 
     const response = await fetch('https://raw.githubusercontent.com/m-akinc/stockview/refs/heads/main/data.json');
     if (!response.ok) {
         document.body.innerText = `Failed to fetch data (${response.status}): ${response.statusText}`;
+        console.log();
         return;
     }
-
     const data = await response.json();
     const priceFormatter = new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -28,12 +19,30 @@
     const latestSharePrice = data.cap / data.totalShares;
     document.querySelector('.date').innerText = lastUpdated.toLocaleString();
 
-    const account = data.accounts.find(x => x.id === accountId);
-    const accountShares = account.lots.reduce(((a, x) => a + x.n), 0);
-    const accountCostBasis = account.lots.reduce(((a, x) => a + x.n * x.price), 0);
-    const accountValue = accountShares * latestSharePrice;
-    const accountGain = accountValue - accountCostBasis;
-    const accountGainPercent = accountGain / accountCostBasis;
+    if (accountId) {
+        accountValues = getAccountValues(data.accounts, accountId);
+    } else if (longitude) {
+        accountId = getAccountIdFromLocation(longitude);
+        accountValues = getAccountValues(data.accounts, accountId);
+    } else if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(x => {
+            accountId = getAccountIdFromLocation(x.coords.longitude);
+            if (!accountId) {
+                console.log('Could not find account for longitude:', x.coords.longitude);
+                const zip = prompt("Couldn't determine your accound from your location. Please enter your zip code so we can show your holdings.");
+                accountId = getAccountIdFromZipCode(zip);
+            }
+            accountValues = getAccountValues(data.accounts, accountId);
+        },x => {
+            console.log('Geolocation failed:', x);
+            const zip = prompt('Looks like the browser is not allowed to use your location. Please enter your zip code so we can show your holdings.');
+            accountId = getAccountIdFromZipCode(zip);
+            accountValues = getAccountValues(data.accounts, accountId);
+        },{
+            enableHighAccuracy: true,
+            timeout: 2000
+        });
+    }
 
     const market = document.querySelector('.market');
     for (const index of data.indices) {
@@ -163,12 +172,23 @@ function getDisplayName(symbol) {
     }
 }
 
-function getLocation() {
+function getAccountIdFromLocation(accounts, longitude) {
+    return accounts.find(x => Math.abs(longitude - x.longitude) < 1.0);
 }
 
-function showPosition(position) {
-    x.innerHTML = "Latitude: " + position.coords.latitude +
-        "<br>Longitude: " + position.coords.longitude;
+function getAccountIdFromZipCode(accounts, zip) {
+    return accounts.find(x => zip === x.zip);
+}
+
+function getAccountValues(accounts, accountId, latestSharePrice) {
+    const account = accounts.find(x => x.id === accountId);
+    return {
+        shares: account.lots.reduce(((a, x) => a + x.n), 0),
+        costBasis: account.lots.reduce(((a, x) => a + x.n * x.price), 0),
+        value: this.shares * latestSharePrice,
+        gain: this.value - accountCostBasis,
+        gainPercent: this.gain / this.costBasis
+    };
 }
 
 function getQueryParameter(name) {
