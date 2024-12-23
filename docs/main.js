@@ -39,7 +39,7 @@
         change.classList.add('quote-change');
         change.innerHTML = `${index[3]}%`;
         change.classList.add('changeValue');
-        if (daysChangeDollars < 0) {
+        if (index[3] < 0) {
             change.classList.add('loss');
         }
     }
