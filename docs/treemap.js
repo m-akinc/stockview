@@ -49,22 +49,20 @@ export class TreeMap extends HTMLElement {
             return;
         }
         container.classList.add('container');
-        let horizontal, divisions;
+        let horizontal, numDivisions;
         if (containerWidth >= containerHeight) {
             horizontal = true;
-            divisions = Math.round(containerWidth / containerHeight);
+            numDivisions = Math.round(containerWidth / containerHeight);
         } else {
             horizontal = false;
-            divisions = Math.round(containerHeight / containerWidth);
+            numDivisions = Math.round(containerHeight / containerWidth);
         }
-        if (divisions > 1) {
-            const targetPercent = containerPercent / divisions;
-            let positionIndex = 0;
+        if (numDivisions > 1) {
             const blocks = [];
-            const blockPercents = [];
-            for (let i = 1; i <= divisions; i += 1) {
+            const targetPercent = containerPercent / numDivisions;
+            let positionIndex = 0;
+            for (let i = 1; i <= numDivisions; i += 1) {
                 const div = document.createElement('div');
-                blocks.push(div);
                 div.classList.add('container');
                 if (horizontal) {
                     div.style.gridColumnStart = i;
@@ -73,31 +71,35 @@ export class TreeMap extends HTMLElement {
                 }
                 container.appendChild(div);
                 // Pick positions that will go in this block and calculate percent of container
-                let blockPercent = 0;
+                let percent = 0;
                 const blockPositions = [];
                 for (; positionIndex < positions.length && blockPercent < targetPercent; positionIndex += 1) {
                     blockPositions.push(positions[positionIndex]);
-                    blockPercent += positions[positionIndex].percentOfPortfolio;
+                    percent += positions[positionIndex].percentOfPortfolio;
                 }
-                blockPercents.push(blockPercent);
+                blocks.push({
+                    div,
+                    percent,
+                    positions: blockPositions
+                })
             }
-            const proportions = blockPercents.map(x => `${x / containerPercent}fr`).join(' ');
+            const proportions = blocks.map(x => `${x.percent}fr`).join(' ');
             if (horizontal) {
                 container.style.gridTemplateColumns = proportions;
             } else {
                 container.style.gridTemplateRows = proportions;
             }
             if (n <= 5) {
-                for (let i = 1; i <= divisions; i += 1) {
+                for (const block of blocks) {
                     let blockWidth, blockHeight;
                     if (horizontal) {
-                        blockWidth = containerWidth * blockPercents[i] / containerPercent;
+                        blockWidth = containerWidth * block.percent / containerPercent;
                         blockHeight = containerHeight;
                     } else {
                         blockWidth = containerWidth;
-                        blockHeight = containerHeight * blockPercents[i] / containerPercent;
+                        blockHeight = containerHeight * block.percent / containerPercent;
                     }
-                    this.layout(blocks[i], blockPercents[i], blockWidth, blockHeight, blockPositions, absoluteChangeMaximum, n+1);
+                    this.layout(block.div, block.percent, blockWidth, blockHeight, block.positions, absoluteChangeMaximum, n+1);
                 }
             }
             return;
@@ -105,16 +107,24 @@ export class TreeMap extends HTMLElement {
         positions = [...positions];
         const largest = positions.shift();
         const largestAsPercentOfContainer = largest.percentOfPortfolio / containerPercent;
+        const proportions = `${largest.percentOfPortfolio}fr ${containerPercent - largest.percentOfPortfolio}fr`;
+        if (horizontal) {
+            container.style.gridTemplateColumns = proportions;
+        } else {
+            container.style.gridTemplateRows = proportions;
+        }
         
         const largestDiv = document.createElement('div');
         const restDiv = document.createElement('div');
         largestDiv.classList.add('leaf');
         largestDiv.style.backgroundColor = this.getPositionColor(largest.daysChangePercent, absoluteChangeMaximum);
-        largestDiv.innerHTML = `${largest.symbol}<br>${largest.percentOfPortfolio}<br>${largest.daysChangePercent}%`;
+        largestDiv.innerHTML = `${largest.symbol}<br>${largest.percentOfPortfolio}<br>${largest.daysChangePercent}%`; 
         if (horizontal) {
-            largestDiv.style.width = `${containerWidth * largestAsPercentOfContainer}px`;
+            largestDiv.style.gridColumnStart = 1;
+            restDiv.style.gridColumnStart = 2;
         } else {
-            largestDiv.style.height = `${containerHeight * largestAsPercentOfContainer}px`;
+            largestDiv.style.gridRowStart = 1;
+            restDiv.style.gridRowStart = 2;
         }
         container.appendChild(largestDiv);
         container.appendChild(restDiv);
