@@ -99,7 +99,7 @@ def priorNDays(descendingHistory, numDays):
 
 
 def toDatetime(ms):
-  return datetime.datetime.fromtimestamp(ms * 1000)
+  return datetime.datetime.fromtimestamp(ms / 1000)
 
 
 if __name__ == '__main__':
