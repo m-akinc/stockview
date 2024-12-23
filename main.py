@@ -61,7 +61,7 @@ def main():
     nowMs = math.floor(datetime.datetime.now().timestamp() * 1000)
     total = totals['totalMarketValue'] + totals['cashBalance']
     #history.append([nowMs, total])
-    history.append([nowMs, total, 0, toDatetime(nowMs).date, toDatetime(nowMs).strftime("%Y-%m-%d %H:%M:%S")])
+    history.append([nowMs, total, 0, toDatetime(nowMs).date(), toDatetime(nowMs).strftime("%Y-%m-%d %H:%M:%S")])
     updated = {
       'version': '1',
       'date': nowMs,
@@ -82,8 +82,8 @@ def decimateHistory(history):
   year, older = priorNDays(older, 365.0)
 
   week = [next(group) for key, group in itertools.groupby(week, lambda y: toDatetime(y[0]).hour)] # if key % 2 == 0]
-  month = [next(group) for key, group in itertools.groupby(month, lambda y: toDatetime(y[0]).date)]
-  year = [next(group) for key, group in itertools.groupby(year, lambda y: (toDatetime(y[0]).day, toDatetime(y[0]).date)) if key[0] == 5]
+  month = [next(group) for key, group in itertools.groupby(month, lambda y: toDatetime(y[0]).date())]
+  year = [next(group) for key, group in itertools.groupby(year, lambda y: (toDatetime(y[0]).day, toDatetime(y[0]).date())) if key[0] == 5]
   older = [next(group) for key, group in itertools.groupby(older, lambda y: (toDatetime(y[0]).month, toDatetime(y[0]).year))]
 
   return list(reversed(today + week + month + year + older))
@@ -95,7 +95,7 @@ def priorNDays(descendingHistory, numDays):
     lambda x: datetime.timedelta(milliseconds = nowMs - x[0]).days <= numDays,
     descendingHistory
   ))
-  latest = [[x[0], x[1], datetime.timedelta(milliseconds = nowMs - x[0]).days, toDatetime(x[0]).date, toDatetime(x[0]).strftime("%Y-%m-%d %H:%M:%S")] for x in latest]
+  latest = [[x[0], x[1], datetime.timedelta(milliseconds = nowMs - x[0]).days, toDatetime(x[0]).date(), toDatetime(x[0]).strftime("%Y-%m-%d %H:%M:%S")] for x in latest]
   remainder = list(descendingHistory)[len(latest):]
   return (latest, remainder)
 
