@@ -73,7 +73,7 @@ export class TreeMap extends HTMLElement {
                 // Pick positions that will go in this block and calculate percent of container
                 let percent = 0;
                 const blockPositions = [];
-                for (; positionIndex < positions.length && blockPercent < targetPercent; positionIndex += 1) {
+                for (; positionIndex < positions.length && percent < targetPercent; positionIndex += 1) {
                     blockPositions.push(positions[positionIndex]);
                     percent += positions[positionIndex].percentOfPortfolio;
                 }
