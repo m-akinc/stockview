@@ -61,7 +61,7 @@ export class TreeMap extends HTMLElement {
             const targetPercent = containerPercent / divisions;
             let positionIndex = 0;
             const blocks = [];
-            const blockPercentsOfContainer = [];
+            const blockPercents = [];
             for (let i = 1; i <= divisions; i += 1) {
                 const div = document.createElement('div');
                 blocks.push(div);
@@ -79,9 +79,9 @@ export class TreeMap extends HTMLElement {
                     blockPositions.push(positions[positionIndex]);
                     blockPercent += positions[positionIndex].percentOfPortfolio;
                 }
-                blockPercentsOfContainer.push(blockPercent / containerPercent);
+                blockPercents.push(blockPercent);
             }
-            const proportions = blockPercentsOfContainer.map(x => `${x}fr`).join(' ');
+            const proportions = blockPercents.map(x => `${x / containerPercent}fr`).join(' ');
             if (horizontal) {
                 container.style.gridTemplateColumns = proportions;
             } else {
@@ -91,13 +91,13 @@ export class TreeMap extends HTMLElement {
                 for (let i = 1; i <= divisions; i += 1) {
                     let blockWidth, blockHeight;
                     if (horizontal) {
-                        blockWidth = (containerWidth * blockPercentsOfContainer[i]);
+                        blockWidth = containerWidth * blockPercents[i] / containerPercent;
                         blockHeight = containerHeight;
                     } else {
                         blockWidth = containerWidth;
-                        blockHeight = (containerHeight * blockPercentsOfContainer[i]);
+                        blockHeight = containerHeight * blockPercents[i] / containerPercent;
                     }
-                    this.layout(blocks[i], blockPercent, blockWidth, blockHeight, blockPositions, absoluteChangeMaximum, n+1);
+                    this.layout(blocks[i], blockPercents[i], blockWidth, blockHeight, blockPositions, absoluteChangeMaximum, n+1);
                 }
             }
             return;
