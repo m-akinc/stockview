@@ -49,8 +49,10 @@
                     max: new Date().setHours(15, 0, 0)
                 }
             },
-            legend: {
-               display: false
+            plugins: {
+              legend: {
+                display: false
+              }
             }
         }
     });
