@@ -60,7 +60,8 @@ def main():
   with open('data.json', 'w', encoding='utf-8') as f:
     nowMs = math.floor(datetime.datetime.now().timestamp() * 1000)
     total = totals['totalMarketValue'] + totals['cashBalance']
-    history.append([nowMs, total])
+    #history.append([nowMs, total])
+    history.append([nowMs, total, 0, toDatetime(nowMs).date, toDatetime(nowMs).strftime("%Y-%m-%d %H:%M:%S")])
     updated = {
       'version': '1',
       'date': nowMs,
@@ -94,6 +95,7 @@ def priorNDays(descendingHistory, numDays):
     lambda x: datetime.timedelta(milliseconds = nowMs - x[0]).days <= numDays,
     descendingHistory
   ))
+  latest = map(lambda x: [x[0], x[1], datetime.timedelta(milliseconds = nowMs - x[0]).days, toDatetime(x[0]).date, toDatetime(x[0]).strftime("%Y-%m-%d %H:%M:%S")], latest)
   remainder = list(descendingHistory)[len(latest):]
   return (latest, remainder)
 
