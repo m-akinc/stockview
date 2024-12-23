@@ -48,6 +48,7 @@ export class TreeMap extends HTMLElement {
         if (positions.length === 0) {
             return;
         }
+        console.log(n, containerWidth, containerHeight, containerPercent);
         container.classList.add('container');
         let horizontal, numDivisions;
         if (containerWidth >= containerHeight) {
