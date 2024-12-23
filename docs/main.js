@@ -7,7 +7,6 @@
     const response = await fetch('https://raw.githubusercontent.com/m-akinc/stockview/refs/heads/main/data.json');
     if (!response.ok) {
         document.body.innerText = `Failed to fetch data (${response.status}): ${response.statusText}`;
-        console.log();
         return;
     }
     const data = await response.json();
@@ -29,7 +28,7 @@
         populateAccountValues(accountValues, priceFormatter);
     } else if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(x => {
-            alert(x);
+            alert(`Longitude is: ${x.longitude}`);
             accountId = getAccountIdFromLocation(x.coords.longitude);
             if (!accountId) {
                 console.log('Could not find account for longitude:', x.coords.longitude);
@@ -39,7 +38,7 @@
             accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
             populateAccountValues(accountValues, priceFormatter);
         },x => {
-            alert(x);
+            alert(`Geolocation failed: ${x}`);
             console.log('Geolocation failed:', x);
             const zip = prompt('Looks like the browser is not allowed to use your location. Please enter your zip code so we can show your holdings.');
             accountId = getAccountIdFromZipCode(zip);
@@ -50,7 +49,7 @@
             timeout: 2000
         });
     }
-    alert(accountId, longitude, navigator.geolocation);
+    alert(`accountId: ${accountId}\nlongitude: ${longitude}\ngeolocation: ${navigator.geolocation}`);
 
     // Big latest value
     document.querySelector('.latestPrice').innerText = priceFormatter.format(latestSharePrice);
