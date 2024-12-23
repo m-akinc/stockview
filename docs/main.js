@@ -133,7 +133,7 @@
         column = document.createElement('td');
         span = document.createElement('span');
         span.classList.add('changeValue');
-        if (accountGain < 0) {
+        if (accountValues.gain < 0) {
             span.classList.add('loss');
         }
         span.innerHTML = priceFormatter.format(accountValues.gain);
@@ -143,7 +143,7 @@
         column = document.createElement('td');
         span = document.createElement('span');
         span.classList.add('changeValue');
-        if (accountGainPercent < 0) {
+        if (accountValues.gainPercent < 0) {
             span.classList.add('loss');
         }
         span.innerHTML = priceFormatter.format(accountValues.gainPercent);
