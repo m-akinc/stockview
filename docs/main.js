@@ -8,6 +8,7 @@
         const cookie = cookieStore.get('stockview-account-id');
         if (cookie) {
             accountId = cookie.value;
+            console.log('cookie:', cookie);
             console.log('Got accountId from cookie:', accountId);
         }
     }

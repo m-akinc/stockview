@@ -37,6 +37,7 @@ export class TreeMap extends HTMLElement {
         }
         this.root.innerHTML = '';
         const rect = this.getBoundingClientRect();
+        console.log('treemap bounding rect:', rect);
         this.layout_bisect(this.root, this.positionsTotalPercent, rect.width, rect.height, this.positions);
     }
 
