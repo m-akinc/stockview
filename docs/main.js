@@ -35,7 +35,7 @@
             datasets: [{
                 data: data.history
                     .filter(x => new Date(x[0]).getDate() === lastUpdated.getDate())
-                    .map(x => {x = x[0], y = x[1]})
+                    .map(x => ({x: x[0], y: x[1]}))
             }]
         }
     });
