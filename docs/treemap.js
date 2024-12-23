@@ -109,9 +109,11 @@ export class TreeMap extends HTMLElement {
         if (largerDimension === containerWidth) {
             restWidth = (containerWidth * restPercent);
             restHeight = containerHeight;
+            restDiv.style.width = `${restWidth}px`;
         } else {
             restWidth = containerWidth;
             restHeight = (containerHeight * restPercent);
+            restDiv.style.height = `${restHeight}px`;
         }
         if (n > 5) {
             return;
