@@ -44,7 +44,7 @@ export class TreeMap extends HTMLElement {
         this.layout(this.root, 100, rect.width, rect.height, this.positions, absoluteMaximum);
     }
 
-    layout(container, containerPercent, containerWidth, containerHeight, positions, absoluteChangeMaximum) {
+    layout(container, containerPercent, containerWidth, containerHeight, positions, absoluteChangeMaximum, n=0) {
         if (positions.length === 0) {
             return;
         }
@@ -86,7 +86,7 @@ export class TreeMap extends HTMLElement {
                     blockWidth = containerWidth;
                     blockHeight = (containerHeight * divPercentOfContainer);
                 }
-                this.layout(div, blockPercent, blockWidth, blockHeight, blockPositions, absoluteChangeMaximum);
+                this.layout(div, blockPercent, blockWidth, blockHeight, blockPositions, absoluteChangeMaximum, n+1);
             }
             return;
         }
@@ -110,7 +110,10 @@ export class TreeMap extends HTMLElement {
             restWidth = containerWidth;
             restHeight = (containerHeight * restPercent);
         }
-        this.layout(restDiv, containerPercent * restPercent, restWidth, restHeight, positions, absoluteChangeMaximum);
+        if (n > 5) {
+            return;
+        }
+        this.layout(restDiv, containerPercent * restPercent, restWidth, restHeight, positions, absoluteChangeMaximum, n+1);
     }
 
     getPositionColor(percentChange, absMaximum) {
