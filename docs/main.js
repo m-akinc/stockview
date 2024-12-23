@@ -37,7 +37,7 @@
                         x: x[0],
                         y: x[1] / data.totalShares
                     })),
-                borderColor: '#75618a'
+                borderColor: '#a772e0'
             }]
         },
         options: {
@@ -47,6 +47,9 @@
                     min: new Date().setHours(8, 30, 0),
                     max: new Date().setHours(15, 0, 0)
                 }
+            },
+            legend: {
+               display: false
             }
         }
     });
@@ -60,7 +63,6 @@
         populateAccountValues(accountValues, priceFormatter);
     } else if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(x => {
-            alert(`Longitude is: ${x.coords.longitude}`);
             accountId = getAccountIdFromLocation(data.accounts, x.coords.longitude);
             if (!accountId) {
                 console.log('Could not find account for longitude:', x.coords.longitude);
@@ -73,7 +75,6 @@
             accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
             populateAccountValues(accountValues, priceFormatter);
         },x => {
-            alert(`Geolocation failed: ${x}`);
             console.log('Geolocation failed:', x);
             const zip = prompt('Looks like the browser is not allowed to use your location. Please enter your zip code so we can show your holdings.');
             accountId = getAccountIdFromZipCode(data.accounts, zip);
@@ -87,28 +88,12 @@
             timeout: 2000
         });
     }
-    alert(`accountId: ${accountId}\nlongitude: ${longitude}\ngeolocation: ${navigator.geolocation}`);
-
-    // Big latest value
-    document.querySelector('.latestPrice').innerText = priceFormatter.format(latestSharePrice);
     
     let daysChangePercent = 0;
     if (previousClose) {
         const previousCloseSharePrice = previousClose[1] / data.totalShares;
         const daysChangeDollars = latestSharePrice - previousCloseSharePrice;
         daysChangePercent = (100 * daysChangeDollars / previousCloseSharePrice).toFixed(2);
-        
-        const daysChangeDollarsElement = document.querySelector('#changeDollars'); 
-        const daysChangePercentElement = document.querySelector('#changePercent'); 
-        daysChangeDollarsElement.innerText = priceFormatter.format(daysChangeDollars);
-        daysChangePercentElement.innerText = `${daysChangePercent}%`;
-        if (daysChangeDollars < 0) {
-            daysChangeDollarsElement.classList.add('loss');
-            daysChangePercentElement.classList.add('loss');
-        } else {
-            daysChangeDollarsElement.classList.remove('loss');
-            daysChangePercentElement.classList.remove('loss');
-        }
 
         // Populate table row (non-account values)
         const columns = document.querySelectorAll('#row td');
