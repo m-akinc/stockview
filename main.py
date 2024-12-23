@@ -80,7 +80,7 @@ def decimateHistory(history):
   month, older = priorNDays(older, 30.0)
   year, older = priorNDays(older, 365.0)
 
-  week = [next(group) for key, group in itertools.groupby(week, lambda y: toDatetime(y[0]).hour) if key % 2 == 0]
+  week = [next(group) for key, group in itertools.groupby(week, lambda y: toDatetime(y[0]).hour)] # if key % 2 == 0]
   month = [next(group) for key, group in itertools.groupby(month, lambda y: toDatetime(y[0]).date)]
   year = [next(group) for key, group in itertools.groupby(year, lambda y: (toDatetime(y[0]).day, toDatetime(y[0]).date)) if key[0] == 5]
   older = [next(group) for key, group in itertools.groupby(older, lambda y: (toDatetime(y[0]).month, toDatetime(y[0]).year))]
