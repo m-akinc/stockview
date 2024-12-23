@@ -16,7 +16,7 @@
     const latestSharePrice = data.cap / data.totalShares;
     document.querySelector('.date').innerText = lastUpdated.toLocaleString();
 
-    const account = data.accounts.find(x => x.id === 'A041281');
+    const account = data.accounts.find(x => x.id === 'A030653');
     const accountShares = account.lots.reduce(((a, x) => a + x.n), 0);
     const accountCostBasis = account.lots.reduce(((a, x) => a + x.n * x.price), 0);
     const accountValue = accountShares * latestSharePrice;
@@ -56,7 +56,6 @@
         table.after(history);
     }
 
-    // TODO: remove later
     document.querySelector('.latestPrice').innerText = priceFormatter.format(latestSharePrice);
     
     const previousClose = data.history.reverse().find(x => new Date(x[0]).getDate() !== lastUpdated.getDate());
@@ -78,9 +77,6 @@
 
         // Add to table
         const row = document.createElement('tr');
-        let column = document.createElement('td');
-        column.innerHTML = 'MERT';
-        row.appendChild(column);
         
         column = document.createElement('td');
         column.innerHTML = priceFormatter.format(latestSharePrice);
