@@ -28,8 +28,8 @@
         populateAccountValues(accountValues, priceFormatter);
     } else if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(x => {
-            alert(`Longitude is: ${x.longitude}`);
-            accountId = getAccountIdFromLocation(x.coords.longitude);
+            alert(`Longitude is: ${x.coords.longitude}`);
+            accountId = getAccountIdFromLocation(data.accounts, x.coords.longitude);
             if (!accountId) {
                 console.log('Could not find account for longitude:', x.coords.longitude);
                 const zip = prompt("Couldn't determine your accound from your location. Please enter your zip code so we can show your holdings.");
