@@ -99,7 +99,9 @@ export class TreeMap extends HTMLElement {
                         blockWidth = containerWidth;
                         blockHeight = containerHeight * block.percent / containerPercent;
                     }
+                    if (n !== 0 || block === blocks[0]) {
                     this.layout(block.div, block.percent, blockWidth, blockHeight, block.positions, absoluteChangeMaximum, n+1);
+                    }
                 }
             }
             return;
@@ -118,7 +120,7 @@ export class TreeMap extends HTMLElement {
         const restDiv = document.createElement('div');
         largestDiv.classList.add('leaf');
         largestDiv.style.backgroundColor = this.getPositionColor(largest.daysChangePercent, absoluteChangeMaximum);
-        largestDiv.innerHTML = `${largest.symbol}<br>${largest.percentOfPortfolio}<br>${largest.daysChangePercent}%`; 
+        largestDiv.innerHTML = `${largest.symbol}<br>${largest.percentOfPortfolio}<br>${largest.daysChangePercent.toFixed(2)}%`; 
         if (horizontal) {
             largestDiv.style.gridColumnStart = 1;
             restDiv.style.gridColumnStart = 2;
