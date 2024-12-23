@@ -52,58 +52,98 @@ export class TreeMap extends HTMLElement {
         let horizontal, numDivisions;
         if (containerWidth >= containerHeight) {
             horizontal = true;
-            numDivisions = Math.round(containerWidth / containerHeight);
+            //numDivisions = Math.round(containerWidth / containerHeight);
         } else {
             horizontal = false;
-            numDivisions = Math.round(containerHeight / containerWidth);
+            //numDivisions = Math.round(containerHeight / containerWidth);
         }
-        if (numDivisions > 1) {
-            const blocks = [];
-            const targetPercent = containerPercent / numDivisions;
-            let positionIndex = 0;
-            for (let i = 1; i <= numDivisions; i += 1) {
-                const div = document.createElement('div');
-                div.classList.add('container');
-                if (horizontal) {
-                    div.style.gridColumnStart = i;
-                } else {
-                    div.style.gridRowStart = i;
-                }
-                container.appendChild(div);
-                // Pick positions that will go in this block and calculate percent of container
-                let percent = 0;
-                const blockPositions = [];
-                for (; positionIndex < positions.length && percent < targetPercent; positionIndex += 1) {
-                    blockPositions.push(positions[positionIndex]);
-                    percent += positions[positionIndex].percentOfPortfolio;
-                }
-                blocks.push({
-                    div,
-                    percent,
-                    positions: blockPositions
-                })
+
+        if (positions.length > 6) {
+            const div1 = document.createElement('div');
+            const div2 = document.createElement('div');
+            div1.classList.add('container');
+            div2.classList.add('container');
+            if (horizontal) {
+                div1.style.gridColumnStart = 1;
+                div2.style.gridColumnStart = 2;
+            } else {
+                div1.style.gridRowStart = 1;
+                div2.style.gridRowStart = 2;
             }
-            const proportions = blocks.map(x => `${x.percent}fr`).join(' ');
+            container.appendChild(div1);
+            container.appendChild(div2);
+
+            const div1Positions = positions.slice(0, 6);
+            const div2Positions = positions(6);
+            const div1Percent = div1Positions.reduce((a, x) => a + x.percentOfPortfolio);
+            const div2Percent = containerPercent - div1Percent;
+            const proportions = `${div1Percent}fr ${div2Percent}fr`;
+            let div1Width, div1Height, div2Width, div2Height;
             if (horizontal) {
                 container.style.gridTemplateColumns = proportions;
+                div1Width = containerWidth * div1Percent / containerPercent;
+                div1Height = containerHeight;
+                div2Width = containerWidth - div1Width;
+                div2Height = containerHeight;
             } else {
                 container.style.gridTemplateRows = proportions;
+                div1Width = containerWidth;
+                div1Height = containerHeight * div1Percent / containerPercent;
+                div2Width = containerWidth;
+                div2Height = containerHeight - div1Height;
             }
-            if (n <= 10) {
-                for (const block of blocks) {
-                    let blockWidth, blockHeight;
-                    if (horizontal) {
-                        blockWidth = containerWidth * block.percent / containerPercent;
-                        blockHeight = containerHeight;
-                    } else {
-                        blockWidth = containerWidth;
-                        blockHeight = containerHeight * block.percent / containerPercent;
-                    }
-                    this.layout(block.div, block.percent, blockWidth, blockHeight, block.positions, absoluteChangeMaximum, n+1);
-                }
-            }
+            this.layout(div1, div1Percent, div1Width, div1Height, div1Positions, absoluteChangeMaximum, n+1);
+            this.layout(div2, div2Percent, div2Width, div2Height, div2Positions, absoluteChangeMaximum, n+1);
             return;
         }
+
+        // if (numDivisions > 1) {
+        //     const blocks = [];
+        //     const targetPercent = containerPercent / numDivisions;
+        //     let positionIndex = 0;
+        //     for (let i = 1; i <= numDivisions; i += 1) {
+        //         const div = document.createElement('div');
+        //         div.classList.add('container');
+        //         if (horizontal) {
+        //             div.style.gridColumnStart = i;
+        //         } else {
+        //             div.style.gridRowStart = i;
+        //         }
+        //         container.appendChild(div);
+        //         // Pick positions that will go in this block and calculate percent of container
+        //         let percent = 0;
+        //         const blockPositions = [];
+        //         for (; positionIndex < positions.length && percent < targetPercent; positionIndex += 1) {
+        //             blockPositions.push(positions[positionIndex]);
+        //             percent += positions[positionIndex].percentOfPortfolio;
+        //         }
+        //         blocks.push({
+        //             div,
+        //             percent,
+        //             positions: blockPositions
+        //         })
+        //     }
+        //     const proportions = blocks.map(x => `${x.percent}fr`).join(' ');
+        //     if (horizontal) {
+        //         container.style.gridTemplateColumns = proportions;
+        //     } else {
+        //         container.style.gridTemplateRows = proportions;
+        //     }
+        //     if (n <= 10) {
+        //         for (const block of blocks) {
+        //             let blockWidth, blockHeight;
+        //             if (horizontal) {
+        //                 blockWidth = containerWidth * block.percent / containerPercent;
+        //                 blockHeight = containerHeight;
+        //             } else {
+        //                 blockWidth = containerWidth;
+        //                 blockHeight = containerHeight * block.percent / containerPercent;
+        //             }
+        //             this.layout(block.div, block.percent, blockWidth, blockHeight, block.positions, absoluteChangeMaximum, n+1);
+        //         }
+        //     }
+        //     return;
+        // }
         positions = [...positions];
         const largest = positions.shift();
         const largestAsPercentOfContainer = largest.percentOfPortfolio / containerPercent;
