@@ -57,7 +57,11 @@ export class TreeMap extends HTMLElement {
         const div2Positions = positions.slice(splitIndex);
         const div1Percent = div1Positions.reduce(((a, x) => a + x.percentOfPortfolio), 0);
         const div2Percent = containerPercent - div1Percent;
-        const proportions = `${div1Percent}fr ${div2Percent}fr`;
+        // If the sum of the fr values are less than 1.0, empty space is left.
+        const scaling = 1.05 / containerPercent;
+        const proportions = scaling > 1
+            ? `${scaling * div1Percent}fr ${scaling * div2Percent}fr`
+            : `${div1Percent}fr ${div2Percent}fr`;
         let div1Width, div1Height, div2Width, div2Height;
         if (horizontal) {
             container.style.gridTemplateColumns = proportions;
