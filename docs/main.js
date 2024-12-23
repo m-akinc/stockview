@@ -27,9 +27,7 @@
     document.querySelector('.date').innerText = lastUpdated.toLocaleString();
     const previousClose = data.history.reverse().find(x => new Date(x[0]).getDate() !== lastUpdated.getDate());
 
-    const canvas = document.getElementById('graph');
-
-    new Chart(canvas, {
+    new Chart(document.getElementById('graph'), {
         type: 'line',
         data: {
             datasets: [{
