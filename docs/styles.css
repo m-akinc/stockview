@@ -15,7 +15,7 @@ body {
 }
 
 .quote-card {
-    background: linear-gradient(#4a4b5c 80%, #75618a);
+    background: linear-gradient(#75618a 56%, #4a4b5c);
     border-radius: 8px;
     padding: 4px;
     width: 150px;
