@@ -182,12 +182,17 @@ function getAccountIdFromZipCode(accounts, zip) {
 
 function getAccountValues(accounts, accountId, latestSharePrice) {
     const account = accounts.find(x => x.id === accountId);
+    const shares = account.lots.reduce(((a, x) => a + x.n), 0);
+    const costBasis = account.lots.reduce(((a, x) => a + x.n * x.price), 0);
+    const value = shares * latestSharePrice;
+    const gain = value - costBasis;
+    const gainPercent = gain / costBasis;
     return {
-        shares: account.lots.reduce(((a, x) => a + x.n), 0),
-        costBasis: account.lots.reduce(((a, x) => a + x.n * x.price), 0),
-        value: this.shares * latestSharePrice,
-        gain: this.value - accountCostBasis,
-        gainPercent: this.gain / this.costBasis
+        shares,
+        costBasis,
+        value,
+        gain,
+        gainPercent
     };
 }
 
