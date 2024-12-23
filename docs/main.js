@@ -18,7 +18,7 @@
 
     const account = data.accounts.find(x => x.id === 'A041281');
 
-    const market = document.querySelector('market');
+    const market = document.querySelector('.market');
     for (const index of data.indices) {
         const card = document.createElement('div');
         market.appendChild(card);
