@@ -163,7 +163,7 @@
 function getDisplayName(symbol) {
     switch (symbol) {
         case 'VTI':
-            return 'TOTAL MARKET (VTI)';
+            return 'MARKET (VTI)';
         case 'DJIND':
             return 'DOW';
         case 'COMP.IDX':
