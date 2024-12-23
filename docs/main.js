@@ -43,6 +43,8 @@
             scales: {
                 x: {
                     type: 'time',
+                    min: new Date().setHours(8, 30, 0),
+                    max: new Date().setHours(15, 0, 0)
                 }
             }
         }
