@@ -1,5 +1,4 @@
 export class TreeMap extends HTMLElement {
-    resizeObserver = new ResizeObserver(this.update);
     root;
     _positions;
 
@@ -26,12 +25,6 @@ export class TreeMap extends HTMLElement {
 
         shadow.appendChild(linkElem);
         shadow.appendChild(this.root);
-
-        this.resizeObserver.observe(this);
-    }
-  
-    disconnectedCallback() {
-        this.resizeObserver.disconnect();
     }
 
     update() {
@@ -44,98 +37,9 @@ export class TreeMap extends HTMLElement {
         this.layout_bisect(this.root, 100, rect.width, rect.height, this.positions, absoluteMaximum);
     }
 
-    layout(container, containerPercent, containerWidth, containerHeight, positions, absoluteChangeMaximum, n=0) {
-        if (positions.length === 0) {
-            return;
-        }
-        console.log(n, containerWidth, containerHeight, containerPercent);
-        container.classList.add('container');
-        let horizontal;
-        if (containerWidth >= containerHeight) {
-            horizontal = true;
-        } else {
-            horizontal = false;
-        }
-
-        if (positions.length > 6) {
-            const div1 = document.createElement('div');
-            const div2 = document.createElement('div');
-            div1.classList.add('container');
-            div2.classList.add('container');
-            if (horizontal) {
-                div1.style.gridColumnStart = 1;
-                div2.style.gridColumnStart = 2;
-            } else {
-                div1.style.gridRowStart = 1;
-                div2.style.gridRowStart = 2;
-            }
-            container.appendChild(div1);
-            container.appendChild(div2);
-
-            const div1Positions = positions.slice(0, 6);
-            const div2Positions = positions.slice(6);
-            const div1Percent = div1Positions.reduce(((a, x) => a + x.percentOfPortfolio), 0);
-            const div2Percent = containerPercent - div1Percent;
-            const proportions = `${div1Percent}fr ${div2Percent}fr`;
-            let div1Width, div1Height, div2Width, div2Height;
-            if (horizontal) {
-                container.style.gridTemplateColumns = proportions;
-                div1Width = containerWidth * div1Percent / containerPercent;
-                div1Height = containerHeight;
-                div2Width = containerWidth - div1Width;
-                div2Height = containerHeight;
-            } else {
-                container.style.gridTemplateRows = proportions;
-                div1Width = containerWidth;
-                div1Height = containerHeight * div1Percent / containerPercent;
-                div2Width = containerWidth;
-                div2Height = containerHeight - div1Height;
-            }
-            this.layout(div1, div1Percent, div1Width, div1Height, div1Positions, absoluteChangeMaximum, n+1);
-            this.layout(div2, div2Percent, div2Width, div2Height, div2Positions, absoluteChangeMaximum, n+1);
-            return;
-        }
-
-        positions = [...positions];
-        const largest = positions.shift();
-        const largestAsPercentOfContainer = largest.percentOfPortfolio / containerPercent;
-        const proportions = `${largest.percentOfPortfolio}fr ${containerPercent - largest.percentOfPortfolio}fr`;
-        if (horizontal) {
-            container.style.gridTemplateColumns = proportions;
-        } else {
-            container.style.gridTemplateRows = proportions;
-        }
-        
-        const largestDiv = document.createElement('div');
-        const restDiv = document.createElement('div');
-        largestDiv.classList.add('leaf');
-        largestDiv.style.backgroundColor = this.getPositionColor(largest.daysChangePercent, absoluteChangeMaximum);
-        largestDiv.innerHTML = `${largest.symbol}<br>${largest.perceSntOfPortfolio}<br>${largest.daysChangePercent.toFixed(2)}%`; 
-        if (horizontal) {
-            largestDiv.style.gridColumnStart = 1;
-            restDiv.style.gridColumnStart = 2;
-        } else {
-            largestDiv.style.gridRowStart = 1;
-            restDiv.style.gridRowStart = 2;
-        }
-        container.appendChild(largestDiv);
-        container.appendChild(restDiv);
-        //if (n <= 10) {
-            const restPercent = 1 - largestAsPercentOfContainer;
-            let restWidth, restHeight;
-            if (horizontal) {
-                restWidth = containerWidth * restPercent;
-                restHeight = containerHeight;
-            } else {
-                restWidth = containerWidth;
-                restHeight = containerHeight * restPercent;
-            }
-            this.layout(restDiv, containerPercent * restPercent, restWidth, restHeight, positions, absoluteChangeMaximum, n+1);
-        //}
-    }
-
     layout_bisect(container, containerPercent, containerWidth, containerHeight, positions, absoluteChangeMaximum, n=0) {
-        console.log(n, containerWidth, containerHeight, containerPercent);
+        const calculatedPercent = positions.reduce(((a, x) => a + x.percentOfPortfolio), 0);
+        console.log(n, containerWidth, containerHeight, containerPercent, calculatedPercent);
         if (positions.length === 0) {
             return;
         }
@@ -184,7 +88,7 @@ export class TreeMap extends HTMLElement {
     configureLeaf(div, position, absoluteChangeMaximum) {
         div.classList.add('leaf');
         div.style.backgroundColor = this.getPositionColor(position.daysChangePercent, absoluteChangeMaximum);
-        div.innerHTML = `${position.symbol}<br>${position.perceSntOfPortfolio}<br>${position.daysChangePercent.toFixed(2)}%`; 
+        div.innerHTML = `${position.symbol}<br>${position.percentOfPortfolio}<br>${position.daysChangePercent.toFixed(2)}%`; 
     }
 
     getPositionColor(percentChange, absMaximum) {
