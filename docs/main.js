@@ -1,3 +1,5 @@
+import cookieStore from './cookie-store-polyfill.js';
+
 (async () => {
     const devMode = getQueryParameter('dev') !== undefined;
     const longitude = getQueryParameter('longitude');
