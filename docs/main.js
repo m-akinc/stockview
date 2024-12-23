@@ -1,6 +1,13 @@
 (async () => {
     const devMode = getQueryParameter('dev') !== undefined;
 
+    let accountId = 'A030653';
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(x => {
+            console.log(x);
+        });
+    }
+
     const response = await fetch('https://raw.githubusercontent.com/m-akinc/stockview/refs/heads/main/data.json');
     if (!response.ok) {
         document.body.innerText = `Failed to fetch data (${response.status}): ${response.statusText}`;
@@ -16,7 +23,7 @@
     const latestSharePrice = data.cap / data.totalShares;
     document.querySelector('.date').innerText = lastUpdated.toLocaleString();
 
-    const account = data.accounts.find(x => x.id === 'A030653');
+    const account = data.accounts.find(x => x.id === accountId);
     const accountShares = account.lots.reduce(((a, x) => a + x.n), 0);
     const accountCostBasis = account.lots.reduce(((a, x) => a + x.n * x.price), 0);
     const accountValue = accountShares * latestSharePrice;
@@ -149,6 +156,14 @@ function getDisplayName(symbol) {
         default:
             return '(Unknown)';
     }
+}
+
+function getLocation() {
+}
+
+function showPosition(position) {
+    x.innerHTML = "Latitude: " + position.coords.latitude +
+        "<br>Longitude: " + position.coords.longitude;
 }
 
 function getQueryParameter(name) {
