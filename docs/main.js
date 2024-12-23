@@ -28,15 +28,18 @@
         const card = document.createElement('div');
         market.appendChild(card);
         card.classList.add('quote-card');
+
         const name = document.createElement('div');
         card.appendChild(name);
         name.classList.add('quote-name');
+        name.innerHTML = getDisplayName(index[0]);
+
         const change = document.createElement('div');
         card.appendChild(change);
         change.classList.add('quote-change');
-        name.innerHTML = getDisplayName(index[0]);
         change.innerHTML = `${index[3]}%`;
-        if (index[3] < 0) {
+        change.classList.add('changeValue');
+        if (daysChangeDollars < 0) {
             change.classList.add('loss');
         }
     }
