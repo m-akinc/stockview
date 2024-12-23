@@ -18,9 +18,11 @@
     const lastUpdated = new Date(data.date);
     const latestSharePrice = data.cap / data.totalShares;
     document.querySelector('.date').innerText = lastUpdated.toLocaleString();
+    const previousClose = data.history.reverse().find(x => new Date(x[0]).getDate() !== lastUpdated.getDate());
 
     if (accountId) {
         accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
+        populateAccountValues(accountValues, priceFormatter);
     } else if (longitude) {
         accountId = getAccountIdFromLocation(longitude);
         accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
@@ -67,8 +69,6 @@
             change.classList.add('loss');
         }
     }
-    
-    const table = document.querySelector('table');
 
     if (devMode) {
         const history = document.createElement('div');
@@ -77,12 +77,27 @@
             d.innerHTML = new Date(x[0]).toLocaleString();
             history.appendChild(d);
         }
-        table.after(history);
+        market.after(history);
     }
+    
+    const columns = document.querySelectorAll('#row td');
+    
+    columns[0].innerHTML = priceFormatter.format(latestSharePrice);
+    
+    let span = columns[1].querySelector('span');
+    if (daysChangeDollars < 0) {
+        span.classList.add('loss');
+    }
+    span.innerHTML = priceFormatter.format(daysChangeDollars);
+    
+    span = columns[2].querySelector('span');
+    if (daysChangeDollars < 0) {
+        span.classList.add('loss');
+    }
+    span.innerHTML = `${daysChangePercent}%`;
 
     document.querySelector('.latestPrice').innerText = priceFormatter.format(latestSharePrice);
     
-    const previousClose = data.history.reverse().find(x => new Date(x[0]).getDate() !== lastUpdated.getDate());
     if (previousClose) {
         const previousCloseSharePrice = previousClose[1] / data.totalShares;
         const daysChangeDollars = latestSharePrice - previousCloseSharePrice;
@@ -127,31 +142,21 @@
         row.appendChild(column);
         
         column = document.createElement('td');
-        column.innerHTML = priceFormatter.format(accountValues.value);
         row.appendChild(column);
         
         column = document.createElement('td');
         span = document.createElement('span');
         span.classList.add('changeValue');
-        if (accountValues.gain < 0) {
-            span.classList.add('loss');
-        }
-        span.innerHTML = priceFormatter.format(accountValues.gain);
         column.appendChild(span);
         row.appendChild(column);
         
         column = document.createElement('td');
         span = document.createElement('span');
         span.classList.add('changeValue');
-        if (accountValues.gainPercent < 0) {
-            span.classList.add('loss');
-        }
-        span.innerHTML = priceFormatter.format(accountValues.gainPercent);
         column.appendChild(span);
         row.appendChild(column);
         
         column = document.createElement('td');
-        column.innerHTML = accountValues.shares;
         row.appendChild(column);
 
         table.appendChild(row);
@@ -159,6 +164,25 @@
 
     document.querySelector('stockview-treemap').positions = data.positions;
 })();
+
+function populateAccountValues(accountValues, priceFormatter) {
+    const columns = document.querySelectorAll('tr:nth-of-type(2) td');
+    columns[3].innerHTML = priceFormatter.format(accountValues.value);
+
+    let span = columns[4].querySelector('span');
+    if (accountValues.gain < 0) {
+        span.classList.add('loss');
+    }
+    span.innerHTML = priceFormatter.format(accountValues.gain);
+    
+    span = columns[5].querySelector('span');
+    if (accountValues.gainPercent < 0) {
+        span.classList.add('loss');
+    }
+    span.innerHTML = priceFormatter.format(accountValues.gainPercent);
+    
+    columns[6].innerHTML = accountValues.shares;
+}
 
 function getDisplayName(symbol) {
     switch (symbol) {
