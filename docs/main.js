@@ -162,11 +162,11 @@ function getDisplayName(symbol) {
 }
 
 function getAccountIdFromLocation(accounts, longitude) {
-    return accounts.find(x => Math.abs(longitude - x.longitude) < 1.0);
+    return accounts.find(x => Math.abs(longitude - x.longitude) < 1.0).id;
 }
 
 function getAccountIdFromZipCode(accounts, zip) {
-    return accounts.find(x => zip === x.zip);
+    return accounts.find(x => zip === x.zip).id;
 }
 
 function getAccountValues(accounts, accountId, latestSharePrice) {
