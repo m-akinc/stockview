@@ -26,6 +26,7 @@
     } else if (longitude) {
         accountId = getAccountIdFromLocation(longitude);
         accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
+        populateAccountValues(accountValues, priceFormatter);
     } else if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(x => {
             alert(x);
@@ -36,12 +37,14 @@
                 accountId = getAccountIdFromZipCode(data.accounts, zip);
             }
             accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
+            populateAccountValues(accountValues, priceFormatter);
         },x => {
             alert(x);
             console.log('Geolocation failed:', x);
             const zip = prompt('Looks like the browser is not allowed to use your location. Please enter your zip code so we can show your holdings.');
             accountId = getAccountIdFromZipCode(zip);
             accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
+            populateAccountValues(accountValues, priceFormatter);
         },{
             enableHighAccuracy: true,
             timeout: 2000
@@ -49,59 +52,15 @@
     }
     alert(accountId, longitude, navigator.geolocation);
 
-    const market = document.querySelector('.market');
-    for (const index of data.indices) {
-        const card = document.createElement('div');
-        market.appendChild(card);
-        card.classList.add('quote-card');
-
-        const name = document.createElement('div');
-        card.appendChild(name);
-        name.classList.add('quote-name');
-        name.innerHTML = getDisplayName(index[0]);
-
-        const change = document.createElement('div');
-        card.appendChild(change);
-        change.classList.add('quote-change');
-        change.innerHTML = `${index[3]}%`;
-        change.classList.add('changeValue');
-        if (index[3] < 0) {
-            change.classList.add('loss');
-        }
-    }
-
-    if (devMode) {
-        const history = document.createElement('div');
-        for (const x of data.history) {
-            const d = document.createElement('div');
-            d.innerHTML = new Date(x[0]).toLocaleString();
-            history.appendChild(d);
-        }
-        market.after(history);
-    }
-    
-    const columns = document.querySelectorAll('#row td');
-    
-    columns[0].innerHTML = priceFormatter.format(latestSharePrice);
-    
-    let span = columns[1].querySelector('span');
-    if (daysChangeDollars < 0) {
-        span.classList.add('loss');
-    }
-    span.innerHTML = priceFormatter.format(daysChangeDollars);
-    
-    span = columns[2].querySelector('span');
-    if (daysChangeDollars < 0) {
-        span.classList.add('loss');
-    }
-    span.innerHTML = `${daysChangePercent}%`;
-
+    // Big latest value
     document.querySelector('.latestPrice').innerText = priceFormatter.format(latestSharePrice);
     
+    let daysChangePercent = 0;
     if (previousClose) {
         const previousCloseSharePrice = previousClose[1] / data.totalShares;
         const daysChangeDollars = latestSharePrice - previousCloseSharePrice;
-        const daysChangePercent = (100 * daysChangeDollars / previousCloseSharePrice).toFixed(2);
+        daysChangePercent = (100 * daysChangeDollars / previousCloseSharePrice).toFixed(2);
+        
         const daysChangeDollarsElement = document.querySelector('#changeDollars'); 
         const daysChangePercentElement = document.querySelector('#changePercent'); 
         daysChangeDollarsElement.innerText = priceFormatter.format(daysChangeDollars);
@@ -114,66 +73,40 @@
             daysChangePercentElement.classList.remove('loss');
         }
 
-        // Add to table
-        const row = document.createElement('tr');
-        
+        // Populate table row (non-account values)
+        const columns = document.querySelectorAll('#row td');
         // LAST
-        let column = document.createElement('td');
-        column.id = 'last';
-        column.innerHTML = priceFormatter.format(latestSharePrice);
-        row.appendChild(column);
-        
-        // DAY'S GAIN $
-        column = document.createElement('td');
-        column.id = 'gain-dol';
-        let span = document.createElement('span');
-        span.classList.add('changeValue');
+        columns[0].innerHTML = priceFormatter.format(latestSharePrice);
+        // DAY'S CHANGE $
+        let span = columns[1].querySelector('span');
         if (daysChangeDollars < 0) {
             span.classList.add('loss');
         }
         span.innerHTML = priceFormatter.format(daysChangeDollars);
-        column.appendChild(span);
-        row.appendChild(column);
-        
-        // DAY'S GAIN %
-        column = document.createElement('td');
-        column.id = 'gain-pct';
-        span = document.createElement('span');
-        span.classList.add('changeValue');
+        // DAY'S CHANGE %
+        span = columns[2].querySelector('span');
         if (daysChangeDollars < 0) {
             span.classList.add('loss');
         }
         span.innerHTML = `${daysChangePercent}%`;
-        column.appendChild(span);
-        row.appendChild(column);
-        
-        // TOTAL VALUE
-        column = document.createElement('td');
-        column.id = 'total';
-        row.appendChild(column);
-        
-        // TOTAL GAIN $
-        column = document.createElement('td');
-        column.id = 'total-gain-dol';
-        span = document.createElement('span');
-        span.classList.add('changeValue');
-        column.appendChild(span);
-        row.appendChild(column);
-        
-        // TOTAL GAIN %
-        column = document.createElement('td');
-        column.id = 'total-gain-pct';
-        span = document.createElement('span');
-        span.classList.add('changeValue');
-        column.appendChild(span);
-        row.appendChild(column);
-        
-        // SHARES
-        column = document.createElement('td');
-        column.id = 'shares';
-        row.appendChild(column);
+    }
 
-        table.appendChild(row);
+    const market = document.querySelector('.market');
+    for (const index of data.indices) {
+        market.appendChild(createCard(index[0], index[3]));
+    }
+    const bigCard = createCard('MERT', daysChangePercent);
+    bigCard.classList.add('big-card');
+    market.after(bigCard);
+
+    if (devMode) {
+        const history = document.createElement('div');
+        for (const x of data.history) {
+            const d = document.createElement('div');
+            d.innerHTML = new Date(x[0]).toLocaleString();
+            history.appendChild(d);
+        }
+        market.after(history);
     }
 
     document.querySelector('stockview-treemap').positions = data.positions;
@@ -208,6 +141,8 @@ function getDisplayName(symbol) {
             return 'NASDAQ';
         case 'SPX':
             return 'S&P 500';
+        case 'MERT':
+            return 'PORTFOLIO';
         default:
             return '(Unknown)';
     }
@@ -235,6 +170,27 @@ function getAccountValues(accounts, accountId, latestSharePrice) {
         gain,
         gainPercent
     };
+}
+
+function createCard(symbol, daysPercent) {
+    const card = document.createElement('div');
+    card.classList.add('quote-card');
+
+    const name = document.createElement('div');
+    card.appendChild(name);
+    name.classList.add('quote-name');
+    name.innerHTML = getDisplayName(symbol);
+
+    const change = document.createElement('div');
+    card.appendChild(change);
+    change.classList.add('quote-change');
+    change.innerHTML = `${daysPercent}%`;
+    change.classList.add('changeValue');
+    if (daysPercent < 0) {
+        change.classList.add('loss');
+    }
+
+    return card;
 }
 
 function getQueryParameter(name) {

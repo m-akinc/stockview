@@ -23,12 +23,24 @@ body {
     margin-right: 6px;
 }
 
+.big-card {
+    width: 200px;
+}
+
 .quote-name {
     font-size: 12px;
 }
 
+.big-card .quote-name {
+    font-size: 22px;
+}
+
 .quote-change {
     font-size: 22px;
+}
+
+.big-card .quote-change {
+    font-size: 40px;
 }
 
 .latestPrice {
