@@ -60,7 +60,7 @@ def main():
   with open('data.json', 'w', encoding='utf-8') as f:
     nowMs = math.floor(datetime.datetime.now().timestamp() * 1000)
     total = totals['totalMarketValue'] + totals['cashBalance']
-    history.append([nowMs, total, 0, toDatetime(nowMs).day, toDatetime(nowMs).strftime("%Y-%m-%d %H:%M:%S")])
+    history.append([nowMs, total])
     updated = {
       'version': '1',
       'date': nowMs,
@@ -75,12 +75,12 @@ def main():
 
 
 def decimateHistory(history):
-  today, older = priorNDays(reversed(history), 1.0)
+  today, older = priorNDays(list(reversed(history)), 1.0)
   week, older = priorNDays(older, 7.0)
   month, older = priorNDays(older, 30.0)
   year, older = priorNDays(older, 365.0)
 
-  week = [next(group) for key, group in itertools.groupby(week, lambda y: toDatetime(y[0]).hour)] # if key % 2 == 0]
+  week = [next(group) for key, group in itertools.groupby(week, lambda y: toDatetime(y[0]).hour) if key % 2 == 0]
   month = [next(group) for key, group in itertools.groupby(month, lambda y: toDatetime(y[0]).day)]
   year = [next(group) for key, group in itertools.groupby(year, lambda y: (toDatetime(y[0]).day, toDatetime(y[0]).day)) if key[0] == 5]
   older = [next(group) for key, group in itertools.groupby(older, lambda y: (toDatetime(y[0]).month, toDatetime(y[0]).year))]
@@ -94,7 +94,6 @@ def priorNDays(descendingHistory, numDays):
     lambda x: datetime.timedelta(milliseconds = nowMs - x[0]).days <= numDays,
     descendingHistory
   ))
-  latest = [[x[0], x[1], datetime.timedelta(milliseconds = nowMs - x[0]).days, toDatetime(x[0]).day, toDatetime(x[0]).strftime("%Y-%m-%d %H:%M:%S")] for x in latest]
   remainder = list(descendingHistory)[len(latest):]
   return (latest, remainder)
 
