@@ -17,6 +17,11 @@
     document.querySelector('.date').innerText = lastUpdated.toLocaleString();
 
     const account = data.accounts.find(x => x.id === 'A041281');
+    const accountShares = account.lots.reduce(((a, x) => a + x.n), 0);
+    const accountCostBasis = account.lots.reduce(((a, x) => a + x.n * x.price), 0);
+    const accountValue = accountShares * latestSharePrice;
+    const accountGain = accountValue - accountCostBasis;
+    const accountGainPercent = accountGain / accountCostBasis;
 
     const market = document.querySelector('.market');
     for (const index of data.indices) {
@@ -99,15 +104,25 @@
         row.appendChild(column);
         
         column = document.createElement('td');
-        column.innerHTML = priceFormatter.format(latestSharePrice * account.shares);
+        column.innerHTML = priceFormatter.format(accountValue);
         row.appendChild(column);
         
         column = document.createElement('td');
-        column.innerHTML = 'TODO';
+        span = document.createElement('span');
+        span.classList.add('changeValue');
+        if (accountGain < 0) {
+            span.classList.add('loss');
+        }
+        column.innerHTML = priceFormatter.format(accountGain);
         row.appendChild(column);
         
         column = document.createElement('td');
-        column.innerHTML = 'TODO';
+        span = document.createElement('span');
+        span.classList.add('changeValue');
+        if (accountGainPercent < 0) {
+            span.classList.add('loss');
+        }
+        column.innerHTML = priceFormatter.format(accountGainPercent);
         row.appendChild(column);
         
         column = document.createElement('td');
