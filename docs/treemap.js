@@ -77,14 +77,15 @@ export class TreeMap extends HTMLElement {
                     blockPercent += positions[positionIndex].percentOfPortfolio;
                 }
                 const divPercentOfContainer = blockPercent / containerPercent;
-                div.style.flexBasis = `${100 * divPercentOfContainer}%`;
                 let blockWidth, blockHeight;
                 if (largerDimension === containerWidth) {
                     blockWidth = (containerWidth * divPercentOfContainer);
                     blockHeight = containerHeight;
+                    div.style.width = `${blockWidth}px`;
                 } else {
                     blockWidth = containerWidth;
                     blockHeight = (containerHeight * divPercentOfContainer);
+                    div.style.height = `${blockHeight}px`;
                 }
                 if (n <= 5) {
                     this.layout(div, blockPercent, blockWidth, blockHeight, blockPositions, absoluteChangeMaximum, n+1);
