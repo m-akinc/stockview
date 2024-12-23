@@ -99,9 +99,9 @@ export class TreeMap extends HTMLElement {
                         blockWidth = containerWidth;
                         blockHeight = containerHeight * block.percent / containerPercent;
                     }
-                    if (n !== 0 || block === blocks[0]) {
+                    //if (n !== 0 || block === blocks[0]) {
                     this.layout(block.div, block.percent, blockWidth, blockHeight, block.positions, absoluteChangeMaximum, n+1);
-                    }
+                    //}
                 }
             }
             return;
