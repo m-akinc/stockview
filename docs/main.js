@@ -144,4 +144,4 @@ function getQueryParameter(name) {
             return nameAndValue[1];
         }
     }
-}​
+}
