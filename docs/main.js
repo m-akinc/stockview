@@ -136,8 +136,8 @@ function getDisplayName(symbol) {
 }
 
 function getQueryParameter(name) {
-    const url = window.location.search.substring(1);
-    const params = url.split('&');
+    const queryString = window.location.search.substring(1);
+    const params = queryString.split('&');
     for (const param of params) {
         const nameAndValue = param.split('=');
         if (nameAndValue[0] === name) {

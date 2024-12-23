@@ -41,8 +41,6 @@ export class TreeMap extends HTMLElement {
     }
 
     layout_bisect(container, containerPercent, containerWidth, containerHeight, positions) {
-        const calculatedPercent = positions.reduce(((a, x) => a + x.percentOfPortfolio), 0);
-        console.log(n, containerWidth, containerHeight, containerPercent, calculatedPercent);
         if (positions.length === 0) {
             return;
         }
