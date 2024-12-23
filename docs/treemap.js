@@ -79,7 +79,7 @@ export class TreeMap extends HTMLElement {
                     blockPositions.push(positions[positionIndex]);
                     blockPercent += positions[positionIndex].percentOfPortfolio;
                 }
-                blockPercentsOfContainer.push(100 * blockPercent / containerPercent);
+                blockPercentsOfContainer.push(blockPercent / containerPercent);
             }
             const proportions = blockPercentsOfContainer.map(x => `${x}fr`).join(' ');
             if (horizontal) {
@@ -88,16 +88,16 @@ export class TreeMap extends HTMLElement {
                 container.style.gridTemplateRows = proportions;
             }
             if (n <= 5) {
-                for (const div of blocks) {
+                for (let i = 1; i <= divisions; i += 1) {
                     let blockWidth, blockHeight;
                     if (horizontal) {
-                        blockWidth = (containerWidth * divPercentOfContainer);
+                        blockWidth = (containerWidth * blockPercentsOfContainer[i]);
                         blockHeight = containerHeight;
                     } else {
                         blockWidth = containerWidth;
-                        blockHeight = (containerHeight * divPercentOfContainer);
+                        blockHeight = (containerHeight * blockPercentsOfContainer[i]);
                     }
-                    this.layout(div, blockPercent, blockWidth, blockHeight, blockPositions, absoluteChangeMaximum, n+1);
+                    this.layout(blocks[i], blockPercent, blockWidth, blockHeight, blockPositions, absoluteChangeMaximum, n+1);
                 }
             }
             return;
