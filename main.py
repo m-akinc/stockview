@@ -59,7 +59,7 @@ def main():
 
   with open('data.json', 'w', encoding='utf-8') as f:
     nowMs = math.floor(datetime.datetime.now().timestamp() * 1000)
-    total = math.floor(totals['totalMarketValue'] + totals['cashBalance'])
+    total = totals['totalMarketValue'] + totals['cashBalance']
     history.append([nowMs, total])
     updated = {
       'version': '1',
