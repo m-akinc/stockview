@@ -26,6 +26,7 @@
         accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
     } else if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(x => {
+            alert(x);
             accountId = getAccountIdFromLocation(x.coords.longitude);
             if (!accountId) {
                 console.log('Could not find account for longitude:', x.coords.longitude);
@@ -34,6 +35,7 @@
             }
             accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
         },x => {
+            alert(x);
             console.log('Geolocation failed:', x);
             const zip = prompt('Looks like the browser is not allowed to use your location. Please enter your zip code so we can show your holdings.');
             accountId = getAccountIdFromZipCode(zip);
@@ -43,7 +45,7 @@
             timeout: 2000
         });
     }
-    alert(accountId);
+    alert(accountId, longitude, navigator.geolocation);
 
     const market = document.querySelector('.market');
     for (const index of data.indices) {
