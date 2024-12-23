@@ -120,11 +120,6 @@
     }
 
     document.querySelector('stockview-treemap').positions = data.positions;
-
-    const positionsElement = document.querySelector('.positions');
-    const sumOfPercents = data.positions.reduce(((a, x) => a + x.percentOfPortfolio), 0.0);
-    const sumOfValue = data.positions.reduce(((a, x) => a + x.value), 0.0);
-    positionsElement.innerHTML = `<div>Sum of percents: ${sumOfPercents}</div><br><div>Sum of values: ${sumOfValue}</div>`
 })();
 
 function getPositionColor(percentChange, absMaximum) {

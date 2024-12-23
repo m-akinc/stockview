@@ -1,9 +1,11 @@
 export class TreeMap extends HTMLElement {
     root;
     _positions;
+    positionsTotalPercent;
 
     set positions(value) {
         this._positions = value.sort((a, b) => b.percentOfPortfolio - a.percentOfPortfolio);
+        this.positionsTotalPercent = this._positions.reduce(((a, x) => a + x.percentOfPortfolio), 0.0);
         this.update();
     }
 
@@ -34,7 +36,7 @@ export class TreeMap extends HTMLElement {
         this.root.innerHTML = '';
         const rect = this.getBoundingClientRect();
         const absoluteMaximum = Math.max(...this.positions.map(x => Math.abs(x.daysChangePercent)));
-        this.layout_bisect(this.root, 100, rect.width, rect.height, this.positions, absoluteMaximum);
+        this.layout_bisect(this.root, this.positionsTotalPercent, rect.width, rect.height, this.positions, absoluteMaximum);
     }
 
     layout_bisect(container, containerPercent, containerWidth, containerHeight, positions, absoluteChangeMaximum, n=0) {
