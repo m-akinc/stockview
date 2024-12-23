@@ -95,7 +95,7 @@ def priorNDays(descendingHistory, numDays):
     lambda x: datetime.timedelta(milliseconds = nowMs - x[0]).days <= numDays,
     descendingHistory
   ))
-  latest = map(lambda x: [x[0], x[1], datetime.timedelta(milliseconds = nowMs - x[0]).days, toDatetime(x[0]).date, toDatetime(x[0]).strftime("%Y-%m-%d %H:%M:%S")], latest)
+  latest = [[x[0], x[1], datetime.timedelta(milliseconds = nowMs - x[0]).days, toDatetime(x[0]).date, toDatetime(x[0]).strftime("%Y-%m-%d %H:%M:%S")] for x in latest]
   remainder = list(descendingHistory)[len(latest):]
   return (latest, remainder)
 
