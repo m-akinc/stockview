@@ -47,17 +47,8 @@ body {
     height: 300px;
 }
 
-.latestPrice {
-    display: block;
-    font-size: 40pt;
-}
-
 .label {
     font-size: 14pt;
-}
-
-#changeDollars, #changePercent {
-    font-size: 36pt;
 }
 
 .changeValue {
