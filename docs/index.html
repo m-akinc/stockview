@@ -4,6 +4,9 @@
     <title>StockView</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <link rel="stylesheet" href="styles.css">
     <script type="module" src="main.js"></script>
     <script type="module" src="treemap.js"></script>
@@ -13,6 +16,7 @@
         Quotes may be delayed by up to 30 min depending on server load. (<span class='date'>?</span>)
     </div>
     <div class="market"></div>
+    <canvas id="graph"></canvas>
     <table>
         <tr>
             <th>LAST</th>

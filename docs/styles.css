@@ -11,8 +11,6 @@ body {
 
 .market {
     display: flex;
-    margin-top: 8px;
-    margin-bottom: 8px;
 }
 
 .quote-card {
@@ -20,6 +18,8 @@ body {
     border-radius: 8px;
     padding: 4px;
     width: 130px;
+    margin-top: 8px;
+    margin-bottom: 8px;
     margin-right: 6px;
 }
 

@@ -27,6 +27,19 @@
     document.querySelector('.date').innerText = lastUpdated.toLocaleString();
     const previousClose = data.history.reverse().find(x => new Date(x[0]).getDate() !== lastUpdated.getDate());
 
+    const canvas = document.getElementById('graph');
+
+    new Chart(canvas, {
+        type: 'line',
+        data: {
+            datasets: [{
+                data: data.history
+                    .filter(x => new Date(x[0]).getDate() === lastUpdated.getDate())
+                    .map(x => {x = x[0], y = x[1]})
+            }]
+        }
+    });
+
     if (accountId) {
         accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
         populateAccountValues(accountValues, priceFormatter);
