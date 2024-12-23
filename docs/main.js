@@ -1,4 +1,3 @@
-import { Chart } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 
 (async () => {
