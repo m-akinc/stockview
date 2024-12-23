@@ -4,6 +4,14 @@
     let accountId = getQueryParameter('id');
     let accountValues;
 
+    if (!accountId && !longitude) {
+        const cookie = cookieStore.get('stockview-account-id');
+        if (cookie) {
+            accountId = cookie.value;
+            console.log('Got accountId from cookie:', accountId);
+        }
+    }
+
     const response = await fetch('https://raw.githubusercontent.com/m-akinc/stockview/refs/heads/main/data.json');
     if (!response.ok) {
         document.body.innerText = `Failed to fetch data (${response.status}): ${response.statusText}`;
@@ -35,13 +43,19 @@
                 const zip = prompt("Couldn't determine your accound from your location. Please enter your zip code so we can show your holdings.");
                 accountId = getAccountIdFromZipCode(data.accounts, zip);
             }
+            if (accountId) {
+                cookieStore.set('stockview-account-id', accountId);
+            }
             accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
             populateAccountValues(accountValues, priceFormatter);
         },x => {
             alert(`Geolocation failed: ${x}`);
             console.log('Geolocation failed:', x);
             const zip = prompt('Looks like the browser is not allowed to use your location. Please enter your zip code so we can show your holdings.');
-            accountId = getAccountIdFromZipCode(zip);
+            accountId = getAccountIdFromZipCode(data.accounts, zip);
+            if (accountId) {
+                cookieStore.set('stockview-account-id', accountId);
+            }
             accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
             populateAccountValues(accountValues, priceFormatter);
         },{
