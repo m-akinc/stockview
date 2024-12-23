@@ -99,6 +99,10 @@
         row.appendChild(column);
         
         column = document.createElement('td');
+        column.innerHTML = priceFormatter.format(latestSharePrice * account.shares);
+        row.appendChild(column);
+        
+        column = document.createElement('td');
         column.innerHTML = 'TODO';
         row.appendChild(column);
         
@@ -132,11 +136,11 @@ function getDisplayName(symbol) {
 }
 
 function getQueryParameter(name) {
-    var url = window.location.search.substring(1);
-    var vars = url.split('&');
-    for (var i = 0; i < vars.length; i++) {
-        var nameAndValue = vars[i].split('=');
-        if (nameAndValue[0] == name) {
+    const url = window.location.search.substring(1);
+    const params = url.split('&');
+    for (const param of params) {
+        const nameAndValue = param.split('=');
+        if (nameAndValue[0] === name) {
             return nameAndValue[1];
         }
     }
