@@ -74,7 +74,7 @@ export class TreeMap extends HTMLElement {
             container.appendChild(div2);
 
             const div1Positions = positions.slice(0, 6);
-            const div2Positions = positions(6);
+            const div2Positions = positions.slice(6);
             const div1Percent = div1Positions.reduce((a, x) => a + x.percentOfPortfolio);
             const div2Percent = containerPercent - div1Percent;
             const proportions = `${div1Percent}fr ${div2Percent}fr`;
