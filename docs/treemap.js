@@ -93,7 +93,7 @@ export class TreeMap extends HTMLElement {
     configureLeaf(div, position) {
         div.classList.add('leaf');
         div.style.backgroundColor = this.getPositionColor(position.daysChangePercent);
-        const textLines = [position.symbol, position.percentOfPortfolio, `${position.daysChangePercent.toFixed(2)}%`];
+        const textLines = [position.symbol, `${position.percentOfPortfolio.toFixed(2)}% pf`, `${position.daysChangePercent.toFixed(2)}%`];
         div.innerHTML = textLines.join('<br>');
         div.title = textLines.join('\n');
     }
