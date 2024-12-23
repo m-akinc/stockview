@@ -2,10 +2,12 @@ export class TreeMap extends HTMLElement {
     root;
     _positions;
     positionsTotalPercent;
+    maximumChangeMagnitude;
 
     set positions(value) {
         this._positions = value.sort((a, b) => b.percentOfPortfolio - a.percentOfPortfolio);
         this.positionsTotalPercent = this._positions.reduce(((a, x) => a + x.percentOfPortfolio), 0.0);
+        this.maximumChangeMagnitude = Math.max(...this._positions.map(x => Math.abs(x.daysChangePercent)));
         this.update();
     }
 
@@ -35,18 +37,17 @@ export class TreeMap extends HTMLElement {
         }
         this.root.innerHTML = '';
         const rect = this.getBoundingClientRect();
-        const absoluteMaximum = Math.max(...this.positions.map(x => Math.abs(x.daysChangePercent)));
-        this.layout_bisect(this.root, this.positionsTotalPercent, rect.width, rect.height, this.positions, absoluteMaximum);
+        this.layout_bisect(this.root, this.positionsTotalPercent, rect.width, rect.height, this.positions);
     }
 
-    layout_bisect(container, containerPercent, containerWidth, containerHeight, positions, absoluteChangeMaximum, n=0) {
+    layout_bisect(container, containerPercent, containerWidth, containerHeight, positions) {
         const calculatedPercent = positions.reduce(((a, x) => a + x.percentOfPortfolio), 0);
         console.log(n, containerWidth, containerHeight, containerPercent, calculatedPercent);
         if (positions.length === 0) {
             return;
         }
         if (positions.length === 1) {
-            this.configureLeaf(container, positions[0], absoluteChangeMaximum);
+            this.configureLeaf(container, positions[0]);
             return;
         }
         container.classList.add('container');
@@ -87,18 +88,18 @@ export class TreeMap extends HTMLElement {
             div1.style.gridRowStart = 1;
             div2.style.gridRowStart = 2;
         }
-        this.layout_bisect(div1, div1Percent, div1Width, div1Height, div1Positions, absoluteChangeMaximum, n+1);
-        this.layout_bisect(div2, div2Percent, div2Width, div2Height, div2Positions, absoluteChangeMaximum, n+1);
+        this.layout_bisect(div1, div1Percent, div1Width, div1Height, div1Positions);
+        this.layout_bisect(div2, div2Percent, div2Width, div2Height, div2Positions);
     }
 
-    configureLeaf(div, position, absoluteChangeMaximum) {
+    configureLeaf(div, position) {
         div.classList.add('leaf');
-        div.style.backgroundColor = this.getPositionColor(position.daysChangePercent, absoluteChangeMaximum);
+        div.style.backgroundColor = this.getPositionColor(position.daysChangePercent);
         div.innerHTML = `${position.symbol}<br>${position.percentOfPortfolio}<br>${position.daysChangePercent.toFixed(2)}%`; 
     }
 
-    getPositionColor(percentChange, absMaximum) {
-        const rangeMax = Math.max(absMaximum, 15);
+    getPositionColor(percentChange) {
+        const rangeMax = Math.max(this.maximumChangeMagnitude, 25);
         let r, g, b;
         if (percentChange > 0) {
             r = this.scaleColorValue(percentChange, rangeMax, 9);

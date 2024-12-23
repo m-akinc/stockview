@@ -16,34 +16,25 @@
 
     const account = data.accounts.find(x => x.id === 'A041281');
 
-    // Populate table
-    const table = document.querySelector('table');
+    const market = document.querySelector('market');
     for (const index of data.indices) {
-        const row = document.createElement('tr');
-        let column;
-        for (const i of [...Array(7).keys()]) {
-            column = document.createElement('td');
-            if (i < 4) {
-                if (i > 0 && i < 6) {
-                    let span = document.createElement('span');
-                    if (i !== 1) {
-                        span.classList.add('changeValue');
-                        if (index[i] < 0) {
-                            span.classList.add('loss');
-                        }
-                    }
-                    span.innerHTML = (i == 1 || i ==2 || i == 4)
-                        ? priceFormatter.format(index[i])
-                        : `${index[i]}%`;
-                    column.appendChild(span);
-                } else {
-                    column.innerHTML = index[i];
-                }
-            }
-            row.appendChild(column);
+        const card = document.createElement('div');
+        market.appendChild(card);
+        card.classList.add('quote-card');
+        const name = document.createElement('div');
+        card.appendChild(name);
+        name.classList.add('quote-name');
+        const change = document.createElement('div');
+        card.appendChild(change);
+        change.classList.add('quote-change');
+        name.innerHTML = getDisplayName(index[0]);
+        change.innerHTML = `${index[3]}%`;
+        if (index[3] < 0) {
+            change.classList.add('loss');
         }
-        table.appendChild(row);
     }
+    
+    const table = document.querySelector('table');
 
     // TODO: remove later
     const history = document.createElement('div');
@@ -122,29 +113,17 @@
     document.querySelector('stockview-treemap').positions = data.positions;
 })();
 
-function getPositionColor(percentChange, absMaximum) {
-    const rangeMax = Math.max(absMaximum, 15);
-    let r, g, b;
-    if (percentChange > 0) {
-        r = foo(percentChange, rangeMax, 9);
-        g = foo(percentChange, rangeMax, 219);
-        b = foo(percentChange, rangeMax, 22);
-    } else if (percentChange < 0) {
-        r = foo(percentChange, rangeMax, 253);
-        g = foo(percentChange, rangeMax, 19);
-        b = foo(percentChange, rangeMax, 12);
-    } else {
-        r = 238;
-        g = 238;
-        b = 238;
+function getDisplayName(symbol) {
+    switch (symbol) {
+        case 'VTI':
+            return 'TOTAL MARKET (VTI)';
+        case 'DJIND':
+            return 'DOW';
+        case 'COMP.IDX':
+            return 'NASDAQ';
+        case 'SPX':
+            return 'S&P 500';
+        default:
+            return '(Unknown)';
     }
-    return `rgb(${r}, ${g}, ${b})`;
-}
-
-function foo(percentChange, rangeMax, minValue) {
-    const logValue = Math.log(1.5 * Math.abs(percentChange) + 1);
-    const logMaxInput = Math.log(1.5 * rangeMax + 1);
-    const percentMagnitude = Math.min(1, logValue / logMaxInput);
-    const range = 255 - minValue;
-    return Math.floor(minValue + ((1 - percentMagnitude) * range));
 }
