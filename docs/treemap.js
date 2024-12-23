@@ -102,15 +102,15 @@ export class TreeMap extends HTMLElement {
         container.appendChild(largestDiv);
         container.appendChild(restDiv);
         const restPercent = 1 - (largestAsPercentOfContainer / 100);
-        let blockWidth, blockHeight;
+        let restWidth, restHeight;
         if (largerDimension === containerWidth) {
-            blockWidth = (containerWidth * restPercent);
-            blockHeight = containerHeight;
+            restWidth = (containerWidth * restPercent);
+            restHeight = containerHeight;
         } else {
-            blockWidth = containerWidth;
-            blockHeight = (containerHeight * restPercent);
+            restWidth = containerWidth;
+            restHeight = (containerHeight * restPercent);
         }
-        this.layout(restDiv, containerPercent * restPercent, positions, absoluteChangeMaximum);
+        this.layout(restDiv, containerPercent * restPercent, restWidth, restHeight, positions, absoluteChangeMaximum);
     }
 
     getPositionColor(percentChange, absMaximum) {
