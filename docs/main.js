@@ -117,11 +117,15 @@
         // Add to table
         const row = document.createElement('tr');
         
+        // LAST
         let column = document.createElement('td');
+        column.id = 'last';
         column.innerHTML = priceFormatter.format(latestSharePrice);
         row.appendChild(column);
         
+        // DAY'S GAIN $
         column = document.createElement('td');
+        column.id = 'gain-dol';
         let span = document.createElement('span');
         span.classList.add('changeValue');
         if (daysChangeDollars < 0) {
@@ -131,7 +135,9 @@
         column.appendChild(span);
         row.appendChild(column);
         
+        // DAY'S GAIN %
         column = document.createElement('td');
+        column.id = 'gain-pct';
         span = document.createElement('span');
         span.classList.add('changeValue');
         if (daysChangeDollars < 0) {
@@ -141,22 +147,30 @@
         column.appendChild(span);
         row.appendChild(column);
         
+        // TOTAL VALUE
         column = document.createElement('td');
+        column.id = 'total';
         row.appendChild(column);
         
+        // TOTAL GAIN $
         column = document.createElement('td');
+        column.id = 'total-gain-dol';
         span = document.createElement('span');
         span.classList.add('changeValue');
         column.appendChild(span);
         row.appendChild(column);
         
+        // TOTAL GAIN %
         column = document.createElement('td');
+        column.id = 'total-gain-pct';
         span = document.createElement('span');
         span.classList.add('changeValue');
         column.appendChild(span);
         row.appendChild(column);
         
+        // SHARES
         column = document.createElement('td');
+        column.id = 'shares';
         row.appendChild(column);
 
         table.appendChild(row);
