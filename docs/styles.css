@@ -15,9 +15,10 @@ body {
 }
 
 .quote-card {
-    background: linear-gradient(#4a4b5c 80%, #dec4fa, #b46ffe);
+    background: linear-gradient(#4a4b5c 80%, #dec4fa);
     border-radius: 8px;
-    width: 100px;
+    padding: 4px;
+    width: 150px;
     margin-right: 6px;
 }
 
@@ -26,7 +27,7 @@ body {
 }
 
 .quote-change {
-    font-size: 18px;
+    font-size: 22px;
 }
 
 .latestPrice {
