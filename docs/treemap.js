@@ -35,7 +35,7 @@ export class TreeMap extends HTMLElement {
     }
 
     update() {
-        if (!this.positions) {
+        if (!this.root || !this.positions) {
             return;
         }
         this.root.innerHTML = '';
@@ -86,7 +86,9 @@ export class TreeMap extends HTMLElement {
                     blockWidth = containerWidth;
                     blockHeight = (containerHeight * divPercentOfContainer);
                 }
-                this.layout(div, blockPercent, blockWidth, blockHeight, blockPositions, absoluteChangeMaximum, n+1);
+                if (n <= 5) {
+                    this.layout(div, blockPercent, blockWidth, blockHeight, blockPositions, absoluteChangeMaximum, n+1);
+                }
             }
             return;
         }
