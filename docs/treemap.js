@@ -89,7 +89,7 @@ export class TreeMap extends HTMLElement {
             } else {
                 container.style.gridTemplateRows = proportions;
             }
-            if (n <= 5) {
+            //if (n <= 5) {
                 for (const block of blocks) {
                     let blockWidth, blockHeight;
                     if (horizontal) {
@@ -103,7 +103,7 @@ export class TreeMap extends HTMLElement {
                     this.layout(block.div, block.percent, blockWidth, blockHeight, block.positions, absoluteChangeMaximum, n+1);
                     //}
                 }
-            }
+            //}
             return;
         }
         positions = [...positions];
@@ -130,7 +130,7 @@ export class TreeMap extends HTMLElement {
         }
         container.appendChild(largestDiv);
         container.appendChild(restDiv);
-        if (n <= 5) {
+        //if (n <= 5) {
             const restPercent = 1 - largestAsPercentOfContainer;
             let restWidth, restHeight;
             if (horizontal) {
@@ -141,7 +141,7 @@ export class TreeMap extends HTMLElement {
                 restHeight = containerHeight * restPercent;
             }
             this.layout(restDiv, containerPercent * restPercent, restWidth, restHeight, positions, absoluteChangeMaximum, n+1);
-        }
+        //}
     }
 
     getPositionColor(percentChange, absMaximum) {
