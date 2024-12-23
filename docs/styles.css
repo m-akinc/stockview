@@ -15,7 +15,7 @@ body {
 }
 
 .quote-card {
-    background: linear-gradient(#4a4b5c 80%, #dec4fa);
+    background: linear-gradient(#4a4b5c 80%, #75618a);
     border-radius: 8px;
     padding: 4px;
     width: 150px;
@@ -44,7 +44,7 @@ body {
 }
 
 .changeValue {
-    color: #24af24;
+    color: #23ce23;
 }
 
 .loss {
