@@ -43,6 +43,7 @@
             timeout: 2000
         });
     }
+    alert(accountId);
 
     const market = document.querySelector('.market');
     for (const index of data.indices) {
