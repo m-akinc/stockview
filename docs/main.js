@@ -1,5 +1,3 @@
-import cookieStore from './cookie-store-polyfill.js';
-
 (async () => {
     const devMode = getQueryParameter('dev') !== undefined;
     const longitude = getQueryParameter('longitude');
@@ -10,15 +8,10 @@ import cookieStore from './cookie-store-polyfill.js';
 
     if (!accountId && !longitude) {
         alert('2');
-        const cookie = cookieStore.get('stockview-account-id');
+        accountId = localStorage.getItem('stockview-account-id');
         alert('3');
-        if (cookie) {
-            accountId = cookie.value;
-            console.log('cookie:', cookie);
-            console.log('Got accountId from cookie:', accountId);
-        }
+        console.log('Got accountId from local storage:', accountId);
     }
-    alert('4');
 
     const response = await fetch('https://raw.githubusercontent.com/m-akinc/stockview/refs/heads/main/data.json');
     if (!response.ok) {
@@ -26,19 +19,16 @@ import cookieStore from './cookie-store-polyfill.js';
         return;
     }
     
-    alert('5');
     const data = await response.json();
     const priceFormatter = new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD'
     })
-    alert('6');
     const lastUpdated = new Date(data.date);
     const latestSharePrice = data.cap / data.totalShares;
     document.querySelector('.date').innerText = lastUpdated.toLocaleString();
     const previousClose = data.history.reverse().find(x => new Date(x[0]).getDate() !== lastUpdated.getDate());
 
-    alert('7');
     new Chart(document.getElementById('graph'), {
         type: 'line',
         data: {
@@ -68,7 +58,6 @@ import cookieStore from './cookie-store-polyfill.js';
         }
     });
 
-    alert('8');
     if (accountId) {
         accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
         populateAccountValues(accountValues, priceFormatter);
@@ -78,7 +67,6 @@ import cookieStore from './cookie-store-polyfill.js';
         populateAccountValues(accountValues, priceFormatter);
     } else if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(x => {
-            alert('A');
             accountId = getAccountIdFromLocation(data.accounts, x.coords.longitude);
             if (!accountId) {
                 console.log('Could not find account for longitude:', x.coords.longitude);
@@ -86,29 +74,25 @@ import cookieStore from './cookie-store-polyfill.js';
                 accountId = getAccountIdFromZipCode(data.accounts, zip);
             }
             if (accountId) {
-                cookieStore.set('stockview-account-id', accountId);
+                localStorage.setItem('stockview-account-id', accountId);
             }
             accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
             populateAccountValues(accountValues, priceFormatter);
-            alert('AA');
         },x => {
-            alert('B');
             console.log('Geolocation failed:', x);
             const zip = prompt('Looks like the browser is not allowed to use your location. Please enter your zip code so we can show your holdings.');
             accountId = getAccountIdFromZipCode(data.accounts, zip);
             if (accountId) {
-                cookieStore.set('stockview-account-id', accountId);
+                localStorage.setItem('stockview-account-id', accountId);
             }
             accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
             populateAccountValues(accountValues, priceFormatter);
-            alert('BB')
         },{
             enableHighAccuracy: true,
             timeout: 2000
         });
     }
     
-    alert('9');
     let daysChangePercent = 0;
     if (previousClose) {
         const previousCloseSharePrice = previousClose[1] / data.totalShares;
