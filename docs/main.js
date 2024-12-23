@@ -131,7 +131,7 @@
         market.after(history);
     }
 
-    document.querySelector('stockview-treemap').positions = data.positions;
+    requestAnimationFrame(() => document.querySelector('stockview-treemap').positions = data.positions);
 })();
 
 function populateAccountValues(accountValues, priceFormatter) {
@@ -184,7 +184,7 @@ function getAccountValues(accounts, accountId, latestSharePrice) {
     const costBasis = account.lots.reduce(((a, x) => a + x.n * x.price), 0);
     const value = shares * latestSharePrice;
     const gain = value - costBasis;
-    const gainPercent = gain / costBasis;
+    const gainPercent = (100 * gain / costBasis).toFixed(2);
     return {
         shares,
         costBasis,
