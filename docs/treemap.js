@@ -4,7 +4,7 @@ export class TreeMap extends HTMLElement {
     _positions;
 
     set positions(value) {
-        this._positions = value.sort((a, b) => b.percentOfPortfolio - a.percentOfPortfolio);
+        this._positions = value.sort((a, b) => -1 * (a.percentOfPortfolio - b.percentOfPortfolio));
         this.update();
     }
 
