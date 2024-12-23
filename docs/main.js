@@ -116,7 +116,8 @@
         if (accountGain < 0) {
             span.classList.add('loss');
         }
-        column.innerHTML = priceFormatter.format(accountGain);
+        span.innerHTML = priceFormatter.format(accountGain);
+        column.appendChild(span);
         row.appendChild(column);
         
         column = document.createElement('td');
@@ -125,11 +126,12 @@
         if (accountGainPercent < 0) {
             span.classList.add('loss');
         }
-        column.innerHTML = priceFormatter.format(accountGainPercent);
+        span.innerHTML = priceFormatter.format(accountGainPercent);
+        column.appendChild(span);
         row.appendChild(column);
         
         column = document.createElement('td');
-        column.innerHTML = account.shares;
+        column.innerHTML = accountShares;
         row.appendChild(column);
 
         table.appendChild(row);
