@@ -11,13 +11,14 @@ body {
 
 .market {
     display: flex;
+    margin: 4px;
 }
 
 .quote-card {
-    background-color: linear-gradient(#ccb5e5 90%, #b46ffe);
-    border-radius: 15px;
-    width: fit-content;
-    gap: 4px;
+    background: linear-gradient(#ccb5e5 90%, #b46ffe);
+    border-radius: 4px;
+    width: 100px;
+    margin-right: 4px;
 }
 
 .quote-name {
