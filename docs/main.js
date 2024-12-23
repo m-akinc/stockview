@@ -78,7 +78,7 @@
         // Add to table
         const row = document.createElement('tr');
         
-        column = document.createElement('td');
+        let column = document.createElement('td');
         column.innerHTML = priceFormatter.format(latestSharePrice);
         row.appendChild(column);
         
