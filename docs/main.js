@@ -24,6 +24,20 @@
     const latestSharePrice = data.cap / data.totalShares;
     document.querySelector('.date').innerText = lastUpdated.toLocaleString();
     const previousClose = data.history.reverse().find(x => new Date(x[0]).getDate() !== lastUpdated.getDate());
+    const previousCloseSharePrice = previousClose[1] / data.totalShares;
+    const daysChangeDollars = latestSharePrice - previousCloseSharePrice;
+    const daysChangePercent = (100 * daysChangeDollars / previousCloseSharePrice).toFixed(2);
+
+    // Populate table row (non-account values)
+    const columns = document.querySelectorAll('#row td');
+    // LAST
+    columns[0].innerHTML = priceFormatter.format(latestSharePrice);
+    // DAY'S CHANGE %
+    span = columns[4].querySelector('span');
+    if (daysChangeDollars < 0) {
+        span.classList.add('loss');
+    }
+    span.innerHTML = `${daysChangePercent}%`;
 
     new Chart(document.getElementById('graph'), {
         type: 'line',
@@ -56,11 +70,11 @@
 
     if (accountId) {
         accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
-        populateAccountValues(accountValues, priceFormatter);
+        populateAccountValues(accountValues, priceFormatter, daysChangePercent);
     } else if (longitude) {
         accountId = getAccountIdFromLocation(longitude);
         accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
-        populateAccountValues(accountValues, priceFormatter);
+        populateAccountValues(accountValues, priceFormatter, daysChangePercent);
     } else if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(x => {
             accountId = getAccountIdFromLocation(data.accounts, x.coords.longitude);
@@ -73,7 +87,7 @@
                 localStorage.setItem('stockview-account-id', accountId);
             }
             accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
-            populateAccountValues(accountValues, priceFormatter);
+            populateAccountValues(accountValues, priceFormatter, daysChangePercent);
         },x => {
             console.log('Geolocation failed:', x);
             const zip = prompt('Looks like the browser is not allowed to use your location. Please enter your zip code so we can show your holdings.');
@@ -82,31 +96,13 @@
                 localStorage.setItem('stockview-account-id', accountId);
             }
             accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
-            populateAccountValues(accountValues, priceFormatter);
+            populateAccountValues(accountValues, priceFormatter, daysChangePercent);
         },{
             enableHighAccuracy: true,
             timeout: 2000
         });
     }
     
-    let daysChangePercent = 0;
-    if (previousClose) {
-        const previousCloseSharePrice = previousClose[1] / data.totalShares;
-        const daysChangeDollars = latestSharePrice - previousCloseSharePrice;
-        daysChangePercent = (100 * daysChangeDollars / previousCloseSharePrice).toFixed(2);
-
-        // Populate table row (non-account values)
-        const columns = document.querySelectorAll('#row td');
-        // LAST
-        columns[0].innerHTML = priceFormatter.format(latestSharePrice);
-        // DAY'S CHANGE %
-        span = columns[4].querySelector('span');
-        if (daysChangeDollars < 0) {
-            span.classList.add('loss');
-        }
-        span.innerHTML = `${daysChangePercent}%`;
-    }
-
     const market = document.querySelector('.market');
     for (const index of data.indices) {
         market.appendChild(createCard(index[0], index[3]));
@@ -128,18 +124,20 @@
     requestAnimationFrame(() => document.querySelector('stockview-treemap').positions = data.positions);
 })();
 
-function populateAccountValues(accountValues, priceFormatter) {
+function populateAccountValues(accountValues, priceFormatter, daysChangePercent) {
     const columns = document.querySelectorAll('tr:nth-of-type(2) td');
     // SHARES
     columns[1].innerHTML = accountValues.shares;
     // TOTAL VALUE
     columns[2].innerHTML = priceFormatter.format(accountValues.value);
     // DAY'S GAIN $
+    const daysStartingValue = accountValues.value / (1 + daysChangePercent / 100);
+    const daysGain = accountValues.value - daysStartingValue;
     let span = columns[3].querySelector('span');
-    if (daysChangeDollars < 0) {
+    if (daysGain < 0) {
         span.classList.add('loss');
     }
-    span.innerHTML = priceFormatter.format(daysChangeDollars);
+    span.innerHTML = priceFormatter.format(daysGain);
     // TOTAL GAIN $
     span = columns[5].querySelector('span');
     if (accountValues.gain < 0) {
