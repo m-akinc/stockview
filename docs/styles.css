@@ -66,7 +66,7 @@ th, td {
     text-overflow: ellipsis;
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 500px) {
     table .hideable {
         display: none;
     }
