@@ -1,5 +1,6 @@
 from wetrade.api import APIClient
 from wetrade.quote import MultiQuote
+from wetrade.market_hours import MarketHours
 import json
 import datetime
 import math
@@ -14,6 +15,10 @@ comps = [
 ]
 
 def main():
+  marketHours = MarketHours()
+  if not marketHours.market_has_opened():
+    return
+
   client = APIClient()
 
   quote = MultiQuote(client, tuple([x[0] for x in comps]))
