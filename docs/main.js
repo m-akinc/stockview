@@ -112,8 +112,9 @@
     market.after(bigCard);
 
     if (devMode) {
-        const x = document.getElementById("screen-dims");
-        x.innerHTML = `Browser width: ${window.innerWidth}, height: ${window.innerHeight}`;
+        const updated = document.querySelector('.updated');
+        const dims = document.createElement('div');
+        dims.innerHTML = `Browser width: ${window.innerWidth}, height: ${window.innerHeight}`;
 
         const history = document.createElement('div');
         for (const x of data.history) {
@@ -121,7 +122,9 @@
             d.innerHTML = new Date(x[0]).toLocaleString();
             history.appendChild(d);
         }
-        market.after(history);
+        
+        updated.after(history);
+        updated.after(dims);
     }
 
     requestAnimationFrame(() => document.querySelector('stockview-treemap').positions = data.positions);
