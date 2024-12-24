@@ -99,14 +99,8 @@
         const columns = document.querySelectorAll('#row td');
         // LAST
         columns[0].innerHTML = priceFormatter.format(latestSharePrice);
-        // DAY'S CHANGE $
-        let span = columns[1].querySelector('span');
-        if (daysChangeDollars < 0) {
-            span.classList.add('loss');
-        }
-        span.innerHTML = priceFormatter.format(daysChangeDollars);
         // DAY'S CHANGE %
-        span = columns[2].querySelector('span');
+        span = columns[4].querySelector('span');
         if (daysChangeDollars < 0) {
             span.classList.add('loss');
         }
@@ -136,21 +130,28 @@
 
 function populateAccountValues(accountValues, priceFormatter) {
     const columns = document.querySelectorAll('tr:nth-of-type(2) td');
-    columns[3].innerHTML = priceFormatter.format(accountValues.value);
-
-    let span = columns[4].querySelector('span');
+    // SHARES
+    columns[1].innerHTML = accountValues.shares;
+    // TOTAL VALUE
+    columns[2].innerHTML = priceFormatter.format(accountValues.value);
+    // DAY'S GAIN $
+    let span = columns[3].querySelector('span');
+    if (daysChangeDollars < 0) {
+        span.classList.add('loss');
+    }
+    span.innerHTML = priceFormatter.format(daysChangeDollars);
+    // TOTAL GAIN $
+    span = columns[5].querySelector('span');
     if (accountValues.gain < 0) {
         span.classList.add('loss');
     }
     span.innerHTML = priceFormatter.format(accountValues.gain);
-    
-    span = columns[5].querySelector('span');
+    // TOTAL GAIN %
+    span = columns[6].querySelector('span');
     if (accountValues.gainPercent < 0) {
         span.classList.add('loss');
     }
     span.innerHTML = `${accountValues.gainPercent}%`;
-    
-    columns[6].innerHTML = accountValues.shares;
 }
 
 function getDisplayName(symbol) {

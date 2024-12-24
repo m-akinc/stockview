@@ -2,11 +2,11 @@ body {
     background-color: #2b2c37;
     color: #c6e8ed;
     font-family: monospace;
-    margin-bottom: 10px;
 }
 
 .updated {
     font-size: 8pt;
+    margin-bottom: 8px;
 }
 
 .changeValue {
@@ -26,7 +26,6 @@ body {
     border-radius: 8px;
     padding: 4px;
     width: 130px;
-    margin-top: 8px;
     margin-bottom: 8px;
     margin-right: 6px;
 }
@@ -56,6 +55,7 @@ table {
     table-layout: fixed;
     width: 100%;
     border-collapse: collapse;
+    margin-bottom: 8px;
 }
 
 th, td {
@@ -66,8 +66,15 @@ th, td {
     text-overflow: ellipsis;
 }
 
+@media screen and (max-width: 300px) {
+    table .hideable {
+        display:none;
+    }
+}
+
 .graph-container {
     max-height: 300px;
+    margin-bottom: 8px;
 }
 
 .label {
