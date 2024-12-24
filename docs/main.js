@@ -112,6 +112,9 @@
     market.after(bigCard);
 
     if (devMode) {
+        const x = document.getElementById("screen-dims");
+        x.innerHTML = `Browser width: ${window.innerWidth}, height: ${window.innerHeight}`;
+
         const history = document.createElement('div');
         for (const x of data.history) {
             const d = document.createElement('div');
