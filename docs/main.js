@@ -33,7 +33,7 @@
     // LAST
     columns[0].innerHTML = priceFormatter.format(latestSharePrice);
     // DAY'S CHANGE %
-    span = columns[4].querySelector('span');
+    let span = columns[4].querySelector('span');
     if (daysChangeDollars < 0) {
         span.classList.add('loss');
     }
