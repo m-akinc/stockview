@@ -104,7 +104,8 @@ stockview-treemap {
     border-radius: 8px;
     padding: 4px;
     height: 30px;
-    width: 80px;
+    flex-grow: 1;
+    max-width: 120px;
     align-content: center;
     justify-content: center;
 }
