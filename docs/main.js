@@ -3,11 +3,13 @@ const priceFormatter = new Intl.NumberFormat('en-US', {
     currency: 'USD'
 });
 
+let data;
+let accountValues;
+
 (async () => {
     const devMode = getQueryParameter('dev') !== undefined;
     const longitude = getQueryParameter('longitude');
     let accountId = getQueryParameter('id');
-    let accountValues;
 
     if (!accountId && !longitude) {
         accountId = localStorage.getItem('stockview-account-id');
@@ -20,7 +22,7 @@ const priceFormatter = new Intl.NumberFormat('en-US', {
         return;
     }
     
-    const data = await response.json();
+    data = await response.json();
     const lastUpdated = new Date(data.date);
     const latestSharePrice = data.cap / data.totalShares;
     document.querySelector('.date').innerText = lastUpdated.toLocaleString();
@@ -128,7 +130,7 @@ const priceFormatter = new Intl.NumberFormat('en-US', {
         updated.after(dims);
     }
     
-    populateMovers(positions, accountValues.value);
+    populateMovers(data.positions, accountValues.value);
 
     requestAnimationFrame(() => document.querySelector('stockview-treemap').positions = data.positions);
 })();
@@ -203,7 +205,7 @@ function onMoversButtonClick(button) {
         x.ariaPressed = undefined;
     }
     button.ariaPressed = "true";
-    populateMovers();
+    populateMovers(data.positions, accountValues.value);
 }
 
 function positionDaysGain(p, accountValue) {
