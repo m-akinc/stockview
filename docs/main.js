@@ -186,20 +186,24 @@ function populateMovers(positions, accountValue) {
     } else {
         min = minDelta;
     }
-    let movers = positions.map(x => (x.symbol, getValue(x))).filter(x => min <= x[1] && x[1] <= max);
+    let movers = positions.map(x => [x.symbol, getValue(x)]).filter(x => min <= x[1] && x[1] <= max);
     movers.sort((a, b) => a[1] - b[1]);
     if (reverse) {
         movers.reverse();
     }
+    movers = movers.slice(0, 6);
 
     const list = document.querySelector('.movers-list');
     list.innerHTML = '';
-    for (const tuple of movers.slice(0, 6)) {
+    if (movers.length === 0) {
+        list.appendChild('Nothing moving or shaking right now.');
+    }
+    for (const tuple of movers) {
         list.appendChild(createCard(tuple[0], tuple[1], changeType));
     }
 }
 
-function onMoversButtonClick(button) {
+export function onMoversButtonClick(button) {
     const allButtons = document.querySelector('.movers .toggle-button');
     for (const x in allButtons) {
         x.ariaPressed = undefined;
