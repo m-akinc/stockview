@@ -171,7 +171,7 @@ function populateMovers(positions, accountValue) {
     if (selected.innerText.includes('$')) {
         changeType = '$';
         getValue = x => positionDaysGain(x, accountValue);
-        minDelta = 0.005 * accountValue;
+        minDelta = 0.0005 * accountValue;
     } else {
         changeType = '%'
         getValue = x => x.daysChangePercent;
