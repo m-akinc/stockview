@@ -32,19 +32,28 @@
             <td class="hideable"><span></span></td>
             <td class="hideable"><span></span></td>
             <td><span></span></td>
-            <td class="hideable"><span class="changeValue"></span></td>
-            <td><span class="changeValue"></span></td>
             <td><span class="changeValue"></span></td>
             <td class="hideable"><span class="changeValue"></span></td>
+            <td class="hideable"><span class="changeValue"></span></td>
+            <td><span class="changeValue"></span></td>
         </tr>
     </table>
     <div class="graph-container">
         <canvas id="graph"></canvas>
     </div>
     <div>
-        <span class='label'>POSITIONS:</span>
+        <span class="label">POSITIONS:</span>
         <stockview-treemap></stockview-treemap>
-        <div class="positions"></div>
+    </div>
+    <div class="movers">
+        <span class="label">MOVERS AND/OR SHAKERS:</span>
+        <div class="button-row">
+            <div class="toggle-button" role="button" onclick="onMoversButtonClick(this)" aria-pressed="true">% GAINERS</div>
+            <div class="toggle-button" role="button" onclick="onMoversButtonClick(this)">$ GAINERS</div>
+            <div class="toggle-button" role="button" onclick="onMoversButtonClick(this)">% LOSERS</div>
+            <div class="toggle-button" role="button" onclick="onMoversButtonClick(this)">$ LOSERS</div>
+        </div>
+        <div class="movers-list"></div>
     </div>
 </body>
 </html>

@@ -1,3 +1,8 @@
+const priceFormatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD'
+})
+
 (async () => {
     const devMode = getQueryParameter('dev') !== undefined;
     const longitude = getQueryParameter('longitude');
@@ -16,10 +21,6 @@
     }
     
     const data = await response.json();
-    const priceFormatter = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD'
-    })
     const lastUpdated = new Date(data.date);
     const latestSharePrice = data.cap / data.totalShares;
     document.querySelector('.date').innerText = lastUpdated.toLocaleString();
@@ -70,11 +71,11 @@
 
     if (accountId) {
         accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
-        populateAccountValues(accountValues, priceFormatter, daysChangePercent);
+        populateAccountValues(accountValues, daysChangePercent);
     } else if (longitude) {
         accountId = getAccountIdFromLocation(longitude);
         accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
-        populateAccountValues(accountValues, priceFormatter, daysChangePercent);
+        populateAccountValues(accountValues, daysChangePercent);
     } else if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(x => {
             accountId = getAccountIdFromLocation(data.accounts, x.coords.longitude);
@@ -87,7 +88,7 @@
                 localStorage.setItem('stockview-account-id', accountId);
             }
             accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
-            populateAccountValues(accountValues, priceFormatter, daysChangePercent);
+            populateAccountValues(accountValues, daysChangePercent);
         },x => {
             console.log('Geolocation failed:', x);
             const zip = prompt('Looks like the browser is not allowed to use your location. Please enter your zip code so we can show your holdings.');
@@ -96,7 +97,7 @@
                 localStorage.setItem('stockview-account-id', accountId);
             }
             accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
-            populateAccountValues(accountValues, priceFormatter, daysChangePercent);
+            populateAccountValues(accountValues, daysChangePercent);
         },{
             enableHighAccuracy: true,
             timeout: 2000
@@ -105,9 +106,9 @@
     
     const market = document.querySelector('.market');
     for (const index of data.indices) {
-        market.appendChild(createCard(index[0], index[3]));
+        market.appendChild(createCard(index[0], index[3], '%'));
     }
-    const bigCard = createCard('MERT', daysChangePercent);
+    const bigCard = createCard('MERT', daysChangePercent, '%');
     bigCard.classList.add('big-card');
     market.after(bigCard);
 
@@ -122,15 +123,17 @@
             d.innerHTML = new Date(x[0]).toLocaleString();
             history.appendChild(d);
         }
-        
+
         updated.after(history);
         updated.after(dims);
     }
+    
+    populateMovers(positions, accountValues.value);
 
     requestAnimationFrame(() => document.querySelector('stockview-treemap').positions = data.positions);
 })();
 
-function populateAccountValues(accountValues, priceFormatter, daysChangePercent) {
+function populateAccountValues(accountValues, daysChangePercent) {
     const columns = document.querySelectorAll('tr:nth-of-type(2) td');
     // SHARES
     columns[1].innerHTML = accountValues.shares;
@@ -156,6 +159,55 @@ function populateAccountValues(accountValues, priceFormatter, daysChangePercent)
         span.classList.add('loss');
     }
     span.innerHTML = `${accountValues.gainPercent}%`;
+}
+
+function populateMovers(positions, accountValue) {
+    const selected = document.querySelector('.movers toggle-button[aria-pressed="true"]');
+    let getValue;
+    let minDelta;
+    let changeType;
+    if (selected.innerText.includes('$')) {
+        changeType = '$';
+        getValue = x => positionDaysGain(x, accountValue);
+        minDelta = 0.005 * accountValue;
+    } else {
+        changeType = '%'
+        getValue = x => x.daysChangePercent;
+        minDelta = 1;
+    }
+    let reverse = false;
+    let min = -Infinity;
+    let max = Infinity;
+    if (selected.innerText.includes('LOSERS')) {
+        reverse = true;
+        max = -minDelta;
+    } else {
+        min = minDelta;
+    }
+    let movers = positions.map(x => (x.symbol, getValue(x))).filter(x => min <= x[1] && x[1] <= max);
+    movers.sort((a, b) => a[1] - b[1]);
+    if (reverse) {
+        movers.reverse();
+    }
+
+    const list = document.querySelector('.movers-list');
+    list.innerHTML = '';
+    for (const tuple of movers.slice(0, 6)) {
+        list.appendChild(createCard(tuple[0], tuple[1], changeType));
+    }
+}
+
+function onMoversButtonClick(button) {
+    const allButtons = document.querySelector('.movers .toggle-button');
+    for (const x in allButtons) {
+        x.ariaPressed = undefined;
+    }
+    button.ariaPressed = "true";
+    populateMovers();
+}
+
+function positionDaysGain(p, accountValue) {
+    return accountValue * p.percentOfPortfolio / (1 + p.daysChangePercent / 100);
 }
 
 function getDisplayName(symbol) {
@@ -199,7 +251,7 @@ function getAccountValues(accounts, accountId, latestSharePrice) {
     };
 }
 
-function createCard(symbol, daysPercent) {
+function createCard(symbol, value, valueType) {
     const card = document.createElement('div');
     card.classList.add('quote-card');
 
@@ -211,9 +263,16 @@ function createCard(symbol, daysPercent) {
     const change = document.createElement('div');
     card.appendChild(change);
     change.classList.add('quote-change');
-    change.innerHTML = `${daysPercent}%`;
+    switch (valueType) {
+        case '$':
+            change.innerHTML = priceFormatter.format(value);
+            break;
+        case '%':
+            change.innerHTML = `${value}%`;
+            break;
+    }
     change.classList.add('changeValue');
-    if (daysPercent < 0) {
+    if (value < 0) {
         change.classList.add('loss');
     }
 
