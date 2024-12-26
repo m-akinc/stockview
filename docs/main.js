@@ -164,7 +164,7 @@ function populateAccountValues(accountValues, daysChangePercent) {
 }
 
 function populateMovers(positions, accountValue) {
-    const selected = document.querySelector('.movers toggle-button[aria-pressed="true"]');
+    const selected = document.querySelector('.movers .toggle-button[aria-pressed="true"]');
     let getValue;
     let minDelta;
     let changeType;
