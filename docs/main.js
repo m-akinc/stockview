@@ -204,7 +204,7 @@ function populateMovers(positions, accountValue) {
 }
 
 function onMoversButtonClick(button) {
-    const allButtons = document.querySelector('.movers .toggle-button');
+    const allButtons = document.querySelectorAll('.movers .toggle-button');
     for (const x in allButtons) {
         x.ariaPressed = undefined;
     }
