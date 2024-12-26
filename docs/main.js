@@ -1,7 +1,7 @@
 const priceFormatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD'
-})
+});
 
 (async () => {
     const devMode = getQueryParameter('dev') !== undefined;
