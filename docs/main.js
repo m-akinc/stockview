@@ -213,7 +213,8 @@ function onMoversButtonClick(button) {
 }
 
 function positionDaysGain(p, accountValue) {
-    return p.value - (p.value / (1 + p.daysChangePercent / 100));
+    const currentAccountValue = accountValue * (p.percentOfPortfolio / 100);
+    return currentAccountValue - (currentAccountValue / (1 + p.daysChangePercent / 100));
 }
 
 function getDisplayName(symbol) {
