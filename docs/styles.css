@@ -2,6 +2,7 @@ body {
     background-color: #2b2c37;
     color: #c6e8ed;
     font-family: monospace;
+    box-sizing: border-box;
 }
 
 .updated {
@@ -84,18 +85,23 @@ th, td {
 stockview-treemap {
     width: 100%;
     height: 500px;
+    margin-bottom: 8px;
 }
 
 .button-row {
     display: flex;
     gap: 4px;
+    margin-top: 4px;
     margin-bottom: 4px;
+    border-bottom: 1px solid #4a4b5c;
 }
 
 .toggle-button {
     background-color: #4a4b5c;
     border-radius: 8px;
-    padding: 2px;
+    padding: 4px;
+    height: 30px;
+    width: 80px;
 }
 
 .toggle-button:hover {
