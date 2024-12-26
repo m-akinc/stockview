@@ -187,7 +187,7 @@ function populateMovers(positions, accountValue) {
         min = minDelta;
     }
     let movers = positions.map(x => [x.symbol, getValue(x)]).filter(x => min <= x[1] && x[1] <= max);
-    movers.sort((a, b) => a[1] - b[1]);
+    movers.sort((a, b) => b[1] - a[1]);
     if (reverse) {
         movers.reverse();
     }
