@@ -229,7 +229,7 @@ function getDisplayName(symbol) {
         case 'MERT':
             return 'PORTFOLIO';
         default:
-            return '(Unknown)';
+            return symbol;
     }
 }
 

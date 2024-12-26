@@ -93,6 +93,7 @@ stockview-treemap {
     margin-top: 4px;
     margin-bottom: 4px;
     border-bottom: 1px solid #4a4b5c;
+    padding-bottom: 2px;
 }
 
 .toggle-button {
