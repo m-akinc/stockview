@@ -196,7 +196,7 @@ function populateMovers(positions, accountValue) {
     const list = document.querySelector('.movers-list');
     list.innerHTML = '';
     if (movers.length === 0) {
-        list.appendChild('Nothing moving or shaking right now.');
+        list.innerHTML = 'Nothing moving or shaking right now.';
     }
     for (const tuple of movers) {
         list.appendChild(createCard(tuple[0], tuple[1], changeType));
@@ -213,7 +213,7 @@ function onMoversButtonClick(button) {
 }
 
 function positionDaysGain(p, accountValue) {
-    return accountValue * p.percentOfPortfolio / (1 + p.daysChangePercent / 100);
+    return accountValue * (p.percentOfPortfolio / 100) / (1 + p.daysChangePercent / 100);
 }
 
 function getDisplayName(symbol) {
