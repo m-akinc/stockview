@@ -3,8 +3,8 @@ name: Update data.json
 on:
   schedule:
     - cron: '29-59/7 13 * * 1-5' # every 7 minutes, from 8:29am to 8:59am, M-F
-    - cron: '*/7 14-20 * * 1-5' # every 7 minutes, from 9am to 3pm, M-F
-    - cron: '0-20/7 20 * * 1-5' # every 7 minutes, from 3pm to 3:20pm, M-F
+    - cron: '*/7 14-21 * * 1-5' # every 7 minutes, from 9am to 3pm, M-F
+    #- cron: '0-20/7 20 * * 1-5' # every 7 minutes, from 3pm to 3:20pm, M-F
   workflow_dispatch:
 
 jobs:
