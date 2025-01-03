@@ -73,8 +73,11 @@ th, td {
 }
 
 .graph-container {
+    margin-bottom: 8px;
+}
+
+#graph {
     max-height: 300px;
-    margin-bottom: 30px;
 }
 
 .label {

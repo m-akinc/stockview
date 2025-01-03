@@ -47,7 +47,7 @@ const chartOptions = {
     lastUpdated = new Date(data.date);
     const latestSharePrice = data.cap / data.totalShares;
     document.querySelector('.date').innerText = lastUpdated.toLocaleString();
-    const previousClose = data.history.reverse().find(x => new Date(x[0]).getDate() !== lastUpdated.getDate());
+    const previousClose = [...data.history].reverse().find(x => new Date(x[0]).getDate() !== lastUpdated.getDate());
     const previousCloseSharePrice = previousClose[1] / data.totalShares;
     const daysChangeDollars = latestSharePrice - previousCloseSharePrice;
     const daysChangePercent = (100 * daysChangeDollars / previousCloseSharePrice).toFixed(2);
@@ -70,7 +70,7 @@ const chartOptions = {
         },
         options: chartOptions
     });
-    updateChart(data, lastUpdated, false, false);
+    updateChart(data, lastUpdated, false);
 
     if (accountId) {
         accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
@@ -133,7 +133,7 @@ const chartOptions = {
     
     populateMovers(data.positions, accountValues.value);
 
-    requestAnimationFrame(() => document.querySelector('stockview-treemap').positions = data.positions);
+    requestAnimationFrame(() => requestAnimationFrame(() => document.querySelector('stockview-treemap').positions = data.positions));
 })();
 
 function populateAccountValues(accountValues, daysChangePercent) {
@@ -164,69 +164,84 @@ function populateAccountValues(accountValues, daysChangePercent) {
     span.innerHTML = `${accountValues.gainPercent}%`;
 }
 
-function getChartDatasets(data, lastUpdated, includeVTI, indexAsBasis, allTime) {
-    const dataSets = [];
+function getChartDatasets(data) {
     const points = allTime
-        ? data.history.filter(x => x[2] !== undefined)
-        : data.history.filter(x => new Date(x[0]).getDate() === lastUpdated.getDate());
-    dataSets.push({
+        ? data.history
+        : data.history.filter(x => new Date(x[0]).getDate() === lastUpdated.getDate());  
+    const portfolioPcts = points.map(x => percentChange(x[1], points[0][1]));
+    const vtiPcts = points.map(x => percentChange(x[2], points[0][2]));
+    const portfolioPctsRelativeToVTI = portfolioPcts.map((x, i) => x - vtiPcts[i]);
+    const portfolioDataSet = {
         label: 'PORTFOLIO',
-        data: points.map(x => ({
+        data: points.map((x, i) => ({
             x: x[0],
-            y: includeVTI
-                ? (indexAsBasis 
-                    ? x[1] / points[0][1] - x[2] / points[0][2]
-                    : 100 * (x[1] - points[0][1]) / points[0][1])
-                : x[1] / data.totalShares
+            y: portfolioPcts[i]
         })),
         borderColor: '#a772e0'
-    });
-    if (includeVTI) {
-        dataSets.push({
-            label: 'VTI',
-            data: points.map(x => ({
-                x: x[0],
-                y: indexAsBasis ? 0 : 100 * (x[2] - points[0][2]) / points[0][2]
-            })),
-            borderColor: '#643e8c'
-        });
-    }
-    return dataSets;
+    };
+    const vtiDataset = {
+        label: 'VTI',
+        data: points.map((x, i) => ({
+            x: x[0],
+            y: vtiPcts[i]
+        })),
+        borderColor: '#643e8c'
+    };
+    const portfolioRelativeToVTIDataset = {
+        label: 'PORTFOLIO',
+        data: points.map((x, i) => ({
+            x: x[0],
+            y: portfolioPctsRelativeToVTI[i]
+        })),
+        borderColor: '#a772e0'
+    };
+
+    return [
+        portfolioDataSet,
+        vtiDataset,
+        portfolioRelativeToVTIDataset
+    ];
 }
 
-function updateChart(data, lastUpdated, includeVTI, indexAsBasis, allTime) {
+function percentChange(v1, v0) {
+    return 100 * (v1 - v0) / v0;
+}
+
+function updateChart(data, lastUpdated, allTime) {
     chartDatasets.length = 0;
-    for (const dataset of getChartDatasets(data, lastUpdated, includeVTI, indexAsBasis, allTime)) {
+    for (const dataset of getChartDatasets(data, lastUpdated, allTime)) {
         chartDatasets.push(dataset);
     }
-    chartOptions.scales.x.min = allTime ? undefined : new Date().setHours(8, 30, 0),
-    chartOptions.scales.x.max = allTime ? undefined : new Date().setHours(15, 30, 0)
-    chartOptions.plugins.legend.display = includeVTI;
+    const showVTI = !!document.querySelector('.toggle-button.toggle-index').ariaPressed;
+    const indexAsBaseline = !!document.querySelector('.toggle-button.as-baseline').ariaPressed;
+    chart.setDatasetVisibility(0, !indexAsBaseline);
+    chart.setDatasetVisibility(1, showVTI && !indexAsBaseline);
+    chart.setDatasetVisibility(2, indexAsBaseline);
+    chartOptions.scales.x.min = allTime ? undefined : new Date(lastUpdated.getTime()).setHours(8, 20, 0);
+    chartOptions.scales.x.max = allTime ? undefined : new Date(lastUpdated.getTime()).setHours(15, 10, 0);
     chart.update();
 }
 
 function onGraphToggleIndexClick(button) {
     const wasPressed = !!button.ariaPressed;
     button.ariaPressed = wasPressed ? undefined : "true";
-    const asBasisButton = document.querySelector('.toggle-button.as-baseline');
-    const allTimeButton = document.querySelector('.toggle-button.all-time');
-    updateChart(data, lastUpdated, !wasPressed, !!asBasisButton.ariaPressed, !!allTimeButton.ariaPressed);
+    const indexAsBaseline = !!document.querySelector('.toggle-button.as-baseline').ariaPressed;
+    chart.setDatasetVisibility(1, !wasPressed && !indexAsBaseline);
+    chart.update();
 }
 
 function onGraphToggleIndexBaseline(button) {
     const wasPressed = !!button.ariaPressed;
     button.ariaPressed = wasPressed ? undefined : "true";
-    const toggleIndexButton = document.querySelector('.toggle-button.toggle-index');
-    const allTimeButton = document.querySelector('.toggle-button.all-time');
-    updateChart(data, lastUpdated, !!toggleIndexButton.ariaPressed, !wasPressed, !!allTimeButton.ariaPressed);
+    chart.setDatasetVisibility(2, !wasPressed);
+    chart.setDatasetVisibility(0, wasPressed);
+    chart.update();
 }
 
 function onGraphToggleAllTime(button) {
     const wasPressed = !!button.ariaPressed;
     button.ariaPressed = wasPressed ? undefined : "true";
-    const toggleIndexButton = document.querySelector('.toggle-button.toggle-index');
-    const asBasisButton = document.querySelector('.toggle-button.as-baseline');
-    updateChart(data, lastUpdated, !!toggleIndexButton.ariaPressed, !!asBasisButton.ariaPressed, !wasPressed);
+    updateChart(data, lastUpdated, !wasPressed);
 }
 
 function populateMovers(positions, accountValue) {
