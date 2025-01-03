@@ -164,7 +164,7 @@ function populateAccountValues(accountValues, daysChangePercent) {
     span.innerHTML = `${accountValues.gainPercent}%`;
 }
 
-function getChartDatasets(data) {
+function getChartDatasets(data, lastUpdated, allTime) {
     const points = allTime
         ? data.history
         : data.history.filter(x => new Date(x[0]).getDate() === lastUpdated.getDate());  
