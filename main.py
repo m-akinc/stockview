@@ -66,7 +66,8 @@ def main():
     nowMs = math.floor(datetime.datetime.now().timestamp() * 1000)
     total = totals['totalMarketValue'] + totals['cashBalance']
     vtiValue = next(x[1] for x in indices if x[0] == 'VTI')
-    history.append([nowMs, total, vtiValue])
+    if history[-1][1] != total or history[-1][2] != vtiValue:
+      history.append([nowMs, total, vtiValue])
     updated = {
       'version': '1',
       'date': nowMs,
