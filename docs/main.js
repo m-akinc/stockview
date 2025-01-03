@@ -13,6 +13,11 @@ let accountValues;
 let chart;
 const chartDatasets = [];
 const chartOptions = {
+    elements: {
+        points: {
+            pointStyle: false
+        }
+    },
     scales: {
         x: {
             type: 'time',
@@ -22,7 +27,7 @@ const chartOptions = {
     },
     plugins: {
         legend: {
-            display: false
+            display: true
         }
     }
 };
