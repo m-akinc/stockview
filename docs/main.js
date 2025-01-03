@@ -334,7 +334,7 @@ function createCard(symbol, value, valueType) {
             }
             break;
         case '%':
-            change.innerHTML = percentFormatter.format(value);
+            change.innerHTML = percentFormatter.format(value / 100);
             break;
     }
     change.classList.add('changeValue');
