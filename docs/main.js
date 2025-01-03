@@ -224,10 +224,10 @@ function populateMovers(positions, accountValue) {
         changeType = '$';
         getValue = x => positionDaysGain(x, accountValue);
         formatValue = x => {
-            if (abs(x) >= 1000) {
+            if (Math.abs(x) >= 1000) {
                 return `${(x / 1000).toFixed(1)}k`;
             }
-            if (abs(x) < 1) {
+            if (Math.abs(x) < 1) {
                 return x.toFixed(2);
             }
             return x.toFixed(1);
