@@ -164,12 +164,6 @@ function populateAccountValues(accountValues, daysChangePercent) {
     span.innerHTML = `${accountValues.gainPercent}%`;
 }
 
-function getChartOptions(includeVTI, allTime) {
-    return {
-        
-    }
-}
-
 function getChartDatasets(data, lastUpdated, includeVTI, indexAsBasis, allTime) {
     const dataSets = [];
     const points = allTime
@@ -182,7 +176,7 @@ function getChartDatasets(data, lastUpdated, includeVTI, indexAsBasis, allTime) 
             y: includeVTI
                 ? (indexAsBasis 
                     ? x[1] / points[0][1] - x[2] / points[0][2]
-                    : x[1] / points[0][1] - 1)
+                    : 100 * (x[1] - points[0][1]) / points[0][1])
                 : x[1] / data.totalShares
         })),
         borderColor: '#a772e0'
@@ -192,7 +186,7 @@ function getChartDatasets(data, lastUpdated, includeVTI, indexAsBasis, allTime) 
             label: 'VTI',
             data: points.map(x => ({
                 x: x[0],
-                y: indexAsBasis ? 0 : x[2] / points[0][2] - 1
+                y: indexAsBasis ? 0 : 100 * (x[2] - points[0][2]) / points[0][2]
             })),
             borderColor: '#643e8c'
         });
