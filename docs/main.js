@@ -1,9 +1,12 @@
+import Chart from 'chart.js';
+
 const priceFormatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD'
 });
 
 let data;
+let lastUpdated;
 let accountValues;
 
 (async () => {
@@ -23,7 +26,7 @@ let accountValues;
     }
     
     data = await response.json();
-    const lastUpdated = new Date(data.date);
+    lastUpdated = new Date(data.date);
     const latestSharePrice = data.cap / data.totalShares;
     document.querySelector('.date').innerText = lastUpdated.toLocaleString();
     const previousClose = data.history.reverse().find(x => new Date(x[0]).getDate() !== lastUpdated.getDate());
@@ -42,34 +45,7 @@ let accountValues;
     }
     span.innerHTML = `${daysChangePercent}%`;
 
-    new Chart(document.getElementById('graph'), {
-        type: 'line',
-        data: {
-            datasets: [{
-                data: data.history
-                    .filter(x => new Date(x[0]).getDate() === lastUpdated.getDate())
-                    .map(x => ({
-                        x: x[0],
-                        y: x[1] / data.totalShares
-                    })),
-                borderColor: '#a772e0'
-            }]
-        },
-        options: {
-            scales: {
-                x: {
-                    type: 'time',
-                    min: new Date().setHours(8, 30, 0),
-                    max: new Date().setHours(15, 0, 0)
-                }
-            },
-            plugins: {
-              legend: {
-                display: false
-              }
-            }
-        }
-    });
+    updateChart(data, lastUpdated, false, false);
 
     if (accountId) {
         accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
@@ -163,19 +139,107 @@ function populateAccountValues(accountValues, daysChangePercent) {
     span.innerHTML = `${accountValues.gainPercent}%`;
 }
 
+function getChartDatasets(data, lastUpdated, includeVTI, indexAsBasis, allTime) {
+    const dataSets = [];
+    const points = allTime
+        ? data.history.filter(x => x[2] !== undefined)
+        : data.history.filter(x => new Date(x[0]).getDate() === lastUpdated.getDate());
+    dataSets.push({
+        label: 'PORTFOLIO',
+        data: points.map(x => ({
+            x: x[0],
+            y: includeVTI
+                ? (indexAsBasis 
+                    ? x[1] / points[0][1] - x[2] / points[0][2]
+                    : x[1] / points[0][1] - 1)
+                : x[1] / data.totalShares
+        })),
+        borderColor: '#a772e0'
+    });
+    if (includeVTI) {
+        dataSets.push({
+            label: 'VTI',
+            data: points.map(x => ({
+                x: x[0],
+                y: indexAsBasis ? 0 : x[2] / points[0][2] - 1
+            })),
+            borderColor: '#643e8c'
+        });
+    }
+    return dataSets;
+}
+
+function updateChart(data, lastUpdated, includeVTI, indexAsBasis, allTime) {
+    new Chart(document.getElementById('graph'), {
+        type: 'line',
+        data: {
+            datasets: getChartDatasets(data, lastUpdated, includeVTI, indexAsBasis, allTime)
+        },
+        options: {
+            scales: {
+                x: {
+                    type: 'time',
+                    min: allTime ? undefined : new Date().setHours(8, 30, 0),
+                    max: allTime ? undefined : new Date().setHours(15, 30, 0)
+                }
+            },
+            plugins: {
+              legend: {
+                display: includeVTI
+              }
+            }
+        }
+    });
+}
+
+function onGraphToggleIndexClick(button) {
+    const wasPressed = !!button.ariaPressed;
+    button.ariaPressed = wasPressed ? undefined : "true";
+    const asBasisButton = document.querySelector('.toggle-button.as-baseline');
+    const allTimeButton = document.querySelector('.toggle-button.all-time');
+    updateChart(data, lastUpdated, !wasPressed, !!asBasisButton.ariaPressed, !!allTimeButton.ariaPressed);
+}
+
+function onGraphToggleIndexBaseline(button) {
+    const wasPressed = !!button.ariaPressed;
+    button.ariaPressed = wasPressed ? undefined : "true";
+    const toggleIndexButton = document.querySelector('.toggle-button.toggle-index');
+    const allTimeButton = document.querySelector('.toggle-button.all-time');
+    updateChart(data, lastUpdated, !!toggleIndexButton.ariaPressed, !wasPressed, !!allTimeButton.ariaPressed);
+}
+
+function onGraphToggleAllTime(button) {
+    const wasPressed = !!button.ariaPressed;
+    button.ariaPressed = wasPressed ? undefined : "true";
+    const toggleIndexButton = document.querySelector('.toggle-button.toggle-index');
+    const asBasisButton = document.querySelector('.toggle-button.as-baseline');
+    updateChart(data, lastUpdated, !!toggleIndexButton.ariaPressed, !!asBasisButton.ariaPressed, !wasPressed);
+}
+
 function populateMovers(positions, accountValue) {
     const selected = document.querySelector('.movers .toggle-button[aria-pressed="true"]');
     let getValue;
+    let formatValue;
     let minDelta;
     let changeType;
     if (selected.innerText.includes('$')) {
         changeType = '$';
         getValue = x => positionDaysGain(x, accountValue);
-        minDelta = 0.0005 * accountValue;
+        formatValue = x => {
+            if (abs(x) >= 1000) {
+                return `${(x / 1000).toFixed(1)}k`;
+            }
+            if (abs(x) < 1) {
+                return x.toFixed(2);
+            }
+            return x.toFixed(1);
+        };
+        minDelta = 0.0006 * accountValue; // at least +/- .06% of account value
     } else {
         changeType = '%'
         getValue = x => x.daysChangePercent;
-        minDelta = 1;
+        formatValue = x => x.toFixed(1);
+        minDelta = 2.2; // at least +/-2.2%
     }
     let reverse = false;
     let min = -Infinity;
@@ -191,15 +255,15 @@ function populateMovers(positions, accountValue) {
     if (reverse) {
         movers.reverse();
     }
-    movers = movers.slice(0, 6);
+    movers = movers.slice(0, 10);
 
     const list = document.querySelector('.movers-list');
     list.innerHTML = '';
     if (movers.length === 0) {
-        list.innerHTML = 'Nothing moving or shaking right now.';
+        list.innerHTML = 'None';
     }
     for (const tuple of movers) {
-        list.appendChild(createCard(tuple[0], tuple[1], changeType));
+        list.appendChild(createCard(tuple[0], formatValue(tuple[1]), changeType));
     }
 }
 

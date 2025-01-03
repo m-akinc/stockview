@@ -39,6 +39,11 @@
         </tr>
     </table>
     <div class="graph-container">
+        <div class="button-row">
+            <div class="toggle-button toggle-index" role="button" onclick="onGraphToggleIndexClick(this)">VS MARKET</div>
+            <div class="toggle-button as-baseline" role="button" onclick="onGraphToggleIndexBaseline(this)">MARKET AS BASELINE</div>
+            <div class="toggle-button all-time" role="button" onclick="onGraphToggleAllTime(this)">ALL TIME</div>
+        </div>
         <canvas id="graph"></canvas>
     </div>
     <div>
