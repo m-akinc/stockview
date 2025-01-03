@@ -2,6 +2,10 @@ const priceFormatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD'
 });
+const percentFormatter = new Intl.NumberFormat('en-US', {
+    style: 'percent',
+    maximumFractionDigits: 1
+});
 
 let data;
 let lastUpdated;
@@ -217,26 +221,15 @@ function onGraphToggleAllTime(button) {
 function populateMovers(positions, accountValue) {
     const selected = document.querySelector('.movers .toggle-button[aria-pressed="true"]');
     let getValue;
-    let formatValue;
     let minDelta;
     let changeType;
     if (selected.innerText.includes('$')) {
         changeType = '$';
         getValue = x => positionDaysGain(x, accountValue);
-        formatValue = x => {
-            if (Math.abs(x) >= 1000) {
-                return `${(x / 1000).toFixed(1)}k`;
-            }
-            if (Math.abs(x) < 1) {
-                return x.toFixed(2);
-            }
-            return x.toFixed(1);
-        };
         minDelta = 0.0006 * accountValue; // at least +/- .06% of account value
     } else {
         changeType = '%'
         getValue = x => x.daysChangePercent;
-        formatValue = x => x.toFixed(1);
         minDelta = 2.2; // at least +/-2.2%
     }
     let reverse = false;
@@ -261,7 +254,7 @@ function populateMovers(positions, accountValue) {
         list.innerHTML = 'None';
     }
     for (const tuple of movers) {
-        list.appendChild(createCard(tuple[0], formatValue(tuple[1]), changeType));
+        list.appendChild(createCard(tuple[0], tuple[1], changeType));
     }
 }
 
@@ -334,10 +327,14 @@ function createCard(symbol, value, valueType) {
     change.classList.add('quote-change');
     switch (valueType) {
         case '$':
-            change.innerHTML = priceFormatter.format(value);
+            if (Math.abs(value) >= 1000) {
+                change.innerHTML = `${(value / 1000).toFixed(1)}k`;
+            } else {
+                change.innerHTML = priceFormatter.format(value);
+            }
             break;
         case '%':
-            change.innerHTML = `${value}%`;
+            change.innerHTML = percentFormatter.format(value);
             break;
     }
     change.classList.add('changeValue');
