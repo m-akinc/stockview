@@ -10,6 +10,9 @@ const percentFormatter = new Intl.NumberFormat('en-US', {
 let data;
 let lastUpdated;
 let accountValues;
+let chart;
+let chartDatasets;
+let chartOptions;
 
 (async () => {
     const devMode = getQueryParameter('dev') !== undefined;
@@ -46,7 +49,14 @@ let accountValues;
         span.classList.add('loss');
     }
     span.innerHTML = `${daysChangePercent}%`;
-
+    
+    chart = new Chart(document.getElementById('graph'), {
+        type: 'line',
+        data: {
+            datasets: []
+        },
+        options: {}
+    });
     updateChart(data, lastUpdated, false, false);
 
     if (accountId) {
@@ -141,6 +151,23 @@ function populateAccountValues(accountValues, daysChangePercent) {
     span.innerHTML = `${accountValues.gainPercent}%`;
 }
 
+function getChartOptions(includeVTI, allTime) {
+    return {
+        scales: {
+            x: {
+                type: 'time',
+                min: allTime ? undefined : new Date().setHours(8, 30, 0),
+                max: allTime ? undefined : new Date().setHours(15, 30, 0)
+            }
+        },
+        plugins: {
+          legend: {
+            display: includeVTI
+          }
+        }
+    }
+}
+
 function getChartDatasets(data, lastUpdated, includeVTI, indexAsBasis, allTime) {
     const dataSets = [];
     const points = allTime
@@ -172,26 +199,9 @@ function getChartDatasets(data, lastUpdated, includeVTI, indexAsBasis, allTime) 
 }
 
 function updateChart(data, lastUpdated, includeVTI, indexAsBasis, allTime) {
-    new Chart(document.getElementById('graph'), {
-        type: 'line',
-        data: {
-            datasets: getChartDatasets(data, lastUpdated, includeVTI, indexAsBasis, allTime)
-        },
-        options: {
-            scales: {
-                x: {
-                    type: 'time',
-                    min: allTime ? undefined : new Date().setHours(8, 30, 0),
-                    max: allTime ? undefined : new Date().setHours(15, 30, 0)
-                }
-            },
-            plugins: {
-              legend: {
-                display: includeVTI
-              }
-            }
-        }
-    });
+    chartDatasets = getChartDatasets(data, lastUpdated, includeVTI, indexAsBasis, allTime);
+    chartOptions = getChartOptions(includeVTI, allTime);
+    chart.update();
 }
 
 function onGraphToggleIndexClick(button) {
