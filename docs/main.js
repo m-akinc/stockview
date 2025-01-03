@@ -201,7 +201,7 @@ function getChartDatasets(data, lastUpdated, includeVTI, indexAsBasis, allTime) 
 }
 
 function updateChart(data, lastUpdated, includeVTI, indexAsBasis, allTime) {
-    chartDatasets.clear();
+    chartDatasets.length = 0;
     for (const dataset of getChartDatasets(data, lastUpdated, includeVTI, indexAsBasis, allTime)) {
         chartDatasets.push(dataset);
     }
