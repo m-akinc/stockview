@@ -11,8 +11,21 @@ let data;
 let lastUpdated;
 let accountValues;
 let chart;
-let chartDatasets;
-let chartOptions;
+const chartDatasets = [];
+const chartOptions = {
+    scales: {
+        x: {
+            type: 'time',
+            min: undefined,
+            max: undefined
+        }
+    },
+    plugins: {
+        legend: {
+            display: false
+        }
+    }
+};
 
 (async () => {
     const devMode = getQueryParameter('dev') !== undefined;
@@ -53,9 +66,9 @@ let chartOptions;
     chart = new Chart(document.getElementById('graph'), {
         type: 'line',
         data: {
-            datasets: []
+            datasets: chartDatasets
         },
-        options: {}
+        options: chartOptions
     });
     updateChart(data, lastUpdated, false, false);
 
@@ -153,18 +166,7 @@ function populateAccountValues(accountValues, daysChangePercent) {
 
 function getChartOptions(includeVTI, allTime) {
     return {
-        scales: {
-            x: {
-                type: 'time',
-                min: allTime ? undefined : new Date().setHours(8, 30, 0),
-                max: allTime ? undefined : new Date().setHours(15, 30, 0)
-            }
-        },
-        plugins: {
-          legend: {
-            display: includeVTI
-          }
-        }
+        
     }
 }
 
@@ -199,8 +201,13 @@ function getChartDatasets(data, lastUpdated, includeVTI, indexAsBasis, allTime) 
 }
 
 function updateChart(data, lastUpdated, includeVTI, indexAsBasis, allTime) {
-    chartDatasets = getChartDatasets(data, lastUpdated, includeVTI, indexAsBasis, allTime);
-    chartOptions = getChartOptions(includeVTI, allTime);
+    chartDatasets.clear();
+    for (const dataset of getChartDatasets(data, lastUpdated, includeVTI, indexAsBasis, allTime)) {
+        chartDatasets.push(dataset);
+    }
+    chartOptions.scales.x.min = allTime ? undefined : new Date().setHours(8, 30, 0),
+    chartOptions.scales.x.max = allTime ? undefined : new Date().setHours(15, 30, 0)
+    chartOptions.plugins.legend.display = includeVTI;
     chart.update();
 }
 
