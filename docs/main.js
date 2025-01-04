@@ -181,7 +181,7 @@ function getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, allTime) {
             label: 'PORTFOLIO',
             data: points.map(x => ({
                 x: x[0],
-                y: x[1]
+                y: x[1] * (accountValues.shares / data.totalShares)
             })),
             borderColor: '#a772e0'
         }];
