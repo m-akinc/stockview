@@ -172,9 +172,12 @@ function populateAccountValues(accountValues, daysChangePercent) {
 function getChartDatasets(data, lastUpdated, allTime) {
     const points = allTime
         ? data.history
-        : data.history.filter(x => new Date(x[0]).getDate() === lastUpdated.getDate());  
-    const portfolioPcts = points.map(x => percentChange(x[1], points[0][1]));
-    const vtiPcts = points.map(x => percentChange(x[2], points[0][2] ?? 0));
+        : data.history.filter(x => new Date(x[0]).getDate() === lastUpdated.getDate());
+    const previousClose = allTime
+        ? data.history[0]
+        : [...data.history].reverse().find(x => new Date(x[0]).getDate() !== lastUpdated.getDate());
+    const portfolioPcts = points.map(x => percentChange(x[1], previousClose[1]));
+    const vtiPcts = points.map(x => percentChange(x[2], previousClose[2]));
     const portfolioPctsRelativeToVTI = portfolioPcts.map((x, i) => x - vtiPcts[i]);
     const portfolioDataSet = {
         label: 'PORTFOLIO',
@@ -238,8 +241,10 @@ function onGraphToggleIndexClick(button) {
 function onGraphToggleIndexBaseline(button) {
     const wasPressed = !!button.ariaPressed;
     button.ariaPressed = wasPressed ? undefined : "true";
-    chart.setDatasetVisibility(2, !wasPressed);
-    chart.setDatasetVisibility(0, wasPressed);
+    const showIndex = !!document.querySelector('.toggle-button.toggle-index').ariaPressed;
+    chart.setDatasetVisibility(0, wasPressed || showIndex);
+    chart.setDatasetVisibility(1, wasPressed && showIndex);
+    chart.setDatasetVisibility(2, !wasPressed && !showIndex);
     chart.update();
 }
 
