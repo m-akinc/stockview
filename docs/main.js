@@ -75,15 +75,6 @@ const chartOptions = {
         span.classList.add('loss');
     }
     span.innerHTML = `${daysChangePercent}%`;
-    
-    chart = new Chart(document.getElementById('graph'), {
-        type: 'line',
-        data: {
-            datasets: chartDatasets
-        },
-        options: chartOptions
-    });
-    updateChart(data, lastUpdated);
 
     if (accountId) {
         accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
@@ -119,6 +110,15 @@ const chartOptions = {
             timeout: 2000
         });
     }
+    
+    chart = new Chart(document.getElementById('graph'), {
+        type: 'line',
+        data: {
+            datasets: chartDatasets
+        },
+        options: chartOptions
+    });
+    updateChart(data, lastUpdated);
     
     const market = document.querySelector('.market');
     for (const index of data.indices) {
