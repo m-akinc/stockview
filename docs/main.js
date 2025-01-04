@@ -27,7 +27,7 @@ const chartOptions = {
     },
     plugins: {
         legend: {
-            display: false
+            display: true
         }
     }
 };
@@ -75,7 +75,7 @@ const chartOptions = {
         },
         options: chartOptions
     });
-    updateChart(data, lastUpdated, false);
+    updateChart(data, lastUpdated);
 
     if (accountId) {
         accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
