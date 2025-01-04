@@ -14,7 +14,7 @@ let chart;
 const chartDatasets = [];
 const chartOptions = {
     elements: {
-        points: {
+        point: {
             pointStyle: false
         }
     },
@@ -27,7 +27,7 @@ const chartOptions = {
     },
     plugins: {
         legend: {
-            display: true
+            display: false
         }
     }
 };
@@ -174,7 +174,7 @@ function getChartDatasets(data, lastUpdated, allTime) {
         ? data.history
         : data.history.filter(x => new Date(x[0]).getDate() === lastUpdated.getDate());  
     const portfolioPcts = points.map(x => percentChange(x[1], points[0][1]));
-    const vtiPcts = points.map(x => percentChange(x[2], points[0][2]));
+    const vtiPcts = points.map(x => percentChange(x[2], points[0][2] ?? 0));
     const portfolioPctsRelativeToVTI = portfolioPcts.map((x, i) => x - vtiPcts[i]);
     const portfolioDataSet = {
         label: 'PORTFOLIO',
