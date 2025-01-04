@@ -4,7 +4,7 @@ const priceFormatter = new Intl.NumberFormat('en-US', {
 });
 const percentFormatter = new Intl.NumberFormat('en-US', {
     style: 'percent',
-    maximumFractionDigits: 1
+    maximumFractionDigits: 2
 });
 
 let data;
@@ -169,89 +169,100 @@ function populateAccountValues(accountValues, daysChangePercent) {
     span.innerHTML = `${accountValues.gainPercent}%`;
 }
 
-function getChartDatasets(data, lastUpdated, allTime) {
+function getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, allTime) {
     const points = allTime
         ? data.history
         : data.history.filter(x => new Date(x[0]).getDate() === lastUpdated.getDate());
     const previousClose = allTime
         ? data.history[0]
         : [...data.history].reverse().find(x => new Date(x[0]).getDate() !== lastUpdated.getDate());
-    const portfolioPcts = points.map(x => percentChange(x[1], previousClose[1]));
-    const vtiPcts = points.map(x => percentChange(x[2], previousClose[2]));
-    const portfolioPctsRelativeToVTI = portfolioPcts.map((x, i) => x - vtiPcts[i]);
-    const portfolioDataSet = {
-        label: 'PORTFOLIO',
-        data: points.map((x, i) => ({
-            x: x[0],
-            y: portfolioPcts[i]
-        })),
-        borderColor: '#a772e0'
-    };
-    const vtiDataset = {
-        label: 'VTI',
-        data: points.map((x, i) => ({
-            x: x[0],
-            y: vtiPcts[i]
-        })),
-        borderColor: '#643e8c'
-    };
-    const portfolioRelativeToVTIDataset = {
-        label: 'PORTFOLIO',
-        data: points.map((x, i) => ({
-            x: x[0],
-            y: portfolioPctsRelativeToVTI[i]
-        })),
-        borderColor: '#a772e0'
-    };
-
-    return [
-        portfolioDataSet,
-        vtiDataset,
-        portfolioRelativeToVTIDataset
-    ];
+    if (!showVTI && !vtiAsBaseline) {
+        return [{
+            label: 'PORTFOLIO',
+            data: points.map((x, i) => ({
+                x: x[0],
+                y: points.map(x => x[1])
+            })),
+            borderColor: '#a772e0'
+        }];
+    }
+    if (showVTI) {
+        return [
+            {
+                label: 'PORTFOLIO',
+                data: points.map((x, i) => ({
+                    x: x[0],
+                    y: points.map(x => percentChange(x[1], previousClose[1]))
+                })),
+                borderColor: '#a772e0'
+            },
+            {
+                label: 'VTI',
+                data: points.map((x, i) => ({
+                    x: x[0],
+                    y: points.map(x => percentChange(x[2], previousClose[2]))
+                })),
+                borderColor: '#643e8c'
+            }
+        ];
+    }
+    if (vtiAsBaseline) {
+        const portfolioPcts = points.map(x => percentChange(x[1], previousClose[1]));
+        const vtiPcts = points.map(x => percentChange(x[2], previousClose[2]));
+        return [
+            {
+                label: 'PORTFOLIO',
+                data: points.map((x, i) => ({
+                    x: x[0],
+                    y: portfolioPcts.map((x, i) => x - vtiPcts[i])
+                })),
+                borderColor: '#a772e0'
+            },
+            {
+                label: 'VTI',
+                data: points.map((x, i) => ({
+                    x: x[0],
+                    y: 0
+                })),
+                borderColor: '#643e8c'
+            }
+        ];
+    }
 }
 
 function percentChange(v1, v0) {
     return 100 * (v1 - v0) / v0;
 }
 
-function updateChart(data, lastUpdated, allTime) {
+function updateChart(data, lastUpdated) {
+    const showVTI = !!document.querySelector('.toggle-button.toggle-index').ariaPressed;
+    const vtiAsBaseline = !!document.querySelector('.toggle-button.as-baseline').ariaPressed;
+    const allTime = !!document.querySelector('.toggle-button.all-time').ariaPressed;
     chartDatasets.length = 0;
-    for (const dataset of getChartDatasets(data, lastUpdated, allTime)) {
+    for (const dataset of getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, allTime)) {
         chartDatasets.push(dataset);
     }
-    const showVTI = !!document.querySelector('.toggle-button.toggle-index').ariaPressed;
-    const indexAsBaseline = !!document.querySelector('.toggle-button.as-baseline').ariaPressed;
-    chart.setDatasetVisibility(0, !indexAsBaseline);
-    chart.setDatasetVisibility(1, showVTI && !indexAsBaseline);
-    chart.setDatasetVisibility(2, indexAsBaseline);
     chartOptions.scales.x.min = allTime ? undefined : new Date(lastUpdated.getTime()).setHours(8, 20, 0);
     chartOptions.scales.x.max = allTime ? undefined : new Date(lastUpdated.getTime()).setHours(15, 10, 0);
     chart.update();
 }
 
 function onGraphToggleIndexClick(button) {
-    const wasPressed = !!button.ariaPressed;
-    button.ariaPressed = wasPressed ? undefined : "true";
-    const indexAsBaseline = !!document.querySelector('.toggle-button.as-baseline').ariaPressed;
-    chart.setDatasetVisibility(1, !wasPressed && !indexAsBaseline);
-    chart.update();
+    toggleButtonAndUpdateChart(button);
 }
 
 function onGraphToggleIndexBaseline(button) {
-    const wasPressed = !!button.ariaPressed;
-    button.ariaPressed = wasPressed ? undefined : "true";
-    const showIndex = !!document.querySelector('.toggle-button.toggle-index').ariaPressed;
-    chart.setDatasetVisibility(0, wasPressed || showIndex);
-    chart.setDatasetVisibility(1, wasPressed && showIndex);
-    chart.setDatasetVisibility(2, !wasPressed && !showIndex);
-    chart.update();
+    toggleButtonAndUpdateChart(button);
 }
 
 function onGraphToggleAllTime(button) {
+    toggleButtonAndUpdateChart(button);
+}
+
+function toggleButtonAndUpdateChart(button) {
     const wasPressed = !!button.ariaPressed;
     button.ariaPressed = wasPressed ? undefined : "true";
-    updateChart(data, lastUpdated, !wasPressed);
+    updateChart(data, lastUpdated);
 }
 
 function populateMovers(positions, accountValue) {
@@ -364,7 +375,7 @@ function createCard(symbol, value, valueType) {
     switch (valueType) {
         case '$':
             if (Math.abs(value) >= 1000) {
-                change.innerHTML = `${(value / 1000).toFixed(1)}k`;
+                change.innerHTML = `$${(value / 1000).toFixed(1)}k`;
             } else {
                 change.innerHTML = priceFormatter.format(value);
             }
