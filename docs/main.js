@@ -179,9 +179,9 @@ function getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, allTime) {
     if (!showVTI && !vtiAsBaseline) {
         return [{
             label: 'PORTFOLIO',
-            data: points.map((x, i) => ({
+            data: points.map(x => ({
                 x: x[0],
-                y: points.map(x => x[1])
+                y: x[1]
             })),
             borderColor: '#a772e0'
         }];
@@ -190,17 +190,17 @@ function getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, allTime) {
         return [
             {
                 label: 'PORTFOLIO',
-                data: points.map((x, i) => ({
+                data: points.map(x => ({
                     x: x[0],
-                    y: points.map(x => percentChange(x[1], previousClose[1]))
+                    y: percentChange(x[1], previousClose[1])
                 })),
                 borderColor: '#a772e0'
             },
             {
                 label: 'VTI',
-                data: points.map((x, i) => ({
+                data: points.map(x => ({
                     x: x[0],
-                    y: points.map(x => percentChange(x[2], previousClose[2]))
+                    y: percentChange(x[2], previousClose[2])
                 })),
                 borderColor: '#643e8c'
             }
@@ -214,7 +214,7 @@ function getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, allTime) {
                 label: 'PORTFOLIO',
                 data: points.map((x, i) => ({
                     x: x[0],
-                    y: portfolioPcts.map((x, i) => x - vtiPcts[i])
+                    y: portfolioPcts[i] - vtiPcts[i]
                 })),
                 borderColor: '#a772e0'
             },
