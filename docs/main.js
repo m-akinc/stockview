@@ -11,6 +11,7 @@ let data;
 let lastUpdated;
 let accountValues;
 let chart;
+let yAxisUseDollars = false;
 const chartDatasets = [];
 const chartOptions = {
     elements: {
@@ -23,6 +24,13 @@ const chartOptions = {
             type: 'time',
             min: undefined,
             max: undefined
+        },
+        y: {
+            ticks: {
+                callback: function(value, index, ticks) {
+                    return yAxisUseDollars ? `$${value}` : `${value}%`;
+                }
+            }
         }
     },
     plugins: {
@@ -177,6 +185,7 @@ function getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, allTime) {
         ? data.history[0]
         : [...data.history].reverse().find(x => new Date(x[0]).getDate() !== lastUpdated.getDate());
     if (!showVTI && !vtiAsBaseline) {
+        yAxisUseDollars = true;
         return [{
             label: 'PORTFOLIO',
             data: points.map(x => ({
@@ -186,6 +195,7 @@ function getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, allTime) {
             borderColor: '#a772e0'
         }];
     }
+    yAxisUseDollars = false;
     if (showVTI) {
         return [
             {
