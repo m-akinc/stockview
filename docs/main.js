@@ -1,3 +1,9 @@
+// Time ranges
+const DAY = 0;
+const WEEK = 1;
+const MONTH = 2;
+const ALL = 3;
+
 const priceFormatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD'
@@ -177,13 +183,14 @@ function populateAccountValues(accountValues, daysChangePercent) {
     span.innerHTML = `${accountValues.gainPercent}%`;
 }
 
-function getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, allTime) {
-    const points = allTime
-        ? data.history
-        : data.history.filter(x => new Date(x[0]).getDate() === lastUpdated.getDate());
-    const previousClose = allTime
-        ? data.history[0]
-        : [...data.history].reverse().find(x => new Date(x[0]).getDate() !== lastUpdated.getDate());
+function getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, range) {
+    const earliest = getDateAgo(lastUpdated, range);
+    const points = earliest
+        ? data.history.filter(x => x[0] >= earliest)
+        : data.history;
+    const previousClose = earliest
+        ? [...data.history].reverse().find(x => x[0] < earliest)
+        : data.history[0];
     if (!showVTI && !vtiAsBaseline) {
         yAxisUseDollars = true;
         return [{
@@ -245,31 +252,44 @@ function percentChange(v1, v0) {
 }
 
 function updateChart(data, lastUpdated) {
+    let range;
+    if (!!document.querySelector('.toggle-button.day').ariaPressed) {
+        range = DAY;
+    } else if (!!document.querySelector('.toggle-button.week').ariaPressed) {
+        range = WEEK;
+    } else if (!!document.querySelector('.toggle-button.month').ariaPressed) {
+        range = MONTH;
+    } else {
+        range = ALL;
+    }
+    chartOptions.scales.x.min = getDateAgo(lastUpdated, range);
+    chartOptions.scales.x.max = new Date(lastUpdated.getTime()).setHours(15, 10);
+    chartDatasets.length = 0;
     const showVTI = !!document.querySelector('.toggle-button.toggle-index').ariaPressed;
     const vtiAsBaseline = !!document.querySelector('.toggle-button.as-baseline').ariaPressed;
-    const today = !!document.querySelector('.toggle-button.day').ariaPressed;
-    const week = !!document.querySelector('.toggle-button.week').ariaPressed;
-    const month = !!document.querySelector('.toggle-button.month').ariaPressed;
-    const allTime = !!document.querySelector('.toggle-button.all-time').ariaPressed;
-    chartDatasets.length = 0;
-    for (const dataset of getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, allTime)) {
+    for (const dataset of getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, range)) {
         chartDatasets.push(dataset);
-    }
-    chartOptions.scales.x.max = new Date(lastUpdated.getTime()).setHours(15, 10);
-    if (today) {
-        chartOptions.scales.x.min = new Date(lastUpdated.getTime()).setHours(8, 20);
-    } else if (week) {
-        chartOptions.scales.x.min = new Date(lastUpdated.getTime()).setDate(lastUpdated.getDate() - 7);
-    } else if (month) {
-        chartOptions.scales.x.min = new Date(lastUpdated.getTime()).setMonth(lastUpdated.getMonth() - 1);
-    } else {
-        chartOptions.scales.x.min = undefined;
     }
     chart.update();
 }
 
+function getDateAgo(lastUpdated, range) {
+    switch (range) {
+        case DAY:
+            return new Date(lastUpdated.getTime()).setHours(8, 20);
+        case WEEK:
+            return new Date(lastUpdated.getTime()).setDate(lastUpdated.getDate() - 7 - (lastUpdated.getHours() / 24));
+        case MONTH:
+            return new Date(lastUpdated.getTime()).setMonth(lastUpdated.getMonth() - 1);
+        default:
+            return undefined
+    }
+}
+
 function onGraphToggleIndexClick(button) {
-    toggleButtonAndUpdateChart(button);
+    const wasPressed = !!button.ariaPressed;
+    button.ariaPressed = wasPressed ? undefined : "true";
+    updateChart(data, lastUpdated);
 }
 
 function onGraphToggleIndexBaseline(button) {
