@@ -282,7 +282,7 @@ function getDateAgo(lastUpdated, range) {
         case DAY:
             return new Date(lastUpdated.getTime()).setHours(8, 20);
         case WEEK:
-            return new Date(new Date(lastUpdated.getTime()).setDate(lastUpdated.getDate())).setHours(0, 0);
+            return new Date(new Date(lastUpdated.getTime()).setDate(lastUpdated.getDate() - 7)).setHours(0, 0);
         case MONTH:
             return new Date(lastUpdated.getTime()).setMonth(lastUpdated.getMonth() - 1);
         default:
