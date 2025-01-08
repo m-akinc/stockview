@@ -34,7 +34,7 @@ const chartOptions = {
         y: {
             ticks: {
                 callback: function(value, index, ticks) {
-                    return yAxisUseDollars ? `$${value}` : `${value}%`;
+                    return yAxisUseDollars ? `$${value}` : percentFormatter.format(value); // `${value}%`;
                 }
             }
         }
