@@ -247,13 +247,24 @@ function percentChange(v1, v0) {
 function updateChart(data, lastUpdated) {
     const showVTI = !!document.querySelector('.toggle-button.toggle-index').ariaPressed;
     const vtiAsBaseline = !!document.querySelector('.toggle-button.as-baseline').ariaPressed;
+    const today = !!document.querySelector('.toggle-button.day').ariaPressed;
+    const week = !!document.querySelector('.toggle-button.week').ariaPressed;
+    const month = !!document.querySelector('.toggle-button.month').ariaPressed;
     const allTime = !!document.querySelector('.toggle-button.all-time').ariaPressed;
     chartDatasets.length = 0;
     for (const dataset of getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, allTime)) {
         chartDatasets.push(dataset);
     }
-    chartOptions.scales.x.min = allTime ? undefined : new Date(lastUpdated.getTime()).setHours(8, 20, 0);
-    chartOptions.scales.x.max = allTime ? undefined : new Date(lastUpdated.getTime()).setHours(15, 10, 0);
+    chartOptions.scales.x.max = new Date(lastUpdated.getTime()).setHours(15, 10);
+    if (today) {
+        chartOptions.scales.x.min = new Date(lastUpdated.getTime()).set(8, 20);
+    } else if (week) {
+        chartOptions.scales.x.min = new Date(lastUpdated.getTime()).setDate(lastUpdated.getDate() - 7);
+    } else if (month) {
+        chartOptions.scales.x.min = new Date(lastUpdated.getTime()).setMonth(lastUpdated.getMonth() - 1);
+    } else {
+        chartOptions.scales.x.min = undefined;
+    }
     chart.update();
 }
 

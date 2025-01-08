@@ -42,7 +42,12 @@
         <div class="button-row">
             <div class="toggle-button toggle-index" role="button" onclick="onGraphToggleIndexClick(this)">SHOW MARKET</div>
             <div class="toggle-button as-baseline" role="button" onclick="onGraphToggleIndexBaseline(this)">VS MARKET</div>
-            <div class="toggle-button all-time" role="button" onclick="onGraphToggleAllTime(this)">ALL TIME</div>
+        </div>
+        <div class="button-row">
+            <div class="toggle-button day" role="button" onclick="onGraphToggleTimeRange(this)" aria-pressed="true">TODAY</div>
+            <div class="toggle-button week" role="button" onclick="onGraphToggleTimeRange(this)">WEEK</div>
+            <div class="toggle-button month" role="button" onclick="onGraphToggleTimeRange(this)">MONTH</div>
+            <div class="toggle-button all-time" role="button" onclick="onGraphToggleTimeRange(this)">ALL TIME</div>
         </div>
         <canvas id="graph"></canvas>
     </div>
