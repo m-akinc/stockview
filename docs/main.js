@@ -257,7 +257,7 @@ function updateChart(data, lastUpdated) {
     }
     chartOptions.scales.x.max = new Date(lastUpdated.getTime()).setHours(15, 10);
     if (today) {
-        chartOptions.scales.x.min = new Date(lastUpdated.getTime()).set(8, 20);
+        chartOptions.scales.x.min = new Date(lastUpdated.getTime()).setHours(8, 20);
     } else if (week) {
         chartOptions.scales.x.min = new Date(lastUpdated.getTime()).setDate(lastUpdated.getDate() - 7);
     } else if (month) {
