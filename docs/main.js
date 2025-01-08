@@ -273,16 +273,23 @@ function onGraphToggleIndexClick(button) {
 }
 
 function onGraphToggleIndexBaseline(button) {
-    toggleButtonAndUpdateChart(button);
-}
-
-function onGraphToggleAllTime(button) {
-    toggleButtonAndUpdateChart(button);
-}
-
-function toggleButtonAndUpdateChart(button) {
     const wasPressed = !!button.ariaPressed;
     button.ariaPressed = wasPressed ? undefined : "true";
+    updateChart(data, lastUpdated);
+}
+
+function onGraphToggleTimeRange(button) {
+    const wasPressed = !!button.ariaPressed;
+    if (wasPressed) {
+        return;
+    }
+    button.ariaPressed = "true";
+    const rangeButtons = document.querySelectorAll('.time-range .toggle-button');
+    for (const rangeButton of rangeButtons) {
+        if (button !== rangeButton) {
+            rangeButton.ariaPressed = undefined;
+        }
+    }
     updateChart(data, lastUpdated);
 }
 
