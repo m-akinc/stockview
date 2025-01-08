@@ -188,9 +188,13 @@ function getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, range) {
     const points = earliest
         ? data.history.filter(x => x[0] >= earliest)
         : data.history;
-    const previousClose = earliest
-        ? [...data.history].reverse().find(x => x[0] < earliest)
-        : data.history[0];
+    let previousClose;
+    if (earliest) {
+        [...data.history].reverse().find(x => x[0] < earliest);
+    }
+    if (!previousClose) {
+        previousClose = data.history[0];
+    }
     if (!showVTI && !vtiAsBaseline) {
         yAxisUseDollars = true;
         return [{
