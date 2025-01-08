@@ -293,12 +293,18 @@ function getDateAgo(lastUpdated, range) {
 function onGraphToggleIndexClick(button) {
     const wasPressed = !!button.ariaPressed;
     button.ariaPressed = wasPressed ? undefined : "true";
+    if (!wasPressed) {
+        document.querySelector('.toggle-button.as-baseline').ariaPressed = undefined;
+    }
     updateChart(data, lastUpdated);
 }
 
 function onGraphToggleIndexBaseline(button) {
     const wasPressed = !!button.ariaPressed;
     button.ariaPressed = wasPressed ? undefined : "true";
+    if (!wasPressed) {
+        document.querySelector('.toggle-button.toggle-index').ariaPressed = undefined;
+    }
     updateChart(data, lastUpdated);
 }
 
