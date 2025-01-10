@@ -190,7 +190,7 @@ function getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, range) {
         : data.history;
     let previousClose;
     if (earliest) {
-        [...data.history].reverse().find(x => x[0] < earliest);
+        previousClose = [...data.history].reverse().find(x => x[0] < earliest);
     }
     if (!previousClose) {
         previousClose = data.history[0];
