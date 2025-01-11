@@ -117,15 +117,6 @@ const chartOptions = {
         });
     }
     
-    chart = new Chart(document.getElementById('graph'), {
-        type: 'line',
-        data: {
-            datasets: chartDatasets
-        },
-        options: chartOptions
-    });
-    updateChart(data, lastUpdated);
-    
     const market = document.querySelector('.market');
     for (const index of data.indices) {
         market.appendChild(createCard(index[0], index[3], '%'));
@@ -159,6 +150,15 @@ const chartOptions = {
         const buttonRow = document.querySelector('.graph-options');
         buttonRow.appendChild(vsAltButton);
     }
+    
+    chart = new Chart(document.getElementById('graph'), {
+        type: 'line',
+        data: {
+            datasets: chartDatasets
+        },
+        options: chartOptions
+    });
+    updateChart(data, lastUpdated);
     
     populateMovers(data.positions, accountValues.value);
 
