@@ -40,7 +40,7 @@ const chartOptions = {
             grid: {
               color: function(context) {
                 if (context.tick.value === 0) {
-                  return '#4a4b5c';
+                  return '#525365';
                 }
                 return '#3a3b4a';
               },
