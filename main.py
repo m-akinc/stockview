@@ -19,15 +19,30 @@ def main():
   if not marketHours.market_has_opened():
     return
 
+  try:
+    with open('data.json', 'r', encoding='utf-8') as f:
+      loaded = json.load(f)
+      history = loaded['history'] or []
+      totalShares = loaded['totalShares'] or 1
+      accounts = loaded['accounts'] or []
+      alt = loaded['alt'] or {}
+  except:
+    history = []
+    totalShares = 1
+    accounts = []
+    alt = {}
+
+  lookups = [x[0] for x in comps].extend(alt.keys())
+
   client = APIClient()
 
-  quote = MultiQuote(client, tuple([x[0] for x in comps]))
+  quotes = MultiQuote(client, tuple(lookups)).get_quote()
   indices = [(
     x['Product']['symbol'],
     x['All']['lastTrade'],
     x['All']['changeClose'],
     x['All']['changeClosePercentage']
-  ) for x in quote.get_quote()]
+  ) for x in quotes if x['Product']['symbol'] in lookups]
 
   response = client.request_account_portfolio(account_key)[0]['PortfolioResponse']
   portfolio = response['AccountPortfolio'][0]
@@ -49,32 +64,29 @@ def main():
       "percentOfPortfolio": position["pctOfPortfolio"]
     })
 
-  try:
-    with open('data.json', 'r', encoding='utf-8') as f:
-      loaded = json.load(f)
-      history = loaded['history'] or []
-      totalShares = loaded['totalShares'] or 1
-      accounts = loaded['accounts'] or []
-  except:
-    history = []
-    totalShares = 1
-    accounts = []
-
+  
   history = decimateHistory(history)
 
   with open('data.json', 'w', encoding='utf-8') as f:
     nowMs = math.floor(datetime.datetime.now().timestamp() * 1000)
-    total = totals['totalMarketValue'] + totals['cashBalance']
+    total = round(totals['totalMarketValue'] + totals['cashBalance'], 4)
     vtiValue = next(x[1] for x in indices if x[0] == 'VTI')
+    altValue = 0
+    for alt in alt.items():
+      altQuote = next(x for x in quotes if x['Product']['symbol'] == alt[0])
+      altValue += alt[1] * altQuote['All']['lastTrade']
+
     if history[-1][1] != total or history[-1][2] != vtiValue:
-      history.append([nowMs, total, vtiValue])
+      history.append([nowMs, total, vtiValue, altValue])
+
     updated = {
       'version': '1',
       'date': nowMs,
       'cap': total,
       'totalShares': totalShares,
       'accounts': accounts,
-      'historySymbols': ['MERT', 'VTI'],
+      'alt': alt,
+      'historySymbols': ['MERT', 'VTI', 'Alt'],
       'history': history,
       'indices': indices,
       'positions': positions
@@ -84,16 +96,17 @@ def main():
 
 def decimateHistory(history):
   today, older = priorNDays(list(reversed(history)), 1.0)
-  week, older = priorNDays(older, 7.0)
-  month, older = priorNDays(older, 30.0)
-  year, older = priorNDays(older, 365.0)
-
-  week = [next(group) for key, group in itertools.groupby(week, lambda y: toDatetime(y[0]).hour) if key % 2 == 0]
-  month = [next(group) for key, group in itertools.groupby(month, lambda y: toDatetime(y[0]).day)]
-  year = [next(group) for key, group in itertools.groupby(year, lambda y: (toDatetime(y[0]).day, toDatetime(y[0]).day)) if key[0] == 5]
-  older = [next(group) for key, group in itertools.groupby(older, lambda y: (toDatetime(y[0]).month, toDatetime(y[0]).year))]
-
-  return list(reversed(today + week + month + year + older))
+  decimated = today
+  while True:
+    dayBefore, older = priorNDays(older, 1.0)
+    if len(dayBefore) == 1:
+      decimated.append(dayBefore[0])
+      decimated.extend(older)
+      break
+    if len(dayBefore) > 0:
+      decimated.append(dayBefore[0])
+  
+  return list(reversed(decimated))
   
 
 def priorNDays(descendingHistory, numDays):

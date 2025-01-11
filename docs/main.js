@@ -149,6 +149,16 @@ const chartOptions = {
         updated.after(history);
         updated.after(dims);
     }
+
+    if (accountId === 'A041281') {
+        const vsAltButton = document.createElement('div');
+        vsAltButton.classList.add('toggle-button');
+        vsAltButton.classList.add('vs-alt');
+        vsAltButton.role = 'button';
+        vsAltButton.addEventListener('click', onGraphToggleVsAlt);
+        const buttonRow = document.querySelector('.graph-options');
+        buttonRow.appendChild(vsAltButton);
+    }
     
     populateMovers(data.positions, accountValues.value);
 
@@ -183,7 +193,7 @@ function populateAccountValues(accountValues, daysChangePercent) {
     span.innerHTML = `${accountValues.gainPercent}%`;
 }
 
-function getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, range) {
+function getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, vsAlt, range) {
     const earliest = getDateAgo(lastUpdated, range);
     const points = earliest
         ? data.history.filter(x => x[0] >= earliest)
@@ -197,7 +207,7 @@ function getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, range) {
     }
     if (!showVTI && !vtiAsBaseline) {
         yAxisUseDollars = true;
-        return [{
+        const plots = [{
             label: 'PORTFOLIO',
             data: points.map(x => ({
                 x: x[0],
@@ -205,10 +215,21 @@ function getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, range) {
             })),
             borderColor: '#a772e0'
         }];
+        if (vsAlt) {
+            plots.push({
+                label: 'OLD PORTFOLIO',
+                data: points.map(x => ({
+                    x: x[0],
+                    y: x[3]
+                })),
+                borderColor: '#697edd'
+            });
+        }
+        return plots;
     }
     yAxisUseDollars = false;
     if (showVTI) {
-        return [
+        const plots = [
             {
                 label: 'PORTFOLIO',
                 data: points.map(x => ({
@@ -226,11 +247,22 @@ function getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, range) {
                 borderColor: '#643e8c'
             }
         ];
+        if (vsAlt) {
+            plots.push({
+                label: 'OLD PORTFOLIO',
+                data: points.map(x => ({
+                    x: x[0],
+                    y: percentChange(x[3], previousClose[3])
+                })),
+                borderColor: '#697edd'
+            });
+        }
+        return plots;
     }
     if (vtiAsBaseline) {
         const portfolioPcts = points.map(x => percentChange(x[1], previousClose[1]));
         const vtiPcts = points.map(x => percentChange(x[2], previousClose[2]));
-        return [
+        const plots = [
             {
                 label: 'PORTFOLIO',
                 data: points.map((x, i) => ({
@@ -241,13 +273,25 @@ function getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, range) {
             },
             {
                 label: 'VTI',
-                data: points.map((x, i) => ({
+                data: points.map(x => ({
                     x: x[0],
                     y: 0
                 })),
                 borderColor: '#643e8c'
             }
         ];
+        if (vsAlt) {
+            const altPcts = points.map(x => percentChange(x[3], previousClose[3]));
+            plots.push({
+                label: 'OLD PORTFOLIO',
+                data: points.map((x, i) => ({
+                    x: x[0],
+                    y: altPcts[i] - vtiPcts[i]
+                })),
+                borderColor: '#697edd'
+            });
+        }
+        return plots;
     }
 }
 
@@ -271,7 +315,8 @@ function updateChart(data, lastUpdated) {
     chartDatasets.length = 0;
     const showVTI = !!document.querySelector('.toggle-button.toggle-index').ariaPressed;
     const vtiAsBaseline = !!document.querySelector('.toggle-button.as-baseline').ariaPressed;
-    for (const dataset of getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, range)) {
+    const vsAlt = !!document.querySelector('.toggle-button.vs-alt').ariaPressed;
+    for (const dataset of getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, vsAlt, range)) {
         chartDatasets.push(dataset);
     }
     chart.update();
@@ -305,6 +350,12 @@ function onGraphToggleIndexBaseline(button) {
     if (!wasPressed) {
         document.querySelector('.toggle-button.toggle-index').ariaPressed = undefined;
     }
+    updateChart(data, lastUpdated);
+}
+
+function onGraphToggleVsAlt(button) {
+    const wasPressed = !!button.ariaPressed;
+    button.ariaPressed = wasPressed ? undefined : "true";
     updateChart(data, lastUpdated);
 }
 
