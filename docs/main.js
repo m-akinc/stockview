@@ -36,7 +36,15 @@ const chartOptions = {
                 callback: function(value, index, ticks) {
                     return yAxisUseDollars ? priceFormatter.format(value) : percentFormatter.format(value / 100);
                 }
-            }
+            },
+            grid: {
+              color: function(context) {
+                if (context.tick.value === 0) {
+                  return '#4a4b5c';
+                }
+                return '#3a3b4a';
+              },
+            },
         }
     },
     plugins: {
@@ -143,7 +151,7 @@ const chartOptions = {
 
     if (accountId === 'A041281') {
         const vsAltButton = document.createElement('div');
-        vsAltButton.innerHTML = 'SHOW OLD PORTFOLIO';
+        vsAltButton.innerHTML = 'SHOW OLD PF';
         vsAltButton.classList.add('toggle-button');
         vsAltButton.classList.add('vs-alt');
         vsAltButton.role = 'button';
