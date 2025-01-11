@@ -143,10 +143,13 @@ const chartOptions = {
 
     if (accountId === 'A041281') {
         const vsAltButton = document.createElement('div');
+        vsAltButton.innerHTML = 'SHOW OLD PORTFOLIO';
         vsAltButton.classList.add('toggle-button');
         vsAltButton.classList.add('vs-alt');
         vsAltButton.role = 'button';
-        vsAltButton.addEventListener('click', onGraphToggleVsAlt);
+        vsAltButton.addEventListener('click', event => {
+            onGraphToggleVsAlt(event.currentTarget);
+        });
         const buttonRow = document.querySelector('.graph-options');
         buttonRow.appendChild(vsAltButton);
     }
