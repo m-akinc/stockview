@@ -32,7 +32,8 @@ def main():
     accounts = []
     alt = {}
 
-  lookups = [x[0] for x in comps].extend(alt.keys())
+  lookups = [x[0] for x in comps]
+  lookups.extend(alt.keys())
 
   client = APIClient()
 
