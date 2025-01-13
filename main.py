@@ -98,14 +98,16 @@ def main():
 def decimateHistory(history):
   today, older = priorNDays(list(reversed(history)), 1.0)
   decimated = today
+  daysAgo = 1.0
   while True:
-    dayBefore, older = priorNDays(older, 1.0)
+    dayBefore, older = priorNDays(older, daysAgo)
     if len(dayBefore) == 1:
       decimated.append(dayBefore[0])
       decimated.extend(older)
       break
     if len(dayBefore) > 0:
       decimated.append(dayBefore[0])
+    daysAgo += 1
   
   return list(reversed(decimated))
   
