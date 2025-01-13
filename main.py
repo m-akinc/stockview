@@ -38,12 +38,13 @@ def main():
   client = APIClient()
 
   quotes = MultiQuote(client, tuple(lookups)).get_quote()
+  compsSymbols = [x[0] for x in comps]
   indices = [(
     x['Product']['symbol'],
     x['All']['lastTrade'],
     x['All']['changeClose'],
     x['All']['changeClosePercentage']
-  ) for x in quotes if x['Product']['symbol'] in lookups]
+  ) for x in quotes if x['Product']['symbol'] in compsSymbols]
 
   response = client.request_account_portfolio(account_key)[0]['PortfolioResponse']
   portfolio = response['AccountPortfolio'][0]
