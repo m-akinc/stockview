@@ -74,9 +74,9 @@ def main():
     total = round(totals['totalMarketValue'] + totals['cashBalance'], 4)
     vtiValue = next(x[1] for x in indices if x[0] == 'VTI')
     altValue = 0
-    for alt in alt.items():
-      altQuote = next(x for x in quotes if x['Product']['symbol'] == alt[0])
-      altValue += alt[1] * altQuote['All']['lastTrade']
+    for item in alt.items():
+      altQuote = next(x for x in quotes if x['Product']['symbol'] == item[0])
+      altValue += item[1] * altQuote['All']['lastTrade']
 
     if history[-1][1] != total or history[-1][2] != vtiValue:
       history.append([nowMs, total, vtiValue, altValue])
