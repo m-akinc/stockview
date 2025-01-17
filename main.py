@@ -5,6 +5,7 @@ import json
 import datetime
 import math
 import itertools
+import more_itertools
 
 account_key = "EuXJsu-w_D6dnA_JY-TueA"
 comps = [
@@ -97,31 +98,27 @@ def main():
 
 
 def decimateHistory(history):
-  today, older = priorNDays(list(reversed(history)), 1.0)
+  today, older = priorDay(list(reversed(history)))
   decimated = today
-  daysAgo = 1.0
   while True:
-    dayBefore, older = priorNDays(older, daysAgo)
+    dayBefore, older = priorDay(older)
     if len(dayBefore) == 1:
       decimated.append(dayBefore[0])
       decimated.extend(older)
       break
     if len(dayBefore) > 0:
       decimated.append(dayBefore[0])
-    daysAgo += 1
   
   return list(reversed(decimated))
-  
 
-def priorNDays(descendingHistory, numDays):
-  nowMs = datetime.datetime.now().timestamp() * 1000
-  latest = list(itertools.takewhile(
-    lambda x: datetime.timedelta(milliseconds = nowMs - x[0]).days <= numDays,
-    descendingHistory
-  ))
-  remainder = list(descendingHistory)[len(latest):]
-  return (latest, remainder)
-
+def priorDay(descendingHistory):
+  prior = descendingHistory[0][0]
+  def sameTradingDay(x):
+      nonlocal prior
+      daysAfterPrior = datetime.timedelta(milliseconds = prior - x[0]).days
+      prior = x[0]
+      return daysAfterPrior < 8/24
+  return more_itertools.before_and_after(sameTradingDay, descendingHistory)
 
 def toDatetime(ms):
   return datetime.datetime.fromtimestamp(ms / 1000)
