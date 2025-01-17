@@ -114,7 +114,7 @@ def priorDay(descendingHistory):
   prior = descendingHistory[0][0]
   def sameTradingDay(x):
       nonlocal prior
-      hoursEarlier = datetime.timedelta(milliseconds = prior - x[0]).seconds / 60 / 60
+      hoursEarlier = datetime.timedelta(milliseconds = prior - x[0]).total_seconds() / 60 / 60
       prior = x[0]
       return hoursEarlier < 8
   day, older = more_itertools.before_and_after(sameTradingDay, descendingHistory)
