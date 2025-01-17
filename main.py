@@ -102,12 +102,11 @@ def decimateHistory(history):
   decimated = today
   while True:
     dayBefore, older = priorDay(older)
-    if len(dayBefore) == 1:
-      decimated.append(dayBefore[0])
-      decimated.extend(older)
-      break
     if len(dayBefore) > 0:
       decimated.append(dayBefore[0])
+      if len(dayBefore) == 1:
+        decimated.extend(older)
+        break
   
   return list(reversed(decimated))
 
@@ -115,9 +114,9 @@ def priorDay(descendingHistory):
   prior = descendingHistory[0][0]
   def sameTradingDay(x):
       nonlocal prior
-      daysAfterPrior = datetime.timedelta(milliseconds = prior - x[0]).days
+      hoursEarlier = datetime.timedelta(milliseconds = prior - x[0]).seconds / 60 / 60
       prior = x[0]
-      return daysAfterPrior < 8/24
+      return hoursEarlier < 8
   day, older = more_itertools.before_and_after(sameTradingDay, descendingHistory)
   return (list(day), list(older))
 
