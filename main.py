@@ -102,12 +102,14 @@ def decimateHistory(history):
   decimated = today
   while True:
     dayBefore, older = priorDay(older)
-    if len(dayBefore) == 1:
-      decimated.append(dayBefore[0])
+    dayBeforeList = list(dayBefore)
+    numDayBeforePoints = len(dayBeforeList)
+    if numDayBeforePoints == 1:
+      decimated.append(dayBeforeList[0])
       decimated.extend(older)
       break
-    if len(dayBefore) > 0:
-      decimated.append(dayBefore[0])
+    if numDayBeforePoints > 0:
+      decimated.append(dayBeforeList[0])
   
   return list(reversed(decimated))
 
