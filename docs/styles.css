@@ -35,12 +35,15 @@ body {
 .updated {
     display: flex;
     flex-direction: row;
+    align-items: center;
     font-size: 8pt;
     margin-bottom: 8px;
 }
 
 .force-refresh {
-    font-size: 20pt;
+    font-size: 18pt;
+    height: 28px;
+    width: 28px;
     margin-right: 4px;
 }
 
