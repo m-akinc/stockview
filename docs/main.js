@@ -79,6 +79,10 @@ const chartOptions = {
     const daysChangeDollars = latestSharePrice - previousCloseSharePrice;
     const daysChangePercent = (100 * daysChangeDollars / previousCloseSharePrice).toFixed(2);
 
+    document.querySelector('.force-refresh').addEventListener('click', () => {
+        location.reload(true);
+    });
+
     // Populate table row (non-account values)
     const columns = document.querySelectorAll('#row td');
     // LAST
@@ -152,6 +156,7 @@ const chartOptions = {
     if (accountId === 'A041281') {
         const vsAltButton = document.createElement('div');
         vsAltButton.innerHTML = 'SHOW OLD PF';
+        vsAltButton.classList.add('button');
         vsAltButton.classList.add('toggle-button');
         vsAltButton.classList.add('vs-alt');
         vsAltButton.role = 'button';

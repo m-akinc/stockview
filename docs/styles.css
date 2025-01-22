@@ -4,6 +4,10 @@ body {
     font-family: monospace;
 }
 
+.force-refresh {
+    height: 100%;
+}
+
 .updated {
     font-size: 8pt;
     margin-bottom: 8px;
@@ -72,6 +76,12 @@ th, td {
     }
 }
 
+@media screen and (min-width: 500px) {
+    .mobile-only {
+        display: none;
+    }
+}
+
 .graph-container {
     margin-bottom: 8px;
 }
@@ -99,7 +109,7 @@ stockview-treemap {
     padding-bottom: 4px;
 }
 
-.toggle-button {
+.button {
     box-sizing: border-box;
     display: flex;
     flex-wrap: wrap;
@@ -113,16 +123,16 @@ stockview-treemap {
     justify-content: center;
 }
 
-.toggle-button:hover {
+.button:hover {
     border: 1px solid #a772e0;
     background-color: #61637c;
 }
 
-.toggle-button[aria-pressed="true"] {
+.button[aria-pressed="true"] {
     border: 2px solid #a772e0;
     background-color: #75618a;
 }
 
-.toggle-button[aria-pressed="true"]:hover {
+.button[aria-pressed="true"]:hover {
     background-color: #856e9e;
 }
