@@ -32,14 +32,16 @@ body {
     background-color: #856e9e;
 }
 
-.force-refresh {
-    height: 20px;
-    width: 20px;
-}
-
 .updated {
+    display: flex;
+    flex-direction: row;
     font-size: 8pt;
     margin-bottom: 8px;
+}
+
+.force-refresh {
+    font-size: 20pt;
+    margin-right: 4px;
 }
 
 .changeValue {
