@@ -165,6 +165,17 @@ const chartOptions = {
         });
         const buttonRow = document.querySelector('.graph-options');
         buttonRow.appendChild(vsAltButton);
+
+        const minusTaxButton = document.createElement('div');
+        minusTaxButton.innerHTML = 'MINUS TAX';
+        minusTaxButton.classList.add('button');
+        minusTaxButton.classList.add('toggle-button');
+        minusTaxButton.classList.add('minus-tax');
+        minusTaxButton.role = 'button';
+        minusTaxButton.addEventListener('click', event => {
+            onGraphToggleMinusTax(event.currentTarget);
+        });
+        buttonRow.appendChild(minusTaxButton);
     }
     
     chart = new Chart(document.getElementById('graph'), {
@@ -209,7 +220,7 @@ function populateAccountValues(accountValues, percentChangeSincePreviousClose) {
     span.innerHTML = `${accountValues.gainPercent}%`;
 }
 
-function getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, vsAlt, range) {
+function getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, vsAlt, minusTax, range) {
     const earliest = getDateAgo(lastUpdated, range);
     const points = earliest
         ? data.history.filter(x => x[0] >= earliest)
@@ -223,20 +234,25 @@ function getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, vsAlt, rang
     }
     if (!showVTI && !vtiAsBaseline) {
         yAxisUseDollars = true;
+        const initialPortfolioValue = data.history[0][1];
         const plots = [{
             label: 'PORTFOLIO',
             data: points.map(x => ({
                 x: x[0],
                 y: x[1] * (accountValues.shares / data.totalShares)
+                    - (minusTax ? (0.35 * (x[1] - initialPortfolioValue + data.startingGainShort - data.followOnGainLong) 
+                                  + 0.2 * (data.startingGainLong + data.followOnGainLong))
+                                : 0)
             })),
             borderColor: '#a772e0'
         }];
         if (vsAlt) {
+            const initialAltValue = data.history[0][3];
             plots.push({
                 label: 'OLD PORTFOLIO',
                 data: points.map(x => ({
                     x: x[0],
-                    y: x[3]
+                    y: x[3] - (minusTax ? (0.2 * (x[3] - initialAltValue + data.startingGainLong)) : 0)
                 })),
                 borderColor: '#697edd'
             });
@@ -340,10 +356,11 @@ function updateChart(data, lastUpdated) {
     chartOptions.scales.x.min = getDateAgo(lastUpdated, range);
     chartOptions.scales.x.max = new Date(lastUpdated.getTime()).setHours(15, 10);
     chartDatasets.length = 0;
-    const showVTI = isToggledOn('.toggle-button.toggle-index');
-    const vtiAsBaseline = isToggledOn('.toggle-button.as-baseline');
-    const vsAlt = isToggledOn('.toggle-button.vs-alt');
-    for (const dataset of getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, vsAlt, range)) {
+    const showVTI = isToggledOn('.toggle-index');
+    const vtiAsBaseline = isToggledOn('.as-baseline');
+    const vsAlt = isToggledOn('.vs-alt');
+    const minusTax = isToggledOn('.minus-tax');
+    for (const dataset of getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, vsAlt, minusTax, range)) {
         chartDatasets.push(dataset);
     }
     chart.update();
@@ -381,6 +398,19 @@ function onGraphToggleIndexBaseline(button) {
 }
 
 function onGraphToggleVsAlt(button) {
+    const wasPressed = !!button.ariaPressed;
+    button.ariaPressed = wasPressed ? undefined : "true";
+    if (wasPressed) {
+        setToggledOn('.toggle-button.minus-tax', false);
+    }
+    updateChart(data, lastUpdated);
+}
+
+function onGraphToggleMinusTax(button) {
+    const altIsOn = isToggledOn('.toggle-button.vs-alt');
+    if (!altIsOn) {
+        return;
+    }
     const wasPressed = !!button.ariaPressed;
     button.ariaPressed = wasPressed ? undefined : "true";
     updateChart(data, lastUpdated);

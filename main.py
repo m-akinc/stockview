@@ -20,18 +20,12 @@ def main():
   if not marketHours.market_has_opened():
     return
 
-  try:
-    with open('data.json', 'r', encoding='utf-8') as f:
-      loaded = json.load(f)
-      history = loaded['history'] or []
-      totalShares = loaded['totalShares'] or 1
-      accounts = loaded['accounts'] or []
-      alt = loaded['alt'] or {}
-  except:
-    history = []
-    totalShares = 1
-    accounts = []
-    alt = {}
+  with open('data.json', 'r', encoding='utf-8') as f:
+    loaded = json.load(f)
+    history = loaded['history']
+    totalShares = loaded['totalShares']
+    accounts = loaded['accounts']
+    alt = loaded['alt']
 
   lookups = [x[0] for x in comps]
   lookups.extend(alt.keys())
@@ -82,18 +76,13 @@ def main():
     if history[-1][1] != total or history[-1][2] != vtiValue:
       history.append([nowMs, total, vtiValue, altValue])
 
-    updated = {
-      'version': '1',
-      'date': nowMs,
-      'cap': total,
-      'totalShares': totalShares,
-      'accounts': accounts,
-      'alt': alt,
-      'historySymbols': ['MERT', 'VTI', 'Alt'],
-      'history': history,
-      'indices': indices,
-      'positions': positions
-    }
+    updated = loaded
+    updated['date'] = nowMs
+    updated['cap'] = total
+    updated['history'] = history
+    updated['indices'] = indices
+    updated['positions'] = positions
+
     json.dump(updated, f, ensure_ascii=False)
 
 
