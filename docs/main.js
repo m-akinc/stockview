@@ -72,12 +72,12 @@ const chartOptions = {
     
     data = await response.json();
     lastUpdated = new Date(data.date);
-    const latestSharePrice = data.cap / data.totalShares;
+    const currentSharePrice = data.cap / data.totalShares;
     document.querySelector('.date').innerText = lastUpdated.toLocaleString();
-    const previousClose = [...data.history].reverse().find(x => new Date(x[0]).getDate() !== lastUpdated.getDate());
-    const previousCloseSharePrice = previousClose[1] / data.totalShares;
-    const daysChangeDollars = latestSharePrice - previousCloseSharePrice;
-    const daysChangePercent = (100 * daysChangeDollars / previousCloseSharePrice).toFixed(2);
+    const [_, previousCloseTotalCap] = [...data.history].reverse().find(x => new Date(x[0]).getDate() !== lastUpdated.getDate());
+    const previousCloseSharePrice = previousCloseTotalCap / data.totalShares;
+    const sharePriceChangeSincePreviousClose = currentSharePrice - previousCloseSharePrice;
+    const percentChangeSincePreviousClose = (100 * sharePriceChangeSincePreviousClose / previousCloseSharePrice).toFixed(2);
 
     document.querySelector('.force-refresh').addEventListener('click', () => {
         location.reload(true);
@@ -86,21 +86,21 @@ const chartOptions = {
     // Populate table row (non-account values)
     const columns = document.querySelectorAll('#row td');
     // LAST
-    columns[0].innerHTML = priceFormatter.format(latestSharePrice);
+    columns[0].innerHTML = priceFormatter.format(currentSharePrice);
     // DAY'S CHANGE %
     let span = columns[4].querySelector('span');
-    if (daysChangeDollars < 0) {
+    if (sharePriceChangeSincePreviousClose < 0) {
         span.classList.add('loss');
     }
-    span.innerHTML = `${daysChangePercent}%`;
+    span.innerHTML = `${percentChangeSincePreviousClose}%`;
 
     if (accountId) {
-        accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
-        populateAccountValues(accountValues, daysChangePercent);
+        accountValues = getAccountValues(data.accounts, accountId, currentSharePrice);
+        populateAccountValues(accountValues, percentChangeSincePreviousClose);
     } else if (longitude) {
         accountId = getAccountIdFromLocation(longitude);
-        accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
-        populateAccountValues(accountValues, daysChangePercent);
+        accountValues = getAccountValues(data.accounts, accountId, currentSharePrice);
+        populateAccountValues(accountValues, percentChangeSincePreviousClose);
     } else if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(x => {
             accountId = getAccountIdFromLocation(data.accounts, x.coords.longitude);
@@ -112,8 +112,8 @@ const chartOptions = {
             if (accountId) {
                 localStorage.setItem('stockview-account-id', accountId);
             }
-            accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
-            populateAccountValues(accountValues, daysChangePercent);
+            accountValues = getAccountValues(data.accounts, accountId, currentSharePrice);
+            populateAccountValues(accountValues, percentChangeSincePreviousClose);
         },x => {
             console.log('Geolocation failed:', x);
             const zip = prompt('Looks like the browser is not allowed to use your location. Please enter your zip code so we can show your holdings.');
@@ -121,8 +121,8 @@ const chartOptions = {
             if (accountId) {
                 localStorage.setItem('stockview-account-id', accountId);
             }
-            accountValues = getAccountValues(data.accounts, accountId, latestSharePrice);
-            populateAccountValues(accountValues, daysChangePercent);
+            accountValues = getAccountValues(data.accounts, accountId, currentSharePrice);
+            populateAccountValues(accountValues, percentChangeSincePreviousClose);
         },{
             enableHighAccuracy: true,
             timeout: 2000
@@ -133,7 +133,7 @@ const chartOptions = {
     for (const index of data.indices) {
         market.appendChild(createCard(index[0], index[3], '%'));
     }
-    const bigCard = createCard('MERT', daysChangePercent, '%');
+    const bigCard = createCard('MERT', percentChangeSincePreviousClose, '%');
     bigCard.classList.add('big-card');
     market.after(bigCard);
 
@@ -181,14 +181,14 @@ const chartOptions = {
     requestAnimationFrame(() => requestAnimationFrame(() => document.querySelector('stockview-treemap').positions = data.positions));
 })();
 
-function populateAccountValues(accountValues, daysChangePercent) {
+function populateAccountValues(accountValues, percentChangeSincePreviousClose) {
     const columns = document.querySelectorAll('tr:nth-of-type(2) td');
     // SHARES
     columns[1].innerHTML = accountValues.shares;
     // TOTAL VALUE
     columns[2].innerHTML = priceFormatter.format(accountValues.value);
     // DAY'S GAIN $
-    const daysStartingValue = accountValues.value / (1 + daysChangePercent / 100);
+    const daysStartingValue = accountValues.value / (1 + percentChangeSincePreviousClose / 100);
     const daysGain = accountValues.value - daysStartingValue;
     let span = columns[3].querySelector('span');
     if (daysGain < 0) {
@@ -315,13 +315,24 @@ function percentChange(v1, v0) {
     return 100 * (v1 - v0) / v0;
 }
 
+function isToggledOn(selector) {
+    return !!document.querySelector(selector)?.ariaPressed;
+}
+
+function setToggledOn(selector, on) {
+    const button = document.querySelector(selector);
+    if (button) {
+        button.ariaPressed = on ? 'true' : undefined;
+    }
+}
+
 function updateChart(data, lastUpdated) {
     let range;
-    if (!!document.querySelector('.toggle-button.day').ariaPressed) {
+    if (isToggledOn('.toggle-button.day')) {
         range = DAY;
-    } else if (!!document.querySelector('.toggle-button.week').ariaPressed) {
+    } else if (isToggledOn('.toggle-button.week')) {
         range = WEEK;
-    } else if (!!document.querySelector('.toggle-button.month').ariaPressed) {
+    } else if (isToggledOn('.toggle-button.month')) {
         range = MONTH;
     } else {
         range = ALL;
@@ -329,9 +340,9 @@ function updateChart(data, lastUpdated) {
     chartOptions.scales.x.min = getDateAgo(lastUpdated, range);
     chartOptions.scales.x.max = new Date(lastUpdated.getTime()).setHours(15, 10);
     chartDatasets.length = 0;
-    const showVTI = !!document.querySelector('.toggle-button.toggle-index').ariaPressed;
-    const vtiAsBaseline = !!document.querySelector('.toggle-button.as-baseline').ariaPressed;
-    const vsAlt = !!document.querySelector('.toggle-button.vs-alt').ariaPressed;
+    const showVTI = isToggledOn('.toggle-button.toggle-index');
+    const vtiAsBaseline = isToggledOn('.toggle-button.as-baseline');
+    const vsAlt = isToggledOn('.toggle-button.vs-alt');
     for (const dataset of getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, vsAlt, range)) {
         chartDatasets.push(dataset);
     }
@@ -355,7 +366,7 @@ function onGraphToggleIndexClick(button) {
     const wasPressed = !!button.ariaPressed;
     button.ariaPressed = wasPressed ? undefined : "true";
     if (!wasPressed) {
-        document.querySelector('.toggle-button.as-baseline').ariaPressed = undefined;
+        setToggledOn('.toggle-button.as-baseline', false);
     }
     updateChart(data, lastUpdated);
 }
@@ -364,7 +375,7 @@ function onGraphToggleIndexBaseline(button) {
     const wasPressed = !!button.ariaPressed;
     button.ariaPressed = wasPressed ? undefined : "true";
     if (!wasPressed) {
-        document.querySelector('.toggle-button.toggle-index').ariaPressed = undefined;
+        setToggledOn('.toggle-button.toggle-index', false);
     }
     updateChart(data, lastUpdated);
 }
