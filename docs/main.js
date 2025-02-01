@@ -252,7 +252,7 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, minusTax, range) 
     }
     if (range !== DAY) {
         const justBeforeToday = getReferencePoint(descendingHistory, DAY);
-        points = points.filter(x => x[0] <= justBeforeToday[0]).push(points[points.length - 1]);
+        points = points.filter(x => x[0] <= justBeforeToday[0]).concat(points[points.length - 1]);
     }
     
     if (!showVTI && !vtiAsBaseline) {
