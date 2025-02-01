@@ -247,8 +247,12 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, minusTax, range) 
     const referencePoint = getReferencePoint(descendingHistory, range);
     const points = data.history.filter(x => x[0] > referencePoint[0]);
     if (range === ALL) {
-        // also include the reference point
+        // include the reference point
         points.unshift(referencePoint);
+    }
+    if (range !== DAY) {
+        const justBeforeToday = getReferencePoint(descendingHistory, DAY);
+        points = points.filter(x => x[0] <= justBeforeToday[0]).push(points[points.length - 1]);
     }
     
     if (!showVTI && !vtiAsBaseline) {
