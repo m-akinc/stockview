@@ -239,7 +239,11 @@ export function getReferencePoint(descendingHistory, howFarBack) {
 function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, minusTax, range) {
     const descendingHistory = [...data.history].reverse();
     const referencePoint = getReferencePoint(descendingHistory, range);
-    const points = data.history.filter(x => x[0] >= referencePoint[0]);
+    const points = data.history.filter(x => x[0] > referencePoint[0]);
+    if (range === ALL) {
+        // also include the reference point
+        points.unshift(referencePoint);
+    }
     
     if (!showVTI && !vtiAsBaseline) {
         yAxisUseDollars = true;
