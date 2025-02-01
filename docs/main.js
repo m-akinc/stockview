@@ -245,7 +245,7 @@ export function getReferencePoint(descendingHistory, howFarBack) {
 function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, minusTax, range) {
     const descendingHistory = [...data.history].reverse();
     const referencePoint = getReferencePoint(descendingHistory, range);
-    const points = data.history.filter(x => x[0] > referencePoint[0]);
+    let points = data.history.filter(x => x[0] > referencePoint[0]);
     if (range === ALL) {
         // include the reference point
         points.unshift(referencePoint);
@@ -351,7 +351,6 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, minusTax, range) 
 }
 
 function percentChange(v1, v0) {
-    console.log(`${v0} -> ${v1} = ${100 * (v1 - v0) / v0}`);
     return 100 * (v1 - v0) / v0;
 }
 
