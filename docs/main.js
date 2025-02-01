@@ -347,6 +347,7 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, minusTax, range) 
 }
 
 function percentChange(v1, v0) {
+    console.log(`${v0} -> ${v1} = ${100 * (v1 - v0) / v0}`);
     return 100 * (v1 - v0) / v0;
 }
 
