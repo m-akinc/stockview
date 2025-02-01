@@ -18,6 +18,7 @@ let lastUpdated;
 let accountValues;
 let chart;
 let yAxisUseDollars = false;
+const splitReduction = 2579183.295;
 const chartDatasets = [];
 const chartOptions = {
     elements: {
@@ -72,6 +73,13 @@ const chartOptions = {
     
     data = await response.json();
     lastUpdated = new Date(data.date);
+    if (data.cap > 5000000 && lastUpdated.valueOf() < 1740808800000) {
+        data.cap -= splitReduction;
+        for (const point of data.history) {
+            point[1] -= splitReduction;
+            point[3] -= splitReduction;
+        }
+    }
     const currentSharePrice = data.cap / data.totalShares;
     document.querySelector('.date').innerText = lastUpdated.toLocaleString();
     const [_, previousCloseTotalCap] = [...data.history].reverse().find(x => new Date(x[0]).getDate() !== lastUpdated.getDate());
