@@ -380,7 +380,7 @@ function updateChart(data, lastUpdated) {
     for (const dataset of getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, minusTax, range)) {
         chartDatasets.push(dataset);
     }
-    chartOptions.scales.x.min = new Date(chartDatasets[0][0][0]);
+    chartOptions.scales.x.min = new Date(chartDatasets[0].data.x - 36000);
     chartOptions.scales.x.max = new Date(lastUpdated.getTime()).setHours(15, 10);
     chart.update();
 }
