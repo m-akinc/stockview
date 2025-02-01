@@ -1,0 +1,14 @@
+{
+  "name": "stockview",
+  "version": "1.0.0",
+  "type": "module",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "jasmine"
+  },
+  "devDependencies": {
+    "jasmine": "^5.5.0"
+  }
+}

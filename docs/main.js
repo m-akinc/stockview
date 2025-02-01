@@ -1,8 +1,8 @@
 // Time ranges
-const DAY = 0;
-const WEEK = 1;
-const MONTH = 2;
-const ALL = 3;
+export const DAY = 0;
+export const WEEK = 1;
+export const MONTH = 2;
+export const ALL = 3;
 
 const priceFormatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -228,18 +228,19 @@ function populateAccountValues(accountValues, percentChangeSincePreviousClose) {
     span.innerHTML = `${accountValues.gainPercent}%`;
 }
 
-function getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, vsAlt, minusTax, range) {
-    const earliest = getDateAgo(lastUpdated, range);
-    const points = earliest
-        ? data.history.filter(x => x[0] >= earliest)
-        : data.history;
-    let previousClose;
-    if (earliest) {
-        previousClose = [...data.history].reverse().find(x => x[0] < earliest);
+export function getReferencePoint(descendingHistory, howFarBack) {
+    if (howFarBack === ALL) {
+        return descendingHistory[descendingHistory.length - 1];
     }
-    if (!previousClose) {
-        previousClose = data.history[0];
-    }
+    const earliest = getDateAgo(new Date(descendingHistory[0][0]), howFarBack);
+    return descendingHistory.find(x => x[0] < earliest);
+}
+
+function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, minusTax, range) {
+    const descendingHistory = [...data.history].reverse();
+    const referencePoint = getReferencePoint(descendingHistory, range);
+    const points = data.history.filter(x => x[0] >= referencePoint[0]);
+    
     if (!showVTI && !vtiAsBaseline) {
         yAxisUseDollars = true;
         const initialPortfolioValue = data.history[0][1];
@@ -368,20 +369,20 @@ function updateChart(data, lastUpdated) {
     const vtiAsBaseline = isToggledOn('.as-baseline');
     const vsAlt = isToggledOn('.vs-alt');
     const minusTax = isToggledOn('.minus-tax');
-    for (const dataset of getChartDatasets(data, lastUpdated, showVTI, vtiAsBaseline, vsAlt, minusTax, range)) {
+    for (const dataset of getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, minusTax, range)) {
         chartDatasets.push(dataset);
     }
     chart.update();
 }
 
-function getDateAgo(lastUpdated, range) {
+function getDateAgo(referenceDate, range) {
     switch (range) {
         case DAY:
-            return new Date(lastUpdated.getTime()).setHours(8, 20);
+            return new Date(referenceDate.getTime()).setHours(0, 0, 0, 0);
         case WEEK:
-            return new Date(new Date(lastUpdated.getTime()).setDate(lastUpdated.getDate() - 7)).setHours(0, 0);
+            return new Date(new Date(referenceDate.getTime()).setDate(referenceDate.getDate() - 6)).setHours(0, 0, 0, 0);
         case MONTH:
-            return new Date(lastUpdated.getTime()).setMonth(lastUpdated.getMonth() - 1);
+            return new Date(referenceDate.getTime()).setMonth(referenceDate.getMonth() - 1);
         default:
             return undefined
     }
