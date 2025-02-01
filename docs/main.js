@@ -285,7 +285,7 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, minusTax, range) 
                 label: 'PORTFOLIO',
                 data: points.map(x => ({
                     x: x[0],
-                    y: percentChange(x[1], previousClose[1])
+                    y: percentChange(x[1], referencePoint[1])
                 })),
                 borderColor: '#a772e0'
             },
@@ -293,7 +293,7 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, minusTax, range) 
                 label: 'VTI',
                 data: points.map(x => ({
                     x: x[0],
-                    y: percentChange(x[2], previousClose[2])
+                    y: percentChange(x[2], referencePoint[2])
                 })),
                 borderColor: '#643e8c'
             }
@@ -303,7 +303,7 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, minusTax, range) 
                 label: 'OLD PORTFOLIO',
                 data: points.map(x => ({
                     x: x[0],
-                    y: percentChange(x[3], previousClose[3])
+                    y: percentChange(x[3], referencePoint[3])
                 })),
                 borderColor: '#697edd'
             });
@@ -311,8 +311,8 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, minusTax, range) 
         return plots;
     }
     if (vtiAsBaseline) {
-        const portfolioPcts = points.map(x => percentChange(x[1], previousClose[1]));
-        const vtiPcts = points.map(x => percentChange(x[2], previousClose[2]));
+        const portfolioPcts = points.map(x => percentChange(x[1], referencePoint[1]));
+        const vtiPcts = points.map(x => percentChange(x[2], referencePoint[2]));
         const plots = [
             {
                 label: 'PORTFOLIO',
@@ -332,7 +332,7 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, minusTax, range) 
             }
         ];
         if (vsAlt) {
-            const altPcts = points.map(x => percentChange(x[3], previousClose[3]));
+            const altPcts = points.map(x => percentChange(x[3], referencePoint[3]));
             plots.push({
                 label: 'OLD PORTFOLIO',
                 data: points.map((x, i) => ({
