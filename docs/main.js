@@ -200,9 +200,8 @@ const chartOptions = {
     requestAnimationFrame(() => requestAnimationFrame(() => document.querySelector('stockview-treemap').positions = data.positions));
 
     // Add handlers
-    document.querySelector('.toggle-index').forEach(x => x.addEventListener('click', () => onGraphToggleIndexClick(x)));
-    document.querySelector('.as-baseline').forEach(x => x.addEventListener('click', () => onGraphToggleIndexBaseline(x)));
-    
+    [document.querySelector('.toggle-index')].forEach(x => x.addEventListener('click', () => onGraphToggleIndexClick(x)));
+    [document.querySelector('.as-baseline')].forEach(x => x.addEventListener('click', () => onGraphToggleIndexBaseline(x)));
     document.querySelectorAll('.time-range .button').forEach(x => x.addEventListener('click', () => onGraphToggleTimeRange(x)));
     document.querySelectorAll('.movers .button').forEach(x => x.addEventListener('click', () => onMoversButtonClick(x)));
 })();
