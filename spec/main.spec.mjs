@@ -1,4 +1,4 @@
-import { ALL, DAY, WEEK, MONTH, getReferencePoint } from '../docs/main.mjs';
+import { ALL, DAY, WEEK, MONTH, getReferencePoint } from '../docs/main.js';
 
 describe('stockview', () => {
     function fmtDate(msDate) {

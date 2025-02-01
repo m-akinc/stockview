@@ -6,11 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.min.js" type="module"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     
     <link rel="stylesheet" href="styles.css">
-    <script src="main.mjs" type="module"></script>
+    <script type="module" src="main.js"></script>
     <script type="module" src="treemap.js"></script>
 </head>
 <body>
@@ -41,14 +41,14 @@
     </table>
     <div class="graph-container">
         <div class="button-row graph-options">
-            <div class="button toggle-button toggle-index" role="button" onclick="onGraphToggleIndexClick(this)">SHOW MARKET</div>
-            <div class="button toggle-button as-baseline" role="button" onclick="onGraphToggleIndexBaseline(this)">VS MARKET</div>
+            <div class="button toggle-button toggle-index" role="button">SHOW MARKET</div>
+            <div class="button toggle-button as-baseline" role="button">VS MARKET</div>
         </div>
         <div class="button-row time-range">
-            <div class="button toggle-button day" role="button" onclick="onGraphToggleTimeRange(this)" aria-pressed="true">TODAY</div>
-            <div class="button toggle-button week" role="button" onclick="onGraphToggleTimeRange(this)">WEEK</div>
-            <div class="button toggle-button month" role="button" onclick="onGraphToggleTimeRange(this)">MONTH</div>
-            <div class="button toggle-button all-time" role="button" onclick="onGraphToggleTimeRange(this)">ALL TIME</div>
+            <div class="button toggle-button day" role="button" aria-pressed="true">TODAY</div>
+            <div class="button toggle-button week" role="button">WEEK</div>
+            <div class="button toggle-button month" role="button">MONTH</div>
+            <div class="button toggle-button all-time" role="button">ALL TIME</div>
         </div>
         <canvas id="graph"></canvas>
     </div>
@@ -59,10 +59,10 @@
     <div class="movers">
         <span class="label">MOVERS AND/OR SHAKERS:</span>
         <div class="button-row">
-            <div class="button toggle-button" role="button" onclick="onMoversButtonClick(this)" aria-pressed="true">% GAINERS</div>
-            <div class="button toggle-button" role="button" onclick="onMoversButtonClick(this)">$ GAINERS</div>
-            <div class="button toggle-button" role="button" onclick="onMoversButtonClick(this)">% LOSERS</div>
-            <div class="button toggle-button" role="button" onclick="onMoversButtonClick(this)">$ LOSERS</div>
+            <div class="button toggle-button" role="button" aria-pressed="true">% GAINERS</div>
+            <div class="button toggle-button" role="button">$ GAINERS</div>
+            <div class="button toggle-button" role="button">% LOSERS</div>
+            <div class="button toggle-button" role="button">$ LOSERS</div>
         </div>
         <div class="movers-list"></div>
     </div>
