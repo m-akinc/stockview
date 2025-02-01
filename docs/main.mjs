@@ -388,7 +388,7 @@ function getDateAgo(referenceDate, range) {
     }
 }
 
-function onGraphToggleIndexClick(button) {
+export function onGraphToggleIndexClick(button) {
     const wasPressed = !!button.ariaPressed;
     button.ariaPressed = wasPressed ? undefined : "true";
     if (!wasPressed) {
@@ -397,7 +397,7 @@ function onGraphToggleIndexClick(button) {
     updateChart(data, lastUpdated);
 }
 
-function onGraphToggleIndexBaseline(button) {
+export function onGraphToggleIndexBaseline(button) {
     const wasPressed = !!button.ariaPressed;
     button.ariaPressed = wasPressed ? undefined : "true";
     if (!wasPressed) {
@@ -406,7 +406,7 @@ function onGraphToggleIndexBaseline(button) {
     updateChart(data, lastUpdated);
 }
 
-function onGraphToggleVsAlt(button) {
+export function onGraphToggleVsAlt(button) {
     const wasPressed = !!button.ariaPressed;
     button.ariaPressed = wasPressed ? undefined : "true";
     if (wasPressed) {
@@ -415,7 +415,7 @@ function onGraphToggleVsAlt(button) {
     updateChart(data, lastUpdated);
 }
 
-function onGraphToggleMinusTax(button) {
+export function onGraphToggleMinusTax(button) {
     const altIsOn = isToggledOn('.toggle-button.vs-alt');
     if (!altIsOn) {
         return;
@@ -425,7 +425,7 @@ function onGraphToggleMinusTax(button) {
     updateChart(data, lastUpdated);
 }
 
-function onGraphToggleTimeRange(button) {
+export function onGraphToggleTimeRange(button) {
     const wasPressed = !!button.ariaPressed;
     if (wasPressed) {
         return;
@@ -480,7 +480,7 @@ function populateMovers(positions, accountValue) {
     }
 }
 
-function onMoversButtonClick(button) {
+export function onMoversButtonClick(button) {
     const allButtons = document.querySelectorAll('.movers .toggle-button');
     for (const x of allButtons) {
         x.ariaPressed = undefined;
