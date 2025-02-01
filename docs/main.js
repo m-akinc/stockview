@@ -372,8 +372,6 @@ function updateChart(data, lastUpdated) {
     } else {
         range = ALL;
     }
-    chartOptions.scales.x.min = getDateAgo(lastUpdated, range);
-    chartOptions.scales.x.max = new Date(lastUpdated.getTime()).setHours(15, 10);
     chartDatasets.length = 0;
     const showVTI = isToggledOn('.toggle-index');
     const vtiAsBaseline = isToggledOn('.as-baseline');
@@ -382,6 +380,8 @@ function updateChart(data, lastUpdated) {
     for (const dataset of getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, minusTax, range)) {
         chartDatasets.push(dataset);
     }
+    chartOptions.scales.x.min = new Date(chartDatasets[0][0][0]);
+    chartOptions.scales.x.max = new Date(lastUpdated.getTime()).setHours(15, 10);
     chart.update();
 }
 
