@@ -73,16 +73,6 @@ const chartOptions = {
     
     data = await response.json();
     lastUpdated = new Date(data.date);
-    
-    if (data.xfer) {
-        data.xfer.forEach(x => data.cap += x[1]);
-        // data.positions.filter(x => x.symbol === '(CASH)')[0].value += data.xfer;
-        for (const point of data.history) {
-            data.xfer.filter(x => x[0] < point[0]).forEach(x => point[1] += x[1]);
-            point[1] -= splitReduction;
-            point[3] -= splitReduction;
-        }
-    }
 
     const currentSharePrice = data.cap / data.totalShares;
     document.querySelector('.date').innerText = lastUpdated.toLocaleString();
@@ -266,10 +256,7 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, minusTax, range) 
             label: 'PORTFOLIO',
             data: points.map(x => ({
                 x: x[0],
-                y: x[1] * (accountValues.shares / data.totalShares)
-                    - (minusTax ? (0.35 * (x[1] - initialPortfolioValue + data.startingGainShort - data.followOnGainLong) 
-                                  + 0.2 * (data.startingGainLong + data.followOnGainLong))
-                                : 0)
+                y: x[1]
             })),
             borderColor: '#a772e0'
         }];
@@ -279,7 +266,7 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, minusTax, range) 
                 label: 'OLD PORTFOLIO',
                 data: points.map(x => ({
                     x: x[0],
-                    y: x[3] - (minusTax ? (0.2 * (x[3] - initialAltValue + data.startingGainLong)) : 0)
+                    y: x[3]
                 })),
                 borderColor: '#697edd'
             });
