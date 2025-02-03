@@ -18,7 +18,9 @@ let lastUpdated;
 let accountValues;
 let chart;
 let yAxisUseDollars = false;
-const splitReduction = 2579183.295;
+const splitCap = true;
+const newCap = 4158366.59;
+const splitReduction = 1000000; //2579183.295;
 const chartDatasets = [];
 const chartOptions = {
     elements: {
@@ -73,7 +75,7 @@ const chartOptions = {
     
     data = await response.json();
     lastUpdated = new Date(data.date);
-    if (data.cap > 5000000 && lastUpdated.valueOf() < 1740808800000) {
+    if (splitCap && lastUpdated.valueOf() < 1740808800000) {
         data.cap -= splitReduction;
         for (const point of data.history) {
             point[1] -= splitReduction;
