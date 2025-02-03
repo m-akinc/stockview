@@ -75,6 +75,7 @@ const chartOptions = {
     lastUpdated = new Date(data.date);
     if (data.xfer && lastUpdated.valueOf() < 1740808800000) {
         data.cap += data.xfer;
+        data.positions.filter(x => x.symbol === '(CASH)')[0].value += data.xfer;
         for (const point of data.history) {
             point[1] -= splitReduction;
             point[3] -= splitReduction;
