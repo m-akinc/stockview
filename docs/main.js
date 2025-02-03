@@ -73,14 +73,17 @@ const chartOptions = {
     
     data = await response.json();
     lastUpdated = new Date(data.date);
-    if (data.xfer && lastUpdated.valueOf() < 1740808800000) {
-        data.cap += data.xfer;
-        data.positions.filter(x => x.symbol === '(CASH)')[0].value += data.xfer;
+    
+    if (data.xfer) {
+        data.xfer.forEach(x => data.cap += x[1]);
+        // data.positions.filter(x => x.symbol === '(CASH)')[0].value += data.xfer;
         for (const point of data.history) {
+            data.xfer.filter(x => x[0] < point[0]).forEach(x => point[1] += x[1]);
             point[1] -= splitReduction;
             point[3] -= splitReduction;
         }
     }
+
     const currentSharePrice = data.cap / data.totalShares;
     document.querySelector('.date').innerText = lastUpdated.toLocaleString();
     const [_, previousCloseTotalCap] = [...data.history].reverse().find(x => new Date(x[0]).getDate() !== lastUpdated.getDate());
