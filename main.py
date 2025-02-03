@@ -66,7 +66,8 @@ def main():
 
   with open('data.json', 'w', encoding='utf-8') as f:
     nowMs = math.floor(datetime.datetime.now().timestamp() * 1000)
-    total = round(totals['totalMarketValue'] + totals['cashBalance'], 4)
+    total = totals['totalMarketValue'] + totals['cashBalance']
+    shareValue = round(total / totalShares, 4)
     vtiValue = next(x[1] for x in indices if x[0] == 'VTI')
     altValue = 0
     for item in alt.items():
@@ -74,7 +75,14 @@ def main():
       altValue += item[1] * altQuote['All']['lastTrade']
 
     if history[-1][1] != total or history[-1][2] != vtiValue:
-      history.append([nowMs, total, vtiValue, altValue])
+      history.append([nowMs, shareValue, vtiValue, altValue])
+      
+    if history[0][1] > 100:
+      xfer = loaded['xfer'][0]
+      for point in history:
+        if point[0] > xfer[0]:
+          point[1] = point[1] + xfer[1]
+        point[1] = round(point[1] / 250000, 4)
 
     updated = loaded
     updated['date'] = nowMs
