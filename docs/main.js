@@ -154,31 +154,6 @@ const chartOptions = {
         updated.after(history);
         updated.after(dims);
     }
-
-    if (accountId === 'A041281') {
-        const vsAltButton = document.createElement('div');
-        vsAltButton.innerHTML = 'SHOW OLD PF';
-        vsAltButton.classList.add('button');
-        vsAltButton.classList.add('toggle-button');
-        vsAltButton.classList.add('vs-alt');
-        vsAltButton.role = 'button';
-        vsAltButton.addEventListener('click', event => {
-            onGraphToggleVsAlt(event.currentTarget);
-        });
-        const buttonRow = document.querySelector('.graph-options');
-        buttonRow.appendChild(vsAltButton);
-
-        const minusTaxButton = document.createElement('div');
-        minusTaxButton.innerHTML = 'MINUS TAX';
-        minusTaxButton.classList.add('button');
-        minusTaxButton.classList.add('toggle-button');
-        minusTaxButton.classList.add('minus-tax');
-        minusTaxButton.role = 'button';
-        minusTaxButton.addEventListener('click', event => {
-            onGraphToggleMinusTax(event.currentTarget);
-        });
-        buttonRow.appendChild(minusTaxButton);
-    }
     
     chart = new Chart(document.getElementById('graph'), {
         type: 'line',
@@ -236,7 +211,7 @@ export function getReferencePoint(descendingHistory, howFarBack) {
     return descendingHistory.find(x => x[0] < earliest);
 }
 
-function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, minusTax, range) {
+function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, range) {
     const descendingHistory = [...data.history].reverse();
     const referencePoint = getReferencePoint(descendingHistory, range);
     let points = data.history.filter(x => x[0] > referencePoint[0]);
@@ -372,8 +347,7 @@ function updateChart(data, lastUpdated) {
     const showVTI = isToggledOn('.toggle-index');
     const vtiAsBaseline = isToggledOn('.as-baseline');
     const vsAlt = isToggledOn('.vs-alt');
-    const minusTax = isToggledOn('.minus-tax');
-    for (const dataset of getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, minusTax, range)) {
+    for (const dataset of getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, range)) {
         chartDatasets.push(dataset);
     }
     chartOptions.scales.x.min = new Date(chartDatasets[0].data.x - 36000);
@@ -409,25 +383,6 @@ function onGraphToggleIndexBaseline(button) {
     if (!wasPressed) {
         setToggledOn('.toggle-button.toggle-index', false);
     }
-    updateChart(data, lastUpdated);
-}
-
-function onGraphToggleVsAlt(button) {
-    const wasPressed = !!button.ariaPressed;
-    button.ariaPressed = wasPressed ? undefined : "true";
-    if (wasPressed) {
-        setToggledOn('.toggle-button.minus-tax', false);
-    }
-    updateChart(data, lastUpdated);
-}
-
-function onGraphToggleMinusTax(button) {
-    const altIsOn = isToggledOn('.toggle-button.vs-alt');
-    if (!altIsOn) {
-        return;
-    }
-    const wasPressed = !!button.ariaPressed;
-    button.ariaPressed = wasPressed ? undefined : "true";
     updateChart(data, lastUpdated);
 }
 
