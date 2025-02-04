@@ -73,11 +73,11 @@ const chartOptions = {
     
     data = await response.json();
     lastUpdated = new Date(data.date);
-
-    const currentSharePrice = data.cap / data.totalShares;
     document.querySelector('.date').innerText = lastUpdated.toLocaleString();
-    const [_, previousCloseTotalCap] = [...data.history].reverse().find(x => new Date(x[0]).getDate() !== lastUpdated.getDate());
-    const previousCloseSharePrice = previousCloseTotalCap / data.totalShares;
+
+    const descendingHistory = [...data.history].reverse();
+    const currentSharePrice = descendingHistory[0][1];
+    const previousCloseSharePrice = getReferencePoint(descendingHistory, DAY)[1]
     const sharePriceChangeSincePreviousClose = currentSharePrice - previousCloseSharePrice;
     const percentChangeSincePreviousClose = (100 * sharePriceChangeSincePreviousClose / previousCloseSharePrice).toFixed(2);
 
@@ -221,11 +221,7 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, range) {
     }
     if (range !== DAY) {
         const justBeforeToday = getReferencePoint(descendingHistory, DAY);
-        const latest = points[points.length - 1];
-        console.log(latest);
-        console.log(points.filter(x => x[0] <= justBeforeToday[0]).length);
-        points = points.filter(x => x[0] <= justBeforeToday[0]).concat(latest);
-        console.log(points.length);
+        points = points.filter(x => x[0] <= justBeforeToday[0]).concat([points[points.length - 1]]);
     }
     
     if (!showVTI && !vtiAsBaseline) {
