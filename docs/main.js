@@ -227,7 +227,6 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, range) {
     
     if (!showVTI && !vtiAsBaseline) {
         yAxisUseDollars = true;
-        const initialPortfolioValue = data.history[0][1];
         const plots = [{
             label: 'PORTFOLIO',
             data: points.map(x => ({
@@ -236,17 +235,6 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, range) {
             })),
             borderColor: '#a772e0'
         }];
-        if (vsAlt) {
-            const initialAltValue = data.history[0][3];
-            plots.push({
-                label: 'OLD PORTFOLIO',
-                data: points.map(x => ({
-                    x: x[0],
-                    y: x[3]
-                })),
-                borderColor: '#697edd'
-            });
-        }
         return plots;
     }
     yAxisUseDollars = false;
@@ -269,16 +257,6 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, range) {
                 borderColor: '#643e8c'
             }
         ];
-        if (vsAlt) {
-            plots.push({
-                label: 'OLD PORTFOLIO',
-                data: points.map(x => ({
-                    x: x[0],
-                    y: percentChange(x[3], referencePoint[3])
-                })),
-                borderColor: '#697edd'
-            });
-        }
         return plots;
     }
     if (vtiAsBaseline) {
@@ -302,17 +280,6 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, range) {
                 borderColor: '#643e8c'
             }
         ];
-        if (vsAlt) {
-            const altPcts = points.map(x => percentChange(x[3], referencePoint[3]));
-            plots.push({
-                label: 'OLD PORTFOLIO',
-                data: points.map((x, i) => ({
-                    x: x[0],
-                    y: altPcts[i] - vtiPcts[i]
-                })),
-                borderColor: '#697edd'
-            });
-        }
         return plots;
     }
 }
