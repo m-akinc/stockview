@@ -222,7 +222,10 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, range) {
     if (range !== DAY) {
         const justBeforeToday = getReferencePoint(descendingHistory, DAY);
         const latest = points[points.length - 1];
+        console.log(latest);
+        console.log(points.filter(x => x[0] <= justBeforeToday[0]).length);
         points = points.filter(x => x[0] <= justBeforeToday[0]).concat(latest);
+        console.log(points.length);
     }
     
     if (!showVTI && !vtiAsBaseline) {
@@ -235,6 +238,7 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, range) {
             })),
             borderColor: '#a772e0'
         }];
+        console.log(plots[0].data.length);
         return plots;
     }
     yAxisUseDollars = false;
