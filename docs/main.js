@@ -245,7 +245,7 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, showLongTerm, range) {
             label: 'PORTFOLIO',
             data: points.map(x => ({
                 x: x[0],
-                y: x[1] * (accountValues.id === 'A811204' ? accountValues.shares : 1)
+                y: x[1] * (accountValues.id === 'A041281' ? accountValues.shares : 1)
             })),
             borderColor: '#a772e0'
         }];
