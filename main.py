@@ -1,4 +1,5 @@
 from wetrade.api import APIClient
+from wetrade.account import Account
 from wetrade.quote import MultiQuote
 from wetrade.market_hours import MarketHours
 import json
@@ -29,6 +30,10 @@ def main():
   lookups.extend(alt.keys())
 
   client = APIClient()
+  my_account = Account(client)
+  aBalance = my_account.check_balance()
+  aPf = my_account.view_portfolio()
+  aAccounts = my_account.list_accounts()
 
   quotes = MultiQuote(client, tuple(lookups)).get_quote()
   compsSymbols = [x[0] for x in comps]
@@ -85,7 +90,9 @@ def main():
 
     updated = loaded
     updated['foo'] = balance
-    # updated['bar'] = [[y['symbolDescription'] for y in x['PortfolioResponse']['Position']] for x in pf]
+    updated['aBalance'] = aBalance
+    updated['aPf'] = aPf
+    updated['aAccounts'] = aAccounts
     updated['date'] = nowMs
     updated['cap'] = total
     updated['history'] = history
