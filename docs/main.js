@@ -154,6 +154,20 @@ const chartOptions = {
         updated.after(history);
         updated.after(dims);
     }
+
+    if (accountId === 'A041281') {
+        const showLongTermButton = document.createElement('div');
+        showLongTermButton.innerHTML = 'SHOW LONG TERM';
+        showLongTermButton.classList.add('button');
+        showLongTermButton.classList.add('toggle-button');
+        showLongTermButton.classList.add('show-lt');
+        showLongTermButton.role = 'button';
+        showLongTermButton.addEventListener('click', event => {
+            onGraphToggleShowLongTerm(event.currentTarget);
+        });
+        const buttonRow = document.querySelector('.graph-options');
+        buttonRow.appendChild(showLongTermButton);
+    }
     
     chart = new Chart(document.getElementById('graph'), {
         type: 'line',
@@ -211,7 +225,7 @@ export function getReferencePoint(descendingHistory, howFarBack) {
     return descendingHistory.find(x => x[0] < earliest);
 }
 
-function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, range) {
+function getChartDatasets(data, showVTI, vtiAsBaseline, showLongTerm, range) {
     const descendingHistory = [...data.history].reverse();
     const referencePoint = getReferencePoint(descendingHistory, range);
     let points = data.history.filter(x => x[0] > referencePoint[0]);
@@ -223,6 +237,7 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, range) {
         const justBeforeToday = getReferencePoint(descendingHistory, DAY);
         points = points.filter(x => x[0] <= justBeforeToday[0]).concat([points[points.length - 1]]);
     }
+    const pointsWithLT = points.filter(x => x.length > 4);
     
     if (!showVTI && !vtiAsBaseline) {
         yAxisUseDollars = true;
@@ -230,11 +245,20 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, range) {
             label: 'PORTFOLIO',
             data: points.map(x => ({
                 x: x[0],
-                y: x[1]
+                y: x[1] * (accountId === 'A811204' ? accountValues.shares : 1)
             })),
             borderColor: '#a772e0'
         }];
-        console.log(plots[0].data.length);
+        if (showLongTerm) {
+            plots.push({
+                label: 'LT PORTFOLIO',
+                data: pointsWithLT.map(x => ({
+                    x: x[0],
+                    y: x[4]
+                })),
+                borderColor: '#697edd'
+            });
+        }
         return plots;
     }
     yAxisUseDollars = false;
@@ -257,6 +281,19 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, range) {
                 borderColor: '#643e8c'
             }
         ];
+        if (showLongTerm) {
+            const refPoint = pointsWithLT.length === points.length
+                ? referencePoint
+                : pointsWithLT[0];
+            plots.push({
+                label: 'LT PORTFOLIO',
+                data: pointsWithLT.map(x => ({
+                    x: x[0],
+                    y: percentChange(x[4], refPoint[4])
+                })),
+                borderColor: '#697edd'
+            });
+        }
         return plots;
     }
     if (vtiAsBaseline) {
@@ -280,6 +317,22 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, range) {
                 borderColor: '#643e8c'
             }
         ];
+        if (showLongTerm) {
+            const refPoint = pointsWithLT.length === points.length
+                ? referencePoint
+                : pointsWithLT[0];
+            const ltPfPcts = pointsWithLT.map(x => percentChange(x[4], refPoint[4]));
+            const startingVtiIndex = points.length - pointsWithLT.length;
+            const initialVtiPct = vtiPcts[i + startingVtiIndex];
+            plots.push({
+                label: 'LT PORTFOLIO',
+                data: pointsWithLT.map(x => ({
+                    x: x[0],
+                    y: ltPfPcts[i] - vtiPcts[i + startingVtiIndex] + initialVtiPct
+                })),
+                borderColor: '#697edd'
+            });
+        }
         return plots;
     }
 }
@@ -313,8 +366,8 @@ function updateChart(data, lastUpdated) {
     chartDatasets.length = 0;
     const showVTI = isToggledOn('.toggle-index');
     const vtiAsBaseline = isToggledOn('.as-baseline');
-    const vsAlt = isToggledOn('.vs-alt');
-    for (const dataset of getChartDatasets(data, showVTI, vtiAsBaseline, vsAlt, range)) {
+    const showLongTerm = isToggledOn('.show-lt');
+    for (const dataset of getChartDatasets(data, showVTI, vtiAsBaseline, showLongTerm, range)) {
         chartDatasets.push(dataset);
     }
     chartOptions.scales.x.min = new Date(chartDatasets[0].data.x - 36000);
@@ -364,6 +417,15 @@ function onGraphToggleTimeRange(button) {
         if (button !== rangeButton) {
             rangeButton.ariaPressed = undefined;
         }
+    }
+    updateChart(data, lastUpdated);
+}
+
+function onGraphToggleShowLongTerm(button) {
+    const wasPressed = !!button.ariaPressed;
+    button.ariaPressed = wasPressed ? undefined : "true";
+    if (wasPressed) {
+        setToggledOn('.show-lt', false);
     }
     updateChart(data, lastUpdated);
 }
