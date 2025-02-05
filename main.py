@@ -85,7 +85,7 @@ def main():
 
     updated = loaded
     updated['foo'] = balance
-    updated['bar'] = [[y['symbolDescription'] for y in x['PortfolioResponse']['Position']] for x in pf]
+    # updated['bar'] = [[y['symbolDescription'] for y in x['PortfolioResponse']['Position']] for x in pf]
     updated['date'] = nowMs
     updated['cap'] = total
     updated['history'] = history
