@@ -245,7 +245,7 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, showLongTerm, range) {
             label: 'PORTFOLIO',
             data: points.map(x => ({
                 x: x[0],
-                y: x[1] * (accountId === 'A811204' ? accountValues.shares : 1)
+                y: x[1] * (accountValues.id === 'A811204' ? accountValues.shares : 1)
             })),
             borderColor: '#a772e0'
         }];
@@ -517,6 +517,7 @@ function getAccountValues(accounts, accountId, latestSharePrice) {
     const gain = value - costBasis;
     const gainPercent = (100 * gain / costBasis).toFixed(2);
     return {
+        id: accountId,
         shares,
         costBasis,
         value,
