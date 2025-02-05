@@ -4,7 +4,6 @@ from wetrade.market_hours import MarketHours
 import json
 import datetime
 import math
-import itertools
 import more_itertools
 
 account_key = "EuXJsu-w_D6dnA_JY-TueA"
@@ -24,7 +23,6 @@ def main():
     loaded = json.load(f)
     history = loaded['history']
     totalShares = loaded['totalShares']
-    accounts = loaded['accounts']
     alt = loaded['alt']
 
   lookups = [x[0] for x in comps]
@@ -40,8 +38,9 @@ def main():
     x['All']['changeClose'],
     x['All']['changeClosePercentage']
   ) for x in quotes if x['Product']['symbol'] in compsSymbols]
-
-  response = client.request_account_portfolio(account_key)[0]['PortfolioResponse']
+  balance = client.request_account_balance(account_key)
+  pf = client.request_account_portfolio(account_key)
+  response = pf[0]['PortfolioResponse']
   portfolio = response['AccountPortfolio'][0]
   totals = response['Totals']
 
@@ -85,6 +84,8 @@ def main():
         point[1] = round(point[1] / 250000, 4)
 
     updated = loaded
+    updated['foo'] = balance
+    updated['bar'] = pf.keys()
     updated['date'] = nowMs
     updated['cap'] = total
     updated['history'] = history
