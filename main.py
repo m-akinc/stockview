@@ -7,7 +7,8 @@ import datetime
 import math
 import more_itertools
 
-account_key = "EuXJsu-w_D6dnA_JY-TueA"
+shortTermAccountKey = "EuXJsu-w_D6dnA_JY-TueA"
+longTermAccountKey = "NZ9OYHStqXgKh7aJe5AbvA"
 comps = [
   ('VTI', 'Total Market'),
   ('DJIND', 'Dow'),
@@ -30,10 +31,6 @@ def main():
   lookups.extend(alt.keys())
 
   client = APIClient()
-  my_account = Account(client)
-  aBalance = my_account.check_balance()
-  aPf = my_account.view_portfolio()
-  aAccounts = my_account.list_accounts()
 
   quotes = MultiQuote(client, tuple(lookups)).get_quote()
   compsSymbols = [x[0] for x in comps]
@@ -43,11 +40,12 @@ def main():
     x['All']['changeClose'],
     x['All']['changeClosePercentage']
   ) for x in quotes if x['Product']['symbol'] in compsSymbols]
-  balance = client.request_account_balance(account_key)
-  pf = client.request_account_portfolio(account_key)
-  response = pf[0]['PortfolioResponse']
+  response = client.request_account_portfolio(shortTermAccountKey)[0]['PortfolioResponse']
   portfolio = response['AccountPortfolio'][0]
   totals = response['Totals']
+
+  longTermAccountBalance = client.request_account_balance(longTermAccountKey)[0]['BalanceResponse']
+  longTermAccountValue = longTermAccountBalance['RealTimeValues']['totalAccountValue']
 
   positions = [{
     "symbol": "(CASH)",
@@ -79,7 +77,7 @@ def main():
       altValue += item[1] * altQuote['All']['lastTrade']
 
     if history[-1][1] != total or history[-1][2] != vtiValue:
-      history.append([nowMs, shareValue, vtiValue, altValue])
+      history.append([nowMs, shareValue, vtiValue, altValue, round(longTermAccountValue, 4)])
       
     if history[0][1] > 100:
       xfer = loaded['xfer'][0]
@@ -89,10 +87,6 @@ def main():
         point[1] = round(point[1] / 250000, 4)
 
     updated = loaded
-    updated['foo'] = balance
-    updated['aBalance'] = aBalance
-    updated['aPf'] = aPf
-    updated['aAccounts'] = aAccounts
     updated['date'] = nowMs
     updated['cap'] = total
     updated['history'] = history
