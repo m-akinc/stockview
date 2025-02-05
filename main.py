@@ -44,8 +44,8 @@ def main():
   portfolio = response['AccountPortfolio'][0]
   totals = response['Totals']
 
-  longTermAccountBalance = client.request_account_balance(longTermAccountKey)[0]['BalanceResponse']
-  longTermAccountValue = longTermAccountBalance['RealTimeValues']['totalAccountValue']
+  longTermAccountPfResponse = client.request_account_portfolio(longTermAccountKey)[0]['PortfolioResponse']
+  longTermAccountValue = longTermAccountPfResponse['Totals']['totalMarketValue'] + longTermAccountPfResponse['Totals']['cashBalance']
 
   positions = [{
     "symbol": "(CASH)",
