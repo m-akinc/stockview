@@ -21,14 +21,6 @@ select:hover {
     background-color: #61637c;
 }
 
-option:hover,
-option:checked,
-option:active,
-option:focus {
-    background: linear-gradient(#856e9e, #856e9e);
-    position: relative;    
-}
-
 .button {
     box-sizing: border-box;
     display: flex;
