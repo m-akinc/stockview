@@ -323,7 +323,6 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, showLongTerm, range) {
                 : pointsWithLT[0];
             const ltPfPcts = pointsWithLT.map(x => percentChange(x[4], refPoint[4]));
             const startingVtiIndex = points.length - pointsWithLT.length;
-            const initialVtiPct = vtiPcts[i + startingVtiIndex];
             plots.push({
                 label: 'LT PORTFOLIO',
                 data: pointsWithLT.map((x, i) => ({
