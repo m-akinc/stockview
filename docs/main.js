@@ -162,6 +162,9 @@ const chartOptions = {
             const option = document.createElement('option');
             option.innerHTML = x.id;
             option.value = x.id;
+            if (x.id === accountId) {
+                option.selected = true;
+            }
             accountSelect.appendChild(option);
         }
         accountSelect.addEventListener('change', event => {
@@ -403,7 +406,7 @@ function getDateAgo(referenceDate, range) {
 }
 
 function onAccountChange(id) {
-    location.replace(location.href + `?id=${id}&acsl=true`);
+    location.replace(location.origin + location.pathname + `?id=${id}&acsl=true`);
 }
 
 function onGraphToggleIndexClick(button) {

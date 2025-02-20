@@ -6,16 +6,14 @@ body {
 
 select {
     box-sizing: border-box;
-    display: flex;
-    flex-wrap: wrap;
+    border: none;
+    color: #c6e8ed;
+    font-family: monospace;
     background-color: #4a4b5c;
-    border-radius: 8px;
+    border-radius: 4px;
     padding: 4px;
     height: 30px;
-    flex-grow: 1;
-    max-width: 124px;
-    align-content: center;
-    justify-content: center;
+    margin-bottom: 8px;
 }
 
 select:hover {
@@ -28,7 +26,7 @@ select:hover {
     display: flex;
     flex-wrap: wrap;
     background-color: #4a4b5c;
-    border-radius: 8px;
+    border-radius: 4px;
     padding: 4px;
     height: 30px;
     flex-grow: 1;
@@ -81,7 +79,7 @@ select:hover {
 
 .quote-card {
     background: linear-gradient(to top, #4a4b5c 46%, #75618a);
-    border-radius: 8px;
+    border-radius: 4px;
     padding: 4px;
     width: 130px;
     margin-bottom: 8px;
