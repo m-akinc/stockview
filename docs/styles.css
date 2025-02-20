@@ -6,7 +6,7 @@ body {
 
 select {
     box-sizing: border-box;
-    border: none;
+    border: 1px solid transparent;
     color: #c6e8ed;
     font-family: monospace;
     background-color: #4a4b5c;
@@ -19,6 +19,10 @@ select {
 select:hover {
     border: 1px solid #a772e0;
     background-color: #61637c;
+}
+
+option:checked {
+    background-color: #856e9e;
 }
 
 .button {
