@@ -59,6 +59,7 @@ const chartOptions = {
     const devMode = getQueryParameter('dev') !== undefined;
     const longitude = getQueryParameter('longitude');
     let accountId = getQueryParameter('id');
+    const showAccountSelect = getQueryParameter('acsl') !== undefined;
 
     if (!accountId && !longitude) {
         accountId = localStorage.getItem('stockview-account-id');
@@ -155,6 +156,20 @@ const chartOptions = {
         updated.after(dims);
     }
 
+    if (accountId === 'A041281' || showAccountSelect) {
+        const accountSelect = document.createElement('select');
+        data.accounts.foreEach(x => {
+            const option = document.createElement('option');
+            option.innerHTML = x.id;
+            option.value = x.id;
+            accountSelect.appendChild(option);
+        });
+        accountSelect.addEventListener('change', event => {
+            onAccountChange(event.target.value);
+        });
+        bigCard.after(accountSelect);
+    }
+    
     if (accountId === 'A041281') {
         const showLongTermButton = document.createElement('div');
         showLongTermButton.innerHTML = 'SHOW LONG TERM';
@@ -385,6 +400,10 @@ function getDateAgo(referenceDate, range) {
         default:
             return undefined
     }
+}
+
+function onAccountChange(id) {
+    location.replace(location.href + `?id=${id}&acsl=true`);
 }
 
 function onGraphToggleIndexClick(button) {
