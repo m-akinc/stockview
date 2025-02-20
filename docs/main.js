@@ -326,9 +326,9 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, showLongTerm, range) {
             const initialVtiPct = vtiPcts[i + startingVtiIndex];
             plots.push({
                 label: 'LT PORTFOLIO',
-                data: pointsWithLT.map(x => ({
+                data: pointsWithLT.map((x, i) => ({
                     x: x[0],
-                    y: ltPfPcts[i] - vtiPcts[i + startingVtiIndex] + initialVtiPct
+                    y: ltPfPcts[i] - vtiPcts[i + startingVtiIndex]
                 })),
                 borderColor: '#697edd'
             });
