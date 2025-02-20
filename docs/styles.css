@@ -21,7 +21,7 @@ select:hover {
     background-color: #61637c;
 }
 
-option:checked {
+option:hover {
     background-color: #856e9e;
 }
 
