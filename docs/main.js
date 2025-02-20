@@ -370,7 +370,7 @@ function updateChart(data, lastUpdated) {
         chartDatasets.push(dataset);
     }
     chartOptions.scales.x.min = new Date(chartDatasets[0].data.x - 36000);
-    chartOptions.scales.x.max = new Date(lastUpdated.getTime()).setHours(15, 10);
+    chartOptions.scales.x.max = new Date(lastUpdated.getTime()).setHours(16, 0);
     chart.update();
 }
 
