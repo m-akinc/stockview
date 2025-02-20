@@ -158,12 +158,12 @@ const chartOptions = {
 
     if (accountId === 'A041281' || showAccountSelect) {
         const accountSelect = document.createElement('select');
-        data.accounts.foreEach(x => {
+        for (const x of data.accounts) {
             const option = document.createElement('option');
             option.innerHTML = x.id;
             option.value = x.id;
             accountSelect.appendChild(option);
-        });
+        }
         accountSelect.addEventListener('change', event => {
             onAccountChange(event.target.value);
         });

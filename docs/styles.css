@@ -4,6 +4,25 @@ body {
     font-family: monospace;
 }
 
+select {
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    background-color: #4a4b5c;
+    border-radius: 8px;
+    padding: 4px;
+    height: 30px;
+    flex-grow: 1;
+    max-width: 124px;
+    align-content: center;
+    justify-content: center;
+}
+
+select:hover {
+    border: 1px solid #a772e0;
+    background-color: #61637c;
+}
+
 .button {
     box-sizing: border-box;
     display: flex;
