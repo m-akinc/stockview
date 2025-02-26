@@ -5,7 +5,7 @@ on:
     - cron: '18-32/5 14 * * 1-5' # every 5 min, from 8:18am to 8:32am, M-F (try to get a run close to open)
     - cron: '30-59/20 14 * * 1-5' # every 20 min, from 8:30am to 9am, M-F
     - cron: '*/20 15-21 * * 1-5' # every 20 min, from 9am to 3pm, M-F
-    - cron: '0-15/5 21 * * 1-5' # every 5 min, from 3pm to 3:15pm, M-F (in case quotes delayed)
+  #- cron: '0-15/5 21 * * 1-5' # every 5 min, from 3pm to 3:15pm, M-F (in case quotes delayed)
   workflow_dispatch:
 
 jobs:
