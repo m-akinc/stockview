@@ -55,8 +55,8 @@ def main():
     "percentOfPortfolio": totals['cashBalance'] / totals['totalMarketValue'] 
   }]
   for position in portfolio["Position"]:
-    if ' ' in position['symbolDescription']:
-      continue
+    # if ' ' in position['symbolDescription']:
+    #   continue
     positions.append({
       "symbol": position["symbolDescription"],
       "value": position["marketValue"],
