@@ -2,13 +2,13 @@ name: Update data.json
 
 on:
   schedule:
-    - cron: '30 14 * * 1-5' # Once at open
+    - cron: '30 13 * * 1-5' # Once at open
     #- cron: '18-32/5 14 * * 1-5' # every 5 min, from 8:18am to 8:32am, M-F (try to get a run close to open)
     #- cron: '30-59/20 14 * * 1-5' # every 20 min, from 8:30am to 9am, M-F
     #- cron: '*/20 15-21 * * 1-5' # every 20 min, from 9am to 3pm, M-F
-    - cron: '*/20 19-21 * * 1-5' # every 20 min, from 1pm to 3pm, M-F
+    - cron: '*/20 18-20 * * 1-5' # every 20 min, from 1pm to 3pm, M-F
     #- cron: '0-15/5 21 * * 1-5' # every 5 min, from 3pm to 3:15pm, M-F (in case quotes delayed)
-    - cron: '10 21 * * 1-5' # try to get an accurate closing value (quotes can be delayed)
+    - cron: '10 20 * * 1-5' # try to get an accurate closing value (quotes can be delayed)
   workflow_dispatch:
 
 jobs:
