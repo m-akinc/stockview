@@ -1,7 +1,7 @@
 name: Update data.json
 
 on:
-  schedule:
+  #schedule:
     - cron: '30 13 * * 1-5' # Once at open
     #- cron: '18-32/5 14 * * 1-5' # every 5 min, from 8:18am to 8:32am, M-F (try to get a run close to open)
     #- cron: '30-59/20 14 * * 1-5' # every 20 min, from 8:30am to 9am, M-F
