@@ -25,10 +25,8 @@ def main():
     loaded = json.load(f)
     history = loaded['history']
     totalShares = loaded['totalShares']
-    alt = loaded['alt']
 
   lookups = [x[0] for x in comps]
-  lookups.extend(alt.keys())
 
   client = APIClient()
 
@@ -73,10 +71,6 @@ def main():
     total = totals['totalMarketValue'] + totals['cashBalance']
     shareValue = round(total / totalShares, 4)
     vtiValue = next(x[1] for x in indices if x[0] == 'VTI')
-    altValue = 0
-    for item in alt.items():
-      altQuote = next(x for x in quotes if x['Product']['symbol'] == item[0])
-      altValue += item[1] * altQuote['All']['lastTrade']
 
     if history[-1][1] != total or history[-1][2] != vtiValue:
       history.append([nowMs, shareValue, vtiValue, round(longTermAccountValue, 4)])
