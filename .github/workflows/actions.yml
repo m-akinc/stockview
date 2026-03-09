@@ -2,9 +2,9 @@ name: Update data.json
 
 on:
   schedule:
-    - cron: '31 14 * * 1-5' # Once at open
-    - cron: '30 18 * * 1-5' # once, halfway through the day
-    - cron: '10 21 * * 1-5' # try to get an accurate closing value (quotes can be delayed)
+    - cron: '31 13 * * 1-5' # Once at open
+    - cron: '30 17 * * 1-5' # once, halfway through the day
+    - cron: '10 20 * * 1-5' # try to get an accurate closing value (quotes can be delayed)
   workflow_dispatch:
 
 jobs:
