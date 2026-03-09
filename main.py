@@ -18,8 +18,8 @@ comps = [
 
 def main():
   marketHours = MarketHours()
-  # if not marketHours.market_has_opened():
-  #   return
+  if not marketHours.market_has_opened():
+     return
 
   with open('data.json', 'r', encoding='utf-8') as f:
     loaded = json.load(f)
