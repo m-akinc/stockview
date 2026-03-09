@@ -94,9 +94,22 @@ export class TreeMap extends HTMLElement {
     configureLeaf(div, position) {
         div.classList.add('leaf');
         div.style.backgroundColor = this.getPositionColor(position.daysChangePercent);
-        const textLines = [position.symbol, `${position.daysChangePercent.toFixed(2)}%`, `${position.percentOfPortfolio.toFixed(2)}% of PF`];
+        const textLines = [this.compactLabel(position.symbol), `${position.daysChangePercent.toFixed(2)}%`, `${position.percentOfPortfolio.toFixed(2)}% of PF`];
         div.innerHTML = textLines.slice(0, 2).join('<br>');
         div.title = textLines.join('\n');
+    }
+
+    compactLabel(symbol) {
+        // Match option symbols like 'SQQQ Apr 25 '25 $37.50 Call' or 'AAPL Apr 17 '25 $225 Put'
+        const optionMatch = symbol.match(/^(\S+)\s+(\w+)\s+(\d+)\s+'?\d+\s+\$[\d.]+\s+(Call|Put)$/i);
+        if (optionMatch) {
+            const [, ticker, month, day, type] = optionMatch;
+            const months = { jan:1, feb:2, mar:3, apr:4, may:5, jun:6, jul:7, aug:8, sep:9, oct:10, nov:11, dec:12 };
+            const monthNum = months[month.toLowerCase().slice(0, 3)];
+            const prefix = type.toLowerCase() === 'call' ? '+' : '-';
+            return `${prefix}${ticker} ${monthNum}/${day}`;
+        }
+        return symbol;
     }
 
     getPositionColor(percentChange) {

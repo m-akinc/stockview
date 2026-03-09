@@ -47,16 +47,16 @@ def main():
   longTermAccountPfResponse = client.request_account_portfolio(longTermAccountKey)[0]['PortfolioResponse']
   longTermAccountValue = longTermAccountPfResponse['Totals']['totalMarketValue'] + longTermAccountPfResponse['Totals']['cashBalance']
 
-  positions = [{
+  cashPosition = {
     "symbol": "(CASH)",
     "value": totals['cashBalance'],
     "daysChangePercent": 0,
     "totalGain": 0,
     "percentOfPortfolio": totals['cashBalance'] / totals['totalMarketValue'] 
-  }]
+  }
+  positions = [cashPosition]
+  
   for position in portfolio["Position"]:
-    # if ' ' in position['symbolDescription']:
-    #   continue
     positions.append({
       "symbol": position["symbolDescription"],
       "value": position["marketValue"],
@@ -66,7 +66,7 @@ def main():
     })
 
   
-  history = decimateHistory(history)
+  history = keepOnlyOneEntryPerDay(history)
 
   with open('data.json', 'w', encoding='utf-8') as f:
     nowMs = math.floor(datetime.datetime.now().timestamp() * 1000)
@@ -79,7 +79,7 @@ def main():
       altValue += item[1] * altQuote['All']['lastTrade']
 
     if history[-1][1] != total or history[-1][2] != vtiValue:
-      history.append([nowMs, shareValue, vtiValue, altValue, round(longTermAccountValue, 4)])
+      history.append([nowMs, shareValue, vtiValue, round(longTermAccountValue, 4)])
       
     if history[0][1] > 100:
       xfer = loaded['xfer'][0]
@@ -98,7 +98,7 @@ def main():
     json.dump(updated, f, ensure_ascii=False)
 
 
-def decimateHistory(history):
+def keepOnlyOneEntryPerDay(history):
   today, older = priorDay(list(reversed(history)))
   decimated = today
   while True:
@@ -120,10 +120,6 @@ def priorDay(descendingHistory):
       return hoursEarlier < 8
   day, older = more_itertools.before_and_after(sameTradingDay, descendingHistory)
   return (list(day), list(older))
-
-def toDatetime(ms):
-  return datetime.datetime.fromtimestamp(ms / 1000)
-
 
 if __name__ == '__main__':
   main()
