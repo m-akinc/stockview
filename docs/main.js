@@ -320,7 +320,7 @@ function filterRedundant(dataset) {
         const nPlus1 = normalizedPoints[i + 1];
         const straightLength = lineLength(nMinus1, nPlus1);
         const bentLength = lineLength(nMinus1, n) + lineLength(n, nPlus1);
-        if ((bentLength - straightLength) > 0.001) {
+        if ((bentLength - straightLength) > 0.005) {
             filtered.push(dataset.data[i]);
         }
     }
