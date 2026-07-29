@@ -233,7 +233,7 @@ export function getReferencePoint(descendingHistory, howFarBack) {
 function makePlotData(points, valueTransform, dataIndex) {
     return points.map((point, index) => ({
         x: point[0],
-        y: valueTransform(point[index], index)
+        y: valueTransform(point[dataIndex], index)
     }));
 }
 
@@ -357,7 +357,7 @@ function updateChart(data, lastUpdated) {
     chartDatasets.length = 0;
     const showVTI = isToggledOn('.toggle-index');
     const vtiAsBaseline = isToggledOn('.as-baseline');
-    yAxisUseDollars = showVTI || vtiAsBaseline;
+    yAxisUseDollars = !(showVTI || vtiAsBaseline);
 
     for (const dataset of getChartDatasets(data, showVTI, vtiAsBaseline, range)) {
         chartDatasets.push(filterRedundant(dataset));
