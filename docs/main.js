@@ -2,7 +2,8 @@
 export const DAY = 0;
 export const WEEK = 1;
 export const MONTH = 2;
-export const ALL = 3;
+export const YEAR = 3;
+export const ALL = 4;
 
 const priceFormatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -33,7 +34,9 @@ const chartOptions = {
         },
         y: {
             ticks: {
-                callback: value => yAxisUseDollars ? priceFormatter.format(value) : percentFormatter.format(value / 100)
+                callback: function(value, index, ticks) {
+                    return yAxisUseDollars ? priceFormatter.format(value) : percentFormatter.format(value / 100);
+                }
             },
             grid: {
               color: function(context) {
@@ -227,7 +230,7 @@ export function getReferencePoint(descendingHistory, howFarBack) {
 }
 
 // points is an array of [timestamp, portfolioValue, vtiValue]
-function makePlotData(points, valueTransform) {
+function makePlotData(points, valueTransform, dataIndex) {
     return points.map((point, index) => ({
         x: point[0],
         y: valueTransform(point[index], index)
@@ -264,18 +267,18 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, range) {
     }
     
     if (!showVTI && !vtiAsBaseline) {
-        return [makePortfolioPlot(makePlotData(points, x => x * accountValues.shares))];
+        return [makePortfolioPlot(makePlotData(points, x => x * accountValues.shares, 1))];
     }
 
-    const portfolioData = makePlotData(points, value => percentChange(value, referencePoint[1]));
-    const vtiData = makePlotData(points, value => percentChange(value, referencePoint[2]));
+    const portfolioData = makePlotData(points, value => percentChange(value, referencePoint[1]), 1);
+    const vtiData = makePlotData(points, value => percentChange(value, referencePoint[2]), 2);
 
     return [
         makePortfolioPlot(vtiAsBaseline 
-            ? makePlotData(points, (_, i) => portfolioData[i].y - vtiData[i].y)
+            ? makePlotData(points, (_, i) => portfolioData[i].y - vtiData[i].y, 1)
             : portfolioData),
         makeVTIPlot(vtiAsBaseline
-            ? makePlotData(points, () => 0)
+            ? makePlotData(points, () => 0, 2)
             : vtiData)
     ];
 }
