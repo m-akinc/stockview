@@ -18,7 +18,6 @@ let lastUpdated;
 let accountValues;
 let chart;
 let yAxisUseDollars = false;
-const splitReduction = 2579183.295;
 const chartDatasets = [];
 const chartOptions = {
     elements: {
@@ -34,9 +33,7 @@ const chartOptions = {
         },
         y: {
             ticks: {
-                callback: function(value, index, ticks) {
-                    return yAxisUseDollars ? priceFormatter.format(value) : percentFormatter.format(value / 100);
-                }
+                callback: value => yAxisUseDollars ? priceFormatter.format(value) : percentFormatter.format(value / 100)
             },
             grid: {
               color: function(context) {
@@ -173,20 +170,6 @@ const chartOptions = {
         bigCard.after(accountSelect);
     }
     
-    if (accountId === 'A041281') {
-        const showLongTermButton = document.createElement('div');
-        showLongTermButton.innerHTML = 'SHOW LONG TERM';
-        showLongTermButton.classList.add('button');
-        showLongTermButton.classList.add('toggle-button');
-        showLongTermButton.classList.add('show-lt');
-        showLongTermButton.role = 'button';
-        showLongTermButton.addEventListener('click', event => {
-            onGraphToggleShowLongTerm(event.currentTarget);
-        });
-        const buttonRow = document.querySelector('.graph-options');
-        buttonRow.appendChild(showLongTermButton);
-    }
-    
     chart = new Chart(document.getElementById('graph'), {
         type: 'line',
         data: {
@@ -201,8 +184,8 @@ const chartOptions = {
     requestAnimationFrame(() => requestAnimationFrame(() => document.querySelector('stockview-treemap').positions = data.positions));
 
     // Add handlers
-    [document.querySelector('.toggle-index')].forEach(x => x.addEventListener('click', () => onGraphToggleIndexClick(x)));
-    [document.querySelector('.as-baseline')].forEach(x => x.addEventListener('click', () => onGraphToggleIndexBaseline(x)));
+    document.querySelector('.toggle-index').addEventListener('click', () => onGraphToggleIndexClick(x));
+    document.querySelector('.as-baseline').addEventListener('click', () => onGraphToggleIndexBaseline(x));
     document.querySelectorAll('.time-range .button').forEach(x => x.addEventListener('click', () => onGraphToggleTimeRange(x)));
     document.querySelectorAll('.movers .button').forEach(x => x.addEventListener('click', () => onMoversButtonClick(x)));
 })();
@@ -243,7 +226,31 @@ export function getReferencePoint(descendingHistory, howFarBack) {
     return descendingHistory.find(x => x[0] < earliest);
 }
 
-function getChartDatasets(data, showVTI, vtiAsBaseline, showLongTerm, range) {
+// points is an array of [timestamp, portfolioValue, vtiValue]
+function makePlotData(points, valueTransform) {
+    return points.map((point, index) => ({
+        x: point[0],
+        y: valueTransform(point[index], index)
+    }));
+}
+
+function makePortfolioPlot(data) {
+    return {
+        label: 'PORTFOLIO',
+        data: data,
+        borderColor: '#a772e0'
+    }
+}
+
+function makeVTIPlot(data) {
+    return {
+        label: 'VTI',
+        data: data,
+        borderColor: '#643e8c'
+    }
+}
+
+function getChartDatasets(data, showVTI, vtiAsBaseline, range) {
     const descendingHistory = [...data.history].reverse();
     const referencePoint = getReferencePoint(descendingHistory, range);
     let points = data.history.filter(x => x[0] > referencePoint[0]);
@@ -255,107 +262,69 @@ function getChartDatasets(data, showVTI, vtiAsBaseline, showLongTerm, range) {
         const justBeforeToday = getReferencePoint(descendingHistory, DAY);
         points = points.filter(x => x[0] <= justBeforeToday[0]).concat([points[points.length - 1]]);
     }
-    const pointsWithLT = points.filter(x => x.length > 4);
     
     if (!showVTI && !vtiAsBaseline) {
-        yAxisUseDollars = true;
-        const plots = [{
-            label: 'PORTFOLIO',
-            data: points.map(x => ({
-                x: x[0],
-                y: x[1] * (accountValues.id === 'A041281' ? accountValues.shares : 1)
-            })),
-            borderColor: '#a772e0'
-        }];
-        if (showLongTerm) {
-            plots.push({
-                label: 'LT PORTFOLIO',
-                data: pointsWithLT.map(x => ({
-                    x: x[0],
-                    y: x[4]
-                })),
-                borderColor: '#697edd'
-            });
-        }
-        return plots;
+        return [makePortfolioPlot(makePlotData(points, x => x * accountValues.shares))];
     }
-    yAxisUseDollars = false;
-    if (showVTI) {
-        const plots = [
-            {
-                label: 'PORTFOLIO',
-                data: points.map(x => ({
-                    x: x[0],
-                    y: percentChange(x[1], referencePoint[1])
-                })),
-                borderColor: '#a772e0'
-            },
-            {
-                label: 'VTI',
-                data: points.map(x => ({
-                    x: x[0],
-                    y: percentChange(x[2], referencePoint[2])
-                })),
-                borderColor: '#643e8c'
-            }
-        ];
-        if (showLongTerm) {
-            const refPoint = pointsWithLT.length === points.length
-                ? referencePoint
-                : pointsWithLT[0];
-            plots.push({
-                label: 'LT PORTFOLIO',
-                data: pointsWithLT.map(x => ({
-                    x: x[0],
-                    y: percentChange(x[4], refPoint[4])
-                })),
-                borderColor: '#697edd'
-            });
-        }
-        return plots;
-    }
-    if (vtiAsBaseline) {
-        const portfolioPcts = points.map(x => percentChange(x[1], referencePoint[1]));
-        const vtiPcts = points.map(x => percentChange(x[2], referencePoint[2]));
-        const plots = [
-            {
-                label: 'PORTFOLIO',
-                data: points.map((x, i) => ({
-                    x: x[0],
-                    y: portfolioPcts[i] - vtiPcts[i]
-                })),
-                borderColor: '#a772e0'
-            },
-            {
-                label: 'VTI',
-                data: points.map(x => ({
-                    x: x[0],
-                    y: 0
-                })),
-                borderColor: '#643e8c'
-            }
-        ];
-        if (showLongTerm) {
-            const refPoint = pointsWithLT.length === points.length
-                ? referencePoint
-                : pointsWithLT[0];
-            const ltPfPcts = pointsWithLT.map(x => percentChange(x[4], refPoint[4]));
-            const startingVtiIndex = points.length - pointsWithLT.length;
-            plots.push({
-                label: 'LT PORTFOLIO',
-                data: pointsWithLT.map((x, i) => ({
-                    x: x[0],
-                    y: ltPfPcts[i] - vtiPcts[i + startingVtiIndex]
-                })),
-                borderColor: '#697edd'
-            });
-        }
-        return plots;
-    }
+
+    const portfolioData = makePlotData(points, value => percentChange(value, referencePoint[1]));
+    const vtiData = makePlotData(points, value => percentChange(value, referencePoint[2]));
+
+    return [
+        makePortfolioPlot(vtiAsBaseline 
+            ? makePlotData(points, (_, i) => portfolioData[i].y - vtiData[i].y)
+            : portfolioData),
+        makeVTIPlot(vtiAsBaseline
+            ? makePlotData(points, () => 0)
+            : vtiData)
+    ];
 }
 
 function percentChange(v1, v0) {
     return 100 * (v1 - v0) / v0;
+}
+
+function lineLength(point1, point2) {
+    const dx = point2.x - point1.x;
+    const dy = point2.y - point1.y;
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
+function normalize(points) {
+    const minX = points.reduce((a, x) => Math.min(a, x.x), Infinity);
+    const maxX = points.reduce((a, x) => Math.max(a, x.x), -Infinity);
+    const minY = points.reduce((a, x) => Math.min(a, x.y), Infinity);
+    const maxY = points.reduce((a, x) => Math.max(a, x.y), -Infinity);
+    const xRange = maxX - minX;
+    const yRange = maxY - minY;
+    return points.map(x => ({
+        x: (x.x - minX) / xRange,
+        y: (x.y - minY) / yRange
+    }));
+}
+
+function filterRedundant(dataset) {
+    if (dataset.data.length < 50) {
+        return dataset;
+    }
+
+    const normalizedPoints = normalize(dataset.data);
+
+    const filtered = [dataset.data[0]];
+    for (let i = 1; i < dataset.data.length - 1; i++) {
+        const nMinus1 = normalizedPoints[i - 1];
+        const n = normalizedPoints[i];
+        const nPlus1 = normalizedPoints[i + 1];
+        const straightLength = lineLength(nMinus1, nPlus1);
+        const bentLength = lineLength(nMinus1, n) + lineLength(n, nPlus1);
+        if ((bentLength - straightLength) > 0.001) {
+            filtered.push(dataset.data[i]);
+        }
+    }
+    filtered.push(dataset.data[-1]);
+
+    dataset.data = filtered;
+    return dataset;
 }
 
 function isToggledOn(selector) {
@@ -377,15 +346,18 @@ function updateChart(data, lastUpdated) {
         range = WEEK;
     } else if (isToggledOn('.toggle-button.month')) {
         range = MONTH;
+    } else if (isToggledOn('.toggle-button.year')) {
+        range = YEAR;
     } else {
         range = ALL;
     }
     chartDatasets.length = 0;
     const showVTI = isToggledOn('.toggle-index');
     const vtiAsBaseline = isToggledOn('.as-baseline');
-    const showLongTerm = isToggledOn('.show-lt');
-    for (const dataset of getChartDatasets(data, showVTI, vtiAsBaseline, showLongTerm, range)) {
-        chartDatasets.push(dataset);
+    yAxisUseDollars = showVTI || vtiAsBaseline;
+
+    for (const dataset of getChartDatasets(data, showVTI, vtiAsBaseline, range)) {
+        chartDatasets.push(filterRedundant(dataset));
     }
     chartOptions.scales.x.min = new Date(chartDatasets[0].data.x - 36000);
     chartOptions.scales.x.max = new Date(lastUpdated.getTime()).setHours(16, 0);
@@ -400,6 +372,8 @@ function getDateAgo(referenceDate, range) {
             return new Date(new Date(referenceDate.getTime()).setDate(referenceDate.getDate() - 6)).setHours(0, 0, 0, 0);
         case MONTH:
             return new Date(referenceDate.getTime()).setMonth(referenceDate.getMonth() - 1);
+        case YEAR:
+            return new Date(referenceDate.getTime()).setFullYear(referenceDate.getFullYear() - 1);
         default:
             return undefined
     }
@@ -438,15 +412,6 @@ function onGraphToggleTimeRange(button) {
         if (button !== rangeButton) {
             rangeButton.ariaPressed = undefined;
         }
-    }
-    updateChart(data, lastUpdated);
-}
-
-function onGraphToggleShowLongTerm(button) {
-    const wasPressed = !!button.ariaPressed;
-    button.ariaPressed = wasPressed ? undefined : "true";
-    if (wasPressed) {
-        setToggledOn('.show-lt', false);
     }
     updateChart(data, lastUpdated);
 }

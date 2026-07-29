@@ -95,10 +95,15 @@ def main():
 def keepOnlyOneEntryPerDay(history):
   today, older = priorDay(list(reversed(history)))
   decimated = today
+  days = 1
   while True:
     dayBefore, older = priorDay(older)
+    days += 1
     if len(dayBefore) > 0:
-      decimated.append(dayBefore[0])
+      if days <= 7:
+        decimated.extend(dayBefore)
+      else:
+        decimated.append(dayBefore[0])
       if len(dayBefore) == 1:
         decimated.extend(older)
         break

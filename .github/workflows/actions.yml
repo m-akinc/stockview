@@ -2,9 +2,12 @@ name: Update data.json
 
 on:
   schedule:
-    - cron: '31 13 * * 1-5' # Once at open
-    - cron: '30 17 * * 1-5' # once, halfway through the day
-    - cron: '10 20 * * 1-5' # try to get an accurate closing value (quotes can be delayed)
+    # GitHub actions can be delayed significantly, based on load, so run earlier, and offset from common times. 
+    - cron: '48 11 * * 1-5' # at open (DST)
+    - cron: '48 12 * * 1-5' # at open
+    - cron: '12 15 * * 1-5' # halfway through the day
+    - cron: '22 18 * * 1-5' # closing (DST) -- note that quotes can be delayed
+    - cron: '22 19 * * 1-5' # closing
   workflow_dispatch:
 
 jobs:
