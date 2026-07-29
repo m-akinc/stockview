@@ -184,10 +184,10 @@ const chartOptions = {
     requestAnimationFrame(() => requestAnimationFrame(() => document.querySelector('stockview-treemap').positions = data.positions));
 
     // Add handlers
-    document.querySelector('.toggle-index').addEventListener('click', () => onGraphToggleIndexClick(x));
-    document.querySelector('.as-baseline').addEventListener('click', () => onGraphToggleIndexBaseline(x));
-    document.querySelectorAll('.time-range .button').forEach(x => x.addEventListener('click', () => onGraphToggleTimeRange(x)));
-    document.querySelectorAll('.movers .button').forEach(x => x.addEventListener('click', () => onMoversButtonClick(x)));
+    document.querySelector('.toggle-index').addEventListener('click', e => onGraphToggleIndexClick(e.target));
+    document.querySelector('.as-baseline').addEventListener('click', e => onGraphToggleIndexBaseline(e.target));
+    document.querySelectorAll('.time-range .button').forEach(x => x.addEventListener('click', e => onGraphToggleTimeRange(e.target)));
+    document.querySelectorAll('.movers .button').forEach(x => x.addEventListener('click', e => onMoversButtonClick(e.target)));
 })();
 
 function populateAccountValues(accountValues, percentChangeSincePreviousClose) {
@@ -321,7 +321,7 @@ function filterRedundant(dataset) {
             filtered.push(dataset.data[i]);
         }
     }
-    filtered.push(dataset.data[-1]);
+    filtered.push(dataset.data[dataset.data.length - 1]);
 
     dataset.data = filtered;
     return dataset;
