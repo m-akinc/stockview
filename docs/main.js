@@ -253,18 +253,18 @@ function makeVTIPlot(data) {
     }
 }
 
+function excludeTodaysPointsExceptLatest(points, descendingHistory) {
+    const justBeforeToday = getReferencePoint(descendingHistory, DAY);
+    return points.filter(x => x[0] <= justBeforeToday[0]).concat([points[points.length - 1]]);
+}
+
 function getChartDatasets(data, showVTI, vtiAsBaseline, range) {
     const descendingHistory = [...data.history].reverse();
     const referencePoint = getReferencePoint(descendingHistory, range);
-    let points = data.history.filter(x => x[0] > referencePoint[0]);
-    if (range === ALL) {
-        // include the reference point
-        points.unshift(referencePoint);
-    }
-    if (range !== DAY) {
-        const justBeforeToday = getReferencePoint(descendingHistory, DAY);
-        points = points.filter(x => x[0] <= justBeforeToday[0]).concat([points[points.length - 1]]);
-    }
+    let points = data.history.filter(x => x[0] >= referencePoint[0]);
+    // if (range !== DAY) {
+    //    points = excludeTodaysPointsExceptLatest(points, descendingHistory);
+    //    
     
     if (!showVTI && !vtiAsBaseline) {
         return [makePortfolioPlot(makePlotData(points, x => x * accountValues.shares, 1))];
@@ -307,7 +307,7 @@ function normalize(points) {
 }
 
 function filterRedundant(dataset) {
-    if (dataset.data.length < 50) {
+    if (dataset.data.length < 25) {
         return dataset;
     }
 
