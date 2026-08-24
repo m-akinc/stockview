@@ -1,5 +1,5 @@
 # pip install virtualenv
-# python -m virtualenv venv --python=python3.12
+# python -m virtualenv venv --python=python3.14
 # .\venv\Scripts\activate
 # pip install "playwright==1.40"
 # playwright install firefox
