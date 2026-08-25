@@ -41,8 +41,8 @@ jobs:
         shell: pwsh
         run: |
           $matches = pip show wetrade | Select-String -Pattern '(?<=Location: )[^\n]+'
-          $path = $matches.Matches.Value + '/wetrade/order/options/__init__.py';
-          if (-not (Test-Path $path)) { New-Item $path }
+          $path = $matches.Matches.Value + '/wetrade/order/options';
+          if (-not (Test-Path "$path/__init__.py")) { New-Item -Path $path -Name '__init__.py' }
 
       - name: fetch new data and update file
         env:
