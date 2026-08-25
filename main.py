@@ -27,9 +27,10 @@ def main():
     totalShares = loaded['totalShares']
 
   lookups = [x[0] for x in comps]
-
+  print("Creating APIClient")
   client = APIClient()
 
+  print("Getting quotes")
   quotes = MultiQuote(client, tuple(lookups)).get_quote()
   compsSymbols = [x[0] for x in comps]
   indices = [(
@@ -38,10 +39,11 @@ def main():
     x['All']['changeClose'],
     x['All']['changeClosePercentage']
   ) for x in quotes if x['Product']['symbol'] in compsSymbols]
+  print("Requesting account portfollio (short)"
   response = client.request_account_portfolio(shortTermAccountKey)[0]['PortfolioResponse']
   portfolio = response['AccountPortfolio'][0]
   totals = response['Totals']
-
+  print("Requesting account portfollio (long)"
   longTermAccountPfResponse = client.request_account_portfolio(longTermAccountKey)[0]['PortfolioResponse']
   longTermAccountValue = longTermAccountPfResponse['Totals']['totalMarketValue'] + longTermAccountPfResponse['Totals']['cashBalance']
 
@@ -62,7 +64,6 @@ def main():
       "totalGain": position["totalGain"],
       "percentOfPortfolio": position["pctOfPortfolio"]
     })
-
   
   history = keepOnlyOneEntryPerDay(history)
 
@@ -89,6 +90,7 @@ def main():
     updated['indices'] = indices
     updated['positions'] = positions
 
+    print("Dumping json to file")
     json.dump(updated, f, ensure_ascii=False)
 
 
