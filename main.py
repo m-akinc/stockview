@@ -39,11 +39,11 @@ def main():
     x['All']['changeClose'],
     x['All']['changeClosePercentage']
   ) for x in quotes if x['Product']['symbol'] in compsSymbols]
-  print("Requesting account portfollio (short)"
+  print("Requesting account portfollio (short)")
   response = client.request_account_portfolio(shortTermAccountKey)[0]['PortfolioResponse']
   portfolio = response['AccountPortfolio'][0]
   totals = response['Totals']
-  print("Requesting account portfollio (long)"
+  print("Requesting account portfollio (long)")
   longTermAccountPfResponse = client.request_account_portfolio(longTermAccountKey)[0]['PortfolioResponse']
   longTermAccountValue = longTermAccountPfResponse['Totals']['totalMarketValue'] + longTermAccountPfResponse['Totals']['cashBalance']
 
