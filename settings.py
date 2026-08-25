@@ -31,7 +31,7 @@ config_options = {
     'totp_secret': TOTP_SECRET
   }
 }
-enable_logging = False
+enable_logging = True
 quote_bucket = 'your-quote-bucket'
 
 config = config_options[config_id]
