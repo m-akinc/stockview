@@ -36,17 +36,6 @@ jobs:
           $matches = pip show wetrade | Select-String -Pattern '(?<=Location: )[^\n]+'
           $path = $matches.Matches.Value + '/wetrade/api.py';
           (Get-Content $path) -replace 'v1/accounts/{}/portfolio.json', 'v1/accounts/{}/portfolio.json?count=1000&totalsRequired=true' | Set-Content $path
-          
-      - name: fix wetrade options module bug
-        shell: pwsh
-        run: |
-          $matches = pip show wetrade | Select-String -Pattern '(?<=Location: )[^\n]+'
-          $path = $matches.Matches.Value + '/wetrade/order/options';
-          if (-not (Test-Path "$($matches.Matches.Value)/wetrade")) { Write-Host "no wetrade dir" }
-          if (-not (Test-Path "$($matches.Matches.Value)/wetrade/order")) { Write-Host "no order dir" }
-          if (-not (Test-Path "$($matches.Matches.Value)/wetrade/order/option")) { Write-Host "no option dir" }
-          ls "$($matches.Matches.Value)/wetrade"
-          if (-not (Test-Path "$path/__init__.py")) { New-Item -Path $path -Name '__init__.py' }
 
       - name: fetch new data and update file
         env:
