@@ -37,7 +37,7 @@ jobs:
           $path = $matches.Matches.Value + '/wetrade/api.py';
           (Get-Content $path) -replace 'v1/accounts/{}/portfolio.json', 'v1/accounts/{}/portfolio.json?count=1000&totalsRequired=true' | Set-Content $path
           
-      - name: fix wetrade orders module bug
+      - name: fix wetrade options module bug
         shell: pwsh
         run: |
           $matches = pip show wetrade | Select-String -Pattern '(?<=Location: )[^\n]+'
