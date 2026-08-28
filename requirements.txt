@@ -1,4 +1,4 @@
 wetrade
-playwright=1.55
+playwright==1.55
 python-vipaccess
 more-itertools
