@@ -37,6 +37,13 @@ jobs:
           $path = $matches.Matches.Value + '/wetrade/api.py';
           (Get-Content $path) -replace 'v1/accounts/{}/portfolio.json', 'v1/accounts/{}/portfolio.json?count=1000&totalsRequired=true' | Set-Content $path
 
+      - name: monkey-patch wetrade file (traceback.format_exception signature, Python 3.13+)
+        shell: pwsh
+        run: |
+          $matches = pip show wetrade | Select-String -Pattern '(?<=Location: )[^\n]+'
+          $path = $matches.Matches.Value + '/wetrade/utils.py';
+          (Get-Content $path) -replace 'traceback.format_exception\(etype=type\(e\), value=e, tb=e.__traceback__\)', 'traceback.format_exception(e)' | Set-Content $path
+
       - name: fetch new data and update file
         env:
           USERNAME: ${{ secrets.USERNAME }}
