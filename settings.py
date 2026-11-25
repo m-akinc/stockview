@@ -6,7 +6,7 @@ try:
     CLIENT_SECRET = os.environ["CLIENT_SECRET"]
     TOTP_SECRET = os.environ["TOTP_SECRET"]
 except KeyError:
-    raise "USERNAME, PASSWORD, CLIENT_SECRET, and TOTP_SECRET env vars not available!"
+    raise RuntimeError("USERNAME, PASSWORD, CLIENT_SECRET, and TOTP_SECRET env vars not available!")
 
 # E-Trade settings
 login_method = 'auto' # 'auto', 'manual'

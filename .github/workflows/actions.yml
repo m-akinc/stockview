@@ -47,8 +47,8 @@ jobs:
       - name: monkey-patch wetrade file (login timing out on slow runners)
         run: |
           python - <<'EOF'
-          import pathlib, wetrade
-          p = pathlib.Path(wetrade.__file__).parent / 'user_session.py'
+          import pathlib, importlib.util
+          p = pathlib.Path(importlib.util.find_spec('wetrade').origin).parent / 'user_session.py'
           s = p.read_text()
           s = s.replace(
             "page.goto('https://us.etrade.com/etx/pxy/login')",
@@ -58,7 +58,7 @@ jobs:
             "!= 'https://us.etrade.com/etx/pxy/login', timeout=45000, wait_until='domcontentloaded')")
           p.write_text(s)
           EOF
-          grep -n "domcontentloaded" "$(python -c 'import wetrade,os;print(os.path.dirname(wetrade.__file__))')/user_session.py"
+          grep -n "domcontentloaded" "$(python -c "import importlib.util,os;print(os.path.dirname(importlib.util.find_spec('wetrade').origin))")/user_session.py"
 
       - name: fetch new data and update file
         env:
