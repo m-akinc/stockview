@@ -13,7 +13,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 45
+
     steps:
 
       - name: checkout repo content
@@ -36,29 +37,6 @@ jobs:
           $matches = pip show wetrade | Select-String -Pattern '(?<=Location: )[^\n]+'
           $path = $matches.Matches.Value + '/wetrade/api.py';
           (Get-Content $path) -replace 'v1/accounts/{}/portfolio.json', 'v1/accounts/{}/portfolio.json?count=1000&totalsRequired=true' | Set-Content $path
-
-      - name: monkey-patch wetrade file (traceback.format_exception signature, Python 3.13+)
-        shell: pwsh
-        run: |
-          $matches = pip show wetrade | Select-String -Pattern '(?<=Location: )[^\n]+'
-          $path = $matches.Matches.Value + '/wetrade/utils.py';
-          (Get-Content $path) -replace 'traceback.format_exception\(etype=type\(e\), value=e, tb=e.__traceback__\)', 'traceback.format_exception(e)' | Set-Content $path
-
-      - name: monkey-patch wetrade file (login timing out on slow runners)
-        run: |
-          python - <<'EOF'
-          import pathlib, importlib.util
-          p = pathlib.Path(importlib.util.find_spec('wetrade').origin).parent / 'user_session.py'
-          s = p.read_text()
-          s = s.replace(
-            "page.goto('https://us.etrade.com/etx/pxy/login')",
-            "page.goto('https://us.etrade.com/etx/pxy/login', wait_until='domcontentloaded')")
-          s = s.replace(
-            "!= 'https://us.etrade.com/etx/pxy/login', timeout=8000)",
-            "!= 'https://us.etrade.com/etx/pxy/login', timeout=45000, wait_until='domcontentloaded')")
-          p.write_text(s)
-          EOF
-          grep -n "domcontentloaded" "$(python -c "import importlib.util,os;print(os.path.dirname(importlib.util.find_spec('wetrade').origin))")/user_session.py"
 
       - name: fetch new data and update file
         env:
