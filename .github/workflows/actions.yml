@@ -44,6 +44,22 @@ jobs:
           $path = $matches.Matches.Value + '/wetrade/utils.py';
           (Get-Content $path) -replace 'traceback.format_exception\(etype=type\(e\), value=e, tb=e.__traceback__\)', 'traceback.format_exception(e)' | Set-Content $path
 
+      - name: monkey-patch wetrade file (login timing out on slow runners)
+        run: |
+          python - <<'EOF'
+          import pathlib, wetrade
+          p = pathlib.Path(wetrade.__file__).parent / 'user_session.py'
+          s = p.read_text()
+          s = s.replace(
+            "page.goto('https://us.etrade.com/etx/pxy/login')",
+            "page.goto('https://us.etrade.com/etx/pxy/login', wait_until='domcontentloaded')")
+          s = s.replace(
+            "!= 'https://us.etrade.com/etx/pxy/login', timeout=8000)",
+            "!= 'https://us.etrade.com/etx/pxy/login', timeout=45000, wait_until='domcontentloaded')")
+          p.write_text(s)
+          EOF
+          grep -n "domcontentloaded" "$(python -c 'import wetrade,os;print(os.path.dirname(wetrade.__file__))')/user_session.py"
+
       - name: fetch new data and update file
         env:
           USERNAME: ${{ secrets.USERNAME }}
